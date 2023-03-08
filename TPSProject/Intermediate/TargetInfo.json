@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "TPSProject",
+			"Path": "C:\\DEVELOPMENT\\GIT\\UE5_PROJECT\\TPSProject\\Source\\TPSProject.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "TPSProjectEditor",
+			"Path": "C:\\DEVELOPMENT\\GIT\\UE5_PROJECT\\TPSProject\\Source\\TPSProjectEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

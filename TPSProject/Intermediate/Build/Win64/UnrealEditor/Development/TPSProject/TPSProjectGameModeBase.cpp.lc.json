@@ -1,0 +1,19 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\development\\git\\ue5_project\\tpsproject\\source\\tpsproject\\private\\tpsprojectgamemodebase.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\development\\git\\ue5_project\\tpsproject\\intermediate\\build\\win64\\tpsprojecteditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "c:\\development\\git\\ue5_project\\tpsproject\\intermediate\\build\\win64\\unrealeditor\\development\\tpsproject\\definitions.tpsproject.h",
+            "c:\\development\\git\\ue5_project\\tpsproject\\source\\tpsproject\\public\\tpsprojectgamemodebase.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\gameframework\\gamemodebase.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\engine\\serverstatreplicator.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\serverstatreplicator.generated.h",
+            "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\gamemodebase.generated.h",
+            "c:\\development\\git\\ue5_project\\tpsproject\\intermediate\\build\\win64\\unrealeditor\\inc\\tpsproject\\tpsprojectgamemodebase.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

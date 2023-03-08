@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"C:\\DEVELOPMENT\\GIT\\UE5_PROJECT\\TPSProject\\Source\\TPSProject\\TPSProject.Build.cs",
+		"C:\\DEVELOPMENT\\GIT\\UE5_PROJECT\\TPSProject\\Source\\TPSProject.Target.cs",
+		"C:\\DEVELOPMENT\\GIT\\UE5_PROJECT\\TPSProject\\Source\\TPSProjectEditor.Target.cs"
+	],
+	"EngineVersion": "5.0.3"
+}
