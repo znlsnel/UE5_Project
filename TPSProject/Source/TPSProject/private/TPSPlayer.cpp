@@ -42,6 +42,13 @@ ATPSPlayer::ATPSPlayer()
 	{
 		bUseControllerRotationYaw = true;
 	}
+
+
+	// CharactorMovement
+	{
+
+		JumpMaxCount = 2;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -56,6 +63,8 @@ void ATPSPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+	Move();
 }
 
 // Called to bind functionality to input
@@ -65,6 +74,9 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, & ATPSPlayer::Turn);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, & ATPSPlayer::LookUp);
+	PlayerInputComponent->BindAxis(TEXT("Horizontal"), this, &ATPSPlayer::InputHorizontal);
+	PlayerInputComponent->BindAxis(TEXT("Vertical"), this, &ATPSPlayer::InputVertical);
+	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ATPSPlayer::InputJump);
 }
 
 void ATPSPlayer::Turn(float value)
@@ -75,4 +87,30 @@ void ATPSPlayer::Turn(float value)
 void ATPSPlayer::LookUp(float value)
 {
 	AddControllerPitchInput(value);
+}
+
+void ATPSPlayer::InputHorizontal(float value)
+{
+	direction.Y = value;
+}
+
+void ATPSPlayer::InputVertical(float value)
+{
+	direction.X = value;
+}
+
+void ATPSPlayer::InputJump()
+{
+	Jump();
+}
+
+void ATPSPlayer::Move()
+{
+	// 플레이어 이동
+	// GetControlRotation - 플레이어 폰을 컨트롤하고 있는 컨트롤러의 방향을 FRotator 타입으로 넘겨줌
+	// FTransform으로 Transform 인스턴트를 생성
+	// TrasnformVector 는 특정한 vector를 local vector로 변환시켜줌
+	direction = FTransform(GetControlRotation()).TransformVector(direction);
+	AddMovementInput(direction);
+	direction = FVector(0, 0, 0);
 }

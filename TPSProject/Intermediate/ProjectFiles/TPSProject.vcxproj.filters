@@ -23,6 +23,9 @@
     <None Include="..\..\Config\DefaultGame.ini">
       <Filter>Config</Filter>
     </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
     <Filter Include="Config\HoloLens">
       <UniqueIdentifier>{4C8DD267-CDE7-336F-8602-F5F485D22BAB}</UniqueIdentifier>
     </Filter>
@@ -38,6 +41,9 @@
     <Filter Include="Source\TPSProject\private">
       <UniqueIdentifier>{F2BBD063-EC9E-3AEE-AB39-F88568F04848}</UniqueIdentifier>
     </Filter>
+    <ClCompile Include="..\..\Source\TPSProject\private\Bullet.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\TPSPlayer.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -50,6 +56,9 @@
     <Filter Include="Source\TPSProject\public">
       <UniqueIdentifier>{68A94EF8-D612-391B-AA07-FA4C4DBF9FA4}</UniqueIdentifier>
     </Filter>
+    <ClInclude Include="..\..\Source\TPSProject\public\Bullet.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\TPSPlayer.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>

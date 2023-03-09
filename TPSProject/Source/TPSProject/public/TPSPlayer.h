@@ -27,8 +27,22 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Input System
-	void Turn(float value);
-	void LookUp(float value);
+
+	void Turn(float value);				// 좌우 회전
+	void LookUp(float value);			// 상하 회전
+	void InputHorizontal(float value);	// 좌우 이동
+	void InputVertical(float value);		// 상하 이동
+	void InputJump();					// 점프
+
+	// 이동 속도
+	UPROPERTY(EditAnywhere, Category = PlayerSetting)
+		float walkSpeed = 600;
+
+	// 이동 방향
+	FVector direction = FVector(0,0,0);
+
+	void Move();
+	
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)

@@ -1,12 +1,12 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "c:\\development\\git\\ue5_project\\tpsproject\\source\\tpsproject\\tpsproject.cpp",
+        "Source": "c:\\development\\git\\ue5_project\\tpsproject\\source\\tpsproject\\private\\tpsproject.cpp",
         "ProvidedModule": "",
         "PCH": "c:\\development\\git\\ue5_project\\tpsproject\\intermediate\\build\\win64\\tpsprojecteditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
         "Includes": [
             "c:\\development\\git\\ue5_project\\tpsproject\\intermediate\\build\\win64\\unrealeditor\\development\\tpsproject\\definitions.tpsproject.h",
-            "c:\\development\\git\\ue5_project\\tpsproject\\source\\tpsproject\\tpsproject.h"
+            "c:\\development\\git\\ue5_project\\tpsproject\\source\\tpsproject\\public\\tpsproject.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []
