@@ -33,7 +33,7 @@ public:
 	void InputHorizontal(float value);	// 좌우 이동
 	void InputVertical(float value);		// 상하 이동
 	void InputJump();					// 점프
-
+	void InputFire();					// 총알 발사
 	// 이동 속도
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
 		float walkSpeed = 600;
@@ -42,11 +42,14 @@ public:
 	FVector direction = FVector(0,0,0);
 
 	void Move();
-	
+	UPROPERTY(VisibleAnywhere, category = GunMesh)
+		class USkeletalMeshComponent* gunMeshComp;
 
 public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class USpringArmComponent* springArmComp;
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class UCameraComponent* tpsCamComp;
+	UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
+		TSubclassOf<class ABullet> bulletFactory; // 총알 공장
 };

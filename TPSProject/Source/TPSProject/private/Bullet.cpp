@@ -33,6 +33,12 @@ ABullet::ABullet()
 		bodyMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		// 외관 크기 설정
 		bodyMeshComp->SetRelativeScale3D(FVector(0.25f));
+		bodyMeshComp->SetRelativeLocation(FVector(0, 0, -12.5));
+		
+		// Mesh Setting
+		ConstructorHelpers::FObjectFinder<UStaticMesh> Sphere(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
+		bodyMeshComp->SetStaticMesh(Sphere.Object);
+		
 	}
 
 	// Projectile Setting
@@ -51,6 +57,10 @@ ABullet::ABullet()
 		movementComp->Bounciness = 0.3f;
 	}
 
+	// Setting
+	{
+		InitialLifeSpan = 2.0f;
+	}
 	
 }
 
