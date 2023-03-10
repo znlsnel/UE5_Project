@@ -23,6 +23,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+
 
 public:
 	// 발사체의 이동을 담당할 컴포넌트
@@ -36,4 +38,11 @@ public:
 	// 외관 컴포넌트
 	UPROPERTY(VisibleAnywhere, Category = BodyMesh)
 		class UStaticMeshComponent* bodyMeshComp;
+
+	// 총알 속도
+	UPROPERTY(EditAnywhere, Category = Settings) 
+		float speed = 5000;
+
+
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 };

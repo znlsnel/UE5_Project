@@ -43,19 +43,31 @@ ATPSPlayer::ATPSPlayer()
 	// Gun Skeletal Mesh Component
 	{
 		// 스켈레탈 메시 컴포넌트 등록
-		gunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
+		pistolMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
 		// 부모 컴포넌트 등록
-		gunMeshComp->SetupAttachment(GetMesh());
+		pistolMeshComp->SetupAttachment(GetMesh());
 		// 스켈레탈메시 데이터 로드
-		ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Weapons/Rifle/Mesh/SK_Rifle.SK_Rifle'"));
+		ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Weapons/Pistol/Mesh/SK_Pistol.SK_Pistol'"));
 		
 		// 데이터 로드가 성공했다면
 		if (TempGunMesh.Succeeded())
 		{
 			// 스켈레탈메시 데이터 할당
-			gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
+			pistolMeshComp->SetSkeletalMesh(TempGunMesh.Object);
 			// 위치 조정하기
-			gunMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
+			pistolMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
+		}
+
+		// Sniper Gun Component
+		ripleMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SniperGunComp"));
+		ripleMeshComp->SetupAttachment(GetMesh());
+
+		ConstructorHelpers::FObjectFinder<UStaticMesh> TempSniperGun(TEXT("StaticMesh'/Game/Weapons/Rifle/Mesh/SM_Rifle.SM_Rifle'"));
+		if (TempSniperGun.Succeeded())
+		{
+			ripleMeshComp->SetStaticMesh(TempSniperGun.Object);
+			ripleMeshComp->SetRelativeLocation(FVector(-22, 55, 120));
+			
 		}
 	}
 
@@ -76,7 +88,7 @@ ATPSPlayer::ATPSPlayer()
 void ATPSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	GetPistol();
 }
 
 // Called every frame
@@ -110,6 +122,8 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAxis(TEXT("Vertical"), this, &ATPSPlayer::InputVertical);
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ATPSPlayer::InputJump);
 	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &ATPSPlayer::InputFire);
+	PlayerInputComponent->BindAction(TEXT("GetPistol"), IE_Pressed, this, &ATPSPlayer::GetPistol);
+	PlayerInputComponent->BindAction(TEXT("GetRiple"), IE_Pressed, this, &ATPSPlayer::GetRiple);
 
 }
 
@@ -141,8 +155,24 @@ void ATPSPlayer::InputJump()
 
 void ATPSPlayer::InputFire()
 {
-	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("Muzzle"));
+	FTransform firePosition = pistolMeshComp->GetSocketTransform(TEXT("Muzzle"));
 	GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+}
+
+void ATPSPlayer::GetPistol()
+{
+	// 권총으로 변경
+	bUsingPistolGun = true;
+	pistolMeshComp->SetVisibility(true);
+	ripleMeshComp->SetVisibility(false);
+}
+
+void ATPSPlayer::GetRiple()
+{
+	// 소총으로 변경
+	bUsingPistolGun = false;
+	pistolMeshComp->SetVisibility(false);
+	ripleMeshComp->SetVisibility(true);
 }
 
 

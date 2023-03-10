@@ -15,6 +15,8 @@ public:
 	// Sets default values for this character's properties
 	ATPSPlayer();
 
+	void Move();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -27,29 +29,37 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Input System
-
 	void Turn(float value);				// 좌우 회전
 	void LookUp(float value);			// 상하 회전
 	void InputHorizontal(float value);	// 좌우 이동
 	void InputVertical(float value);		// 상하 이동
 	void InputJump();					// 점프
 	void InputFire();					// 총알 발사
+	void GetPistol();					// 권총 장착
+	void GetRiple();					// 소총 장착
+
+public:
 	// 이동 속도
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
 		float walkSpeed = 600;
 
 	// 이동 방향
 	FVector direction = FVector(0,0,0);
-
-	void Move();
-	UPROPERTY(VisibleAnywhere, category = GunMesh)
-		class USkeletalMeshComponent* gunMeshComp;
+	bool bUsingPistolGun = true;
 
 public:
+	// Component
 	UPROPERTY(VisibleAnywhere, Category = Camera)
-		class USpringArmComponent* springArmComp;
+		class USpringArmComponent* springArmComp;		// Spring Arm
 	UPROPERTY(VisibleAnywhere, Category = Camera)
-		class UCameraComponent* tpsCamComp;
+		class UCameraComponent* tpsCamComp;			// Camera
+	UPROPERTY(VisibleAnywhere, category = GunMesh)
+		class USkeletalMeshComponent* pistolMeshComp;	// Pistol
+
+	UPROPERTY(VisibleAnywhere, category = GunMesh)
+		class UStaticMeshComponent* ripleMeshComp;	// Sniper
+
 	UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
 		TSubclassOf<class ABullet> bulletFactory; // 총알 공장
+
 };

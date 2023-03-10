@@ -59,7 +59,7 @@ ABullet::ABullet()
 
 	// Setting
 	{
-		InitialLifeSpan = 2.0f;
+		//InitialLifeSpan = 2.0f;
 	}
 	
 }
@@ -68,7 +68,9 @@ ABullet::ABullet()
 void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	FTimerHandle deathTimer;
+	GetWorld()->GetTimerManager().SetTimer(deathTimer, FTimerDelegate::CreateLambda([this]()-> void{Destroy(); }), 2.0f, false);
 }
 
 // Called every frame
@@ -77,4 +79,17 @@ void ABullet::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void ABullet::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	// speed 값이 수정되었는지 체크
+	if (PropertyChangedEvent.GetPropertyName() == TEXT("speed"))
+	{
+		// 프로젝타일 무브먼트 컴포넌트에 speed 값 적용
+		movementComp->InitialSpeed = speed;
+		movementComp->MaxSpeed = speed;
+	}
+}
+
+
 
