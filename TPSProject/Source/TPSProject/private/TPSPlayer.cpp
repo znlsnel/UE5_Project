@@ -6,6 +6,9 @@
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
+#include <Blueprint/UserWidget.h>
+
+
 
 // Sets default values
 ATPSPlayer::ATPSPlayer()
@@ -88,6 +91,11 @@ ATPSPlayer::ATPSPlayer()
 void ATPSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//  스나이퍼 UI 위젯 인스턴스 생성
+	_sniperUI = CreateWidget(GetWorld(), sniperUIFactory);
+
+	// 권총 들기
 	GetPistol();
 }
 
@@ -124,6 +132,8 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &ATPSPlayer::InputFire);
 	PlayerInputComponent->BindAction(TEXT("GetPistol"), IE_Pressed, this, &ATPSPlayer::GetPistol);
 	PlayerInputComponent->BindAction(TEXT("GetRiple"), IE_Pressed, this, &ATPSPlayer::GetRiple);
+	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Pressed, this, &ATPSPlayer::SniperAim);
+	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Released, this, &ATPSPlayer::SniperAim);
 
 }
 
@@ -174,5 +184,30 @@ void ATPSPlayer::GetRiple()
 	pistolMeshComp->SetVisibility(false);
 	ripleMeshComp->SetVisibility(true);
 }
+
+void ATPSPlayer::SniperAim()
+{
+	if (bUsingPistolGun == true) return;
+
+	// Pressed 입력 처리
+	if (bSniperAim == false)
+	{
+		// 스나이퍼 조준 모드 활성화!
+		bSniperAim = true;
+		// 스나이퍼 조준 UI 등록
+		_sniperUI->AddToViewport();
+		tpsCamComp->SetFieldOfView(45.0f);
+	}
+	// Released 입력 처리
+	else
+	{
+		// 스나이퍼 조준 모드 비활성화!
+		bSniperAim = false;
+		// 스나이퍼 조준 UI 등록
+		_sniperUI->RemoveFromParent();
+		tpsCamComp->SetFieldOfView(90.0f);
+	}
+}
+
 
 

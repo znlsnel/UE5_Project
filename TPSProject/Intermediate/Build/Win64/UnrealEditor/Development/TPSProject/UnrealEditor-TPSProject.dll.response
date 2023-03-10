@@ -34,9 +34,9 @@
 /NODEFAULTLIB:"LIBCPD"
 /FUNCTIONPADMIN
 "C:\DEVELOPMENT\GIT\UE5_PROJECT\TPSProject\Intermediate\Build\Win64\TPSProjectEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"C:\DEVELOPMENT\GIT\UE5_PROJECT\TPSProject\Intermediate\Build\Win64\UnrealEditor\Development\TPSProject\Bullet.cpp.obj"
 "C:\DEVELOPMENT\GIT\UE5_PROJECT\TPSProject\Intermediate\Build\Win64\UnrealEditor\Development\TPSProject\TPSProject.cpp.obj"
 "C:\DEVELOPMENT\GIT\UE5_PROJECT\TPSProject\Intermediate\Build\Win64\UnrealEditor\Development\TPSProject\TPSProjectGameModeBase.cpp.obj"
-"C:\DEVELOPMENT\GIT\UE5_PROJECT\TPSProject\Intermediate\Build\Win64\UnrealEditor\Development\TPSProject\Bullet.cpp.obj"
 "C:\DEVELOPMENT\GIT\UE5_PROJECT\TPSProject\Intermediate\Build\Win64\UnrealEditor\Development\TPSProject\TPSPlayer.cpp.obj"
 "C:\DEVELOPMENT\GIT\UE5_PROJECT\TPSProject\Intermediate\Build\Win64\UnrealEditor\Development\TPSProject\Bullet.gen.cpp.obj"
 "C:\DEVELOPMENT\GIT\UE5_PROJECT\TPSProject\Intermediate\Build\Win64\UnrealEditor\Development\TPSProject\TPSPlayer.gen.cpp.obj"
@@ -44,6 +44,7 @@
 "C:\DEVELOPMENT\GIT\UE5_PROJECT\TPSProject\Intermediate\Build\Win64\UnrealEditor\Development\TPSProject\TPSProjectGameModeBase.gen.cpp.obj"
 "C:\DEVELOPMENT\GIT\UE5_PROJECT\TPSProject\Intermediate\Build\Win64\UnrealEditor\Development\TPSProject\Default.rc2.res"
 "..\Intermediate\Build\Win64\UnrealEditor\Development\Engine\UnrealEditor-Engine.lib"
+"..\Intermediate\Build\Win64\UnrealEditor\Development\UMG\UnrealEditor-UMG.lib"
 "..\Intermediate\Build\Win64\UnrealEditor\Development\Core\UnrealEditor-Core.lib"
 "..\Intermediate\Build\Win64\UnrealEditor\Development\CoreUObject\UnrealEditor-CoreUObject.lib"
 "..\Intermediate\Build\Win64\UnrealEditor\Development\InputCore\UnrealEditor-InputCore.lib"

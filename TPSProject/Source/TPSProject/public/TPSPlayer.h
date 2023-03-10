@@ -37,6 +37,8 @@ public:
 	void InputFire();					// 총알 발사
 	void GetPistol();					// 권총 장착
 	void GetRiple();					// 소총 장착
+	void SniperAim();					// 스코프 모드
+
 
 public:
 	// 이동 속도
@@ -46,12 +48,12 @@ public:
 	// 이동 방향
 	FVector direction = FVector(0,0,0);
 	bool bUsingPistolGun = true;
+	bool bSniperAim = false;
 
 public:
-	// Component
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class USpringArmComponent* springArmComp;		// Spring Arm
-	UPROPERTY(VisibleAnywhere, Category = Camera)
+	UPROPERTY(BlueprintReadOnly, Category = Camera)
 		class UCameraComponent* tpsCamComp;			// Camera
 	UPROPERTY(VisibleAnywhere, category = GunMesh)
 		class USkeletalMeshComponent* pistolMeshComp;	// Pistol
@@ -59,7 +61,13 @@ public:
 	UPROPERTY(VisibleAnywhere, category = GunMesh)
 		class UStaticMeshComponent* ripleMeshComp;	// Sniper
 
+	// Factory
 	UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
 		TSubclassOf<class ABullet> bulletFactory; // 총알 공장
+
+	UPROPERTY(EditDefaultsOnly, Category = SniperUI)
+		TSubclassOf<class UUserWidget> sniperUIFactory;
+	class UUserWidget* _sniperUI;
+
 
 };
