@@ -7,7 +7,7 @@
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
 #include <Blueprint/UserWidget.h>
-
+#include <Kismet/GameplayStatics.h>
 
 
 // Sets default values
@@ -94,6 +94,10 @@ void ATPSPlayer::BeginPlay()
 
 	//  스나이퍼 UI 위젯 인스턴스 생성
 	_sniperUI = CreateWidget(GetWorld(), sniperUIFactory);
+	// 일반 조준 크로스헤어 UI
+	_crosshairUI = CreateWidget(GetWorld(), crosshairUIFactory);
+	// 일반 조준 UI 등록
+	_crosshairUI->AddToViewport();
 
 	// 권총 들기
 	GetPistol();
@@ -165,8 +169,51 @@ void ATPSPlayer::InputJump()
 
 void ATPSPlayer::InputFire()
 {
-	FTransform firePosition = pistolMeshComp->GetSocketTransform(TEXT("Muzzle"));
-	GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+	if (bUsingPistolGun)
+	{
+		FTransform firePosition = pistolMeshComp->GetSocketTransform(TEXT("Muzzle"));
+		GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+	}
+	else if (bSniperAim)
+	{
+		// LineTrace의 시작 위치
+		FVector startPos = tpsCamComp->GetComponentLocation(); // 카메라의 월드좌표
+		//LineTrace의 종료 위치
+		FVector endPos = startPos + tpsCamComp->GetForwardVector() * 5000;
+
+		// LineTrace의 충돌 정보를 담을 변수
+		FHitResult hitInfo;
+
+		// 충돌 옵션 설정 변수
+		FCollisionQueryParams params;
+
+		// 자기 자신은 충돌에서 제외
+		params.AddIgnoredActor(this);
+
+		// Channel 필터를 이용한 LineTrace 충돌 검출 (충돌 정보, 시작 위치, 종료 위치, 검출 채널, 충돌 옵션) 
+		bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
+
+		// LineTrace가 부딪혔을때
+		if (bHit)
+		{
+			// 충돌 파편 효과 트랜스폼
+			FTransform bulletTrans;
+			// 부딪힌 위치 할당
+			bulletTrans.SetLocation(hitInfo.ImpactPoint);
+			// 총알 파편 효과 인스턴스 생성
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletEffectFactory, bulletTrans);
+
+			auto hitComp = hitInfo.GetComponent();
+			// 컴포넌트가 있고 물리가 적용되어있다면
+			if (hitComp && hitComp->IsSimulatingPhysics())
+			{
+				// 날려버릴 힘과 방향이 필요
+				FVector force = -hitInfo.ImpactNormal * hitComp->GetMass() * 500000;
+				// 그 방향으로 날리기
+				hitComp->AddForce(force);
+			}
+		}
+	}
 }
 
 void ATPSPlayer::GetPistol()
@@ -197,6 +244,7 @@ void ATPSPlayer::SniperAim()
 		// 스나이퍼 조준 UI 등록
 		_sniperUI->AddToViewport();
 		tpsCamComp->SetFieldOfView(45.0f);
+		_crosshairUI->RemoveFromParent();
 	}
 	// Released 입력 처리
 	else
@@ -206,6 +254,7 @@ void ATPSPlayer::SniperAim()
 		// 스나이퍼 조준 UI 등록
 		_sniperUI->RemoveFromParent();
 		tpsCamComp->SetFieldOfView(90.0f);
+		_crosshairUI->AddToViewport();
 	}
 }
 

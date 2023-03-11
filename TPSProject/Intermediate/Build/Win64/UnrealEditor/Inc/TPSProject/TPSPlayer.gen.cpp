@@ -20,6 +20,7 @@ void EmptyLinkFunctionForGeneratedCodeTPSPlayer() {}
 	COREUOBJECT_API UClass* Z_Construct_UClass_UClass();
 	TPSPROJECT_API UClass* Z_Construct_UClass_ABullet_NoRegister();
 	UMG_API UClass* Z_Construct_UClass_UUserWidget_NoRegister();
+	ENGINE_API UClass* Z_Construct_UClass_UParticleSystem_NoRegister();
 // End Cross Module References
 	void ATPSPlayer::StaticRegisterNativesATPSPlayer()
 	{
@@ -63,6 +64,14 @@ void EmptyLinkFunctionForGeneratedCodeTPSPlayer() {}
 		static const UECodeGen_Private::FMetaDataPairParam NewProp_sniperUIFactory_MetaData[];
 #endif
 		static const UECodeGen_Private::FClassPropertyParams NewProp_sniperUIFactory;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_bulletEffectFactory_MetaData[];
+#endif
+		static const UECodeGen_Private::FObjectPropertyParams NewProp_bulletEffectFactory;
+#if WITH_METADATA
+		static const UECodeGen_Private::FMetaDataPairParam NewProp_crosshairUIFactory_MetaData[];
+#endif
+		static const UECodeGen_Private::FClassPropertyParams NewProp_crosshairUIFactory;
 		static const UECodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UECodeGen_Private::FClassParams ClassParams;
@@ -90,59 +99,79 @@ void EmptyLinkFunctionForGeneratedCodeTPSPlayer() {}
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ATPSPlayer_Statics::NewProp_springArmComp_MetaData[] = {
 		{ "Category", "Camera" },
+		{ "Comment", "// ???????? Comp\n" },
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "public/TPSPlayer.h" },
+		{ "ToolTip", "???????? Comp" },
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ATPSPlayer_Statics::NewProp_springArmComp = { "springArmComp", nullptr, (EPropertyFlags)0x00100000000a0009, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ATPSPlayer, springArmComp), Z_Construct_UClass_USpringArmComponent_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_springArmComp_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_springArmComp_MetaData)) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ATPSPlayer_Statics::NewProp_tpsCamComp_MetaData[] = {
 		{ "Category", "Camera" },
-		{ "Comment", "// Spring Arm\n" },
+		{ "Comment", "// \xc4\xab?\xde\xb6? Comp\n" },
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "public/TPSPlayer.h" },
-		{ "ToolTip", "Spring Arm" },
+		{ "ToolTip", "\xc4\xab?\xde\xb6? Comp" },
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ATPSPlayer_Statics::NewProp_tpsCamComp = { "tpsCamComp", nullptr, (EPropertyFlags)0x001000000008001c, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ATPSPlayer, tpsCamComp), Z_Construct_UClass_UCameraComponent_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_tpsCamComp_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_tpsCamComp_MetaData)) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ATPSPlayer_Statics::NewProp_pistolMeshComp_MetaData[] = {
 		{ "Category", "GunMesh" },
-		{ "Comment", "// Camera\n" },
+		{ "Comment", "// ???? Mesh\n" },
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "public/TPSPlayer.h" },
-		{ "ToolTip", "Camera" },
+		{ "ToolTip", "???? Mesh" },
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ATPSPlayer_Statics::NewProp_pistolMeshComp = { "pistolMeshComp", nullptr, (EPropertyFlags)0x00100000000a0009, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ATPSPlayer, pistolMeshComp), Z_Construct_UClass_USkeletalMeshComponent_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_pistolMeshComp_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_pistolMeshComp_MetaData)) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ATPSPlayer_Statics::NewProp_ripleMeshComp_MetaData[] = {
 		{ "Category", "GunMesh" },
-		{ "Comment", "// Pistol\n" },
+		{ "Comment", "// ???? Mesh\n" },
 		{ "EditInline", "true" },
 		{ "ModuleRelativePath", "public/TPSPlayer.h" },
-		{ "ToolTip", "Pistol" },
+		{ "ToolTip", "???? Mesh" },
 	};
 #endif
 	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ATPSPlayer_Statics::NewProp_ripleMeshComp = { "ripleMeshComp", nullptr, (EPropertyFlags)0x00100000000a0009, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ATPSPlayer, ripleMeshComp), Z_Construct_UClass_UStaticMeshComponent_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_ripleMeshComp_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_ripleMeshComp_MetaData)) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ATPSPlayer_Statics::NewProp_bulletFactory_MetaData[] = {
 		{ "Category", "BulletFactory" },
-		{ "Comment", "// Factory\n" },
+		{ "Comment", "// ?\xd1\xbe? Factory\n" },
 		{ "ModuleRelativePath", "public/TPSPlayer.h" },
-		{ "ToolTip", "Factory" },
+		{ "ToolTip", "?\xd1\xbe? Factory" },
 	};
 #endif
 	const UECodeGen_Private::FClassPropertyParams Z_Construct_UClass_ATPSPlayer_Statics::NewProp_bulletFactory = { "bulletFactory", nullptr, (EPropertyFlags)0x0014000000010001, UECodeGen_Private::EPropertyGenFlags::Class, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ATPSPlayer, bulletFactory), Z_Construct_UClass_ABullet_NoRegister, Z_Construct_UClass_UClass, METADATA_PARAMS(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_bulletFactory_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_bulletFactory_MetaData)) };
 #if WITH_METADATA
 	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ATPSPlayer_Statics::NewProp_sniperUIFactory_MetaData[] = {
 		{ "Category", "SniperUI" },
-		{ "Comment", "// ?\xd1\xbe? ????\n" },
+		{ "Comment", "// ?????? ???? UI Widget\n" },
 		{ "ModuleRelativePath", "public/TPSPlayer.h" },
-		{ "ToolTip", "?\xd1\xbe? ????" },
+		{ "ToolTip", "?????? ???? UI Widget" },
 	};
 #endif
 	const UECodeGen_Private::FClassPropertyParams Z_Construct_UClass_ATPSPlayer_Statics::NewProp_sniperUIFactory = { "sniperUIFactory", nullptr, (EPropertyFlags)0x0014000000010001, UECodeGen_Private::EPropertyGenFlags::Class, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ATPSPlayer, sniperUIFactory), Z_Construct_UClass_UUserWidget_NoRegister, Z_Construct_UClass_UClass, METADATA_PARAMS(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_sniperUIFactory_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_sniperUIFactory_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ATPSPlayer_Statics::NewProp_bulletEffectFactory_MetaData[] = {
+		{ "Category", "BulletEffect" },
+		{ "Comment", "// ?\xd1\xbe? ????\xc6\xae Particle\n" },
+		{ "ModuleRelativePath", "public/TPSPlayer.h" },
+		{ "ToolTip", "?\xd1\xbe? ????\xc6\xae Particle" },
+	};
+#endif
+	const UECodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ATPSPlayer_Statics::NewProp_bulletEffectFactory = { "bulletEffectFactory", nullptr, (EPropertyFlags)0x0010000000000001, UECodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ATPSPlayer, bulletEffectFactory), Z_Construct_UClass_UParticleSystem_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_bulletEffectFactory_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_bulletEffectFactory_MetaData)) };
+#if WITH_METADATA
+	const UECodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ATPSPlayer_Statics::NewProp_crosshairUIFactory_MetaData[] = {
+		{ "Category", "CrosshairUIFactory" },
+		{ "Comment", "// ?\xcf\xb9? ???? \xc5\xa9?\xce\xbd????? UI ????\n" },
+		{ "ModuleRelativePath", "public/TPSPlayer.h" },
+		{ "ToolTip", "?\xcf\xb9? ???? \xc5\xa9?\xce\xbd????? UI ????" },
+	};
+#endif
+	const UECodeGen_Private::FClassPropertyParams Z_Construct_UClass_ATPSPlayer_Statics::NewProp_crosshairUIFactory = { "crosshairUIFactory", nullptr, (EPropertyFlags)0x0014000000010001, UECodeGen_Private::EPropertyGenFlags::Class, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ATPSPlayer, crosshairUIFactory), Z_Construct_UClass_UUserWidget_NoRegister, Z_Construct_UClass_UClass, METADATA_PARAMS(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_crosshairUIFactory_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ATPSPlayer_Statics::NewProp_crosshairUIFactory_MetaData)) };
 	const UECodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_ATPSPlayer_Statics::PropPointers[] = {
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ATPSPlayer_Statics::NewProp_walkSpeed,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ATPSPlayer_Statics::NewProp_springArmComp,
@@ -151,6 +180,8 @@ void EmptyLinkFunctionForGeneratedCodeTPSPlayer() {}
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ATPSPlayer_Statics::NewProp_ripleMeshComp,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ATPSPlayer_Statics::NewProp_bulletFactory,
 		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ATPSPlayer_Statics::NewProp_sniperUIFactory,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ATPSPlayer_Statics::NewProp_bulletEffectFactory,
+		(const UECodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ATPSPlayer_Statics::NewProp_crosshairUIFactory,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_ATPSPlayer_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<ATPSPlayer>::IsAbstract,
@@ -188,9 +219,9 @@ void EmptyLinkFunctionForGeneratedCodeTPSPlayer() {}
 		static const FClassRegisterCompiledInInfo ClassInfo[];
 	};
 	const FClassRegisterCompiledInInfo Z_CompiledInDeferFile_FID_TPSProject_Source_TPSProject_public_TPSPlayer_h_Statics::ClassInfo[] = {
-		{ Z_Construct_UClass_ATPSPlayer, ATPSPlayer::StaticClass, TEXT("ATPSPlayer"), &Z_Registration_Info_UClass_ATPSPlayer, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ATPSPlayer), 1717150366U) },
+		{ Z_Construct_UClass_ATPSPlayer, ATPSPlayer::StaticClass, TEXT("ATPSPlayer"), &Z_Registration_Info_UClass_ATPSPlayer, CONSTRUCT_RELOAD_VERSION_INFO(FClassReloadVersionInfo, sizeof(ATPSPlayer), 466880235U) },
 	};
-	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_TPSProject_Source_TPSProject_public_TPSPlayer_h_599939175(TEXT("/Script/TPSProject"),
+	static FRegisterCompiledInInfo Z_CompiledInDeferFile_FID_TPSProject_Source_TPSProject_public_TPSPlayer_h_2867284477(TEXT("/Script/TPSProject"),
 		Z_CompiledInDeferFile_FID_TPSProject_Source_TPSProject_public_TPSPlayer_h_Statics::ClassInfo, UE_ARRAY_COUNT(Z_CompiledInDeferFile_FID_TPSProject_Source_TPSProject_public_TPSPlayer_h_Statics::ClassInfo),
 		nullptr, 0,
 		nullptr, 0);

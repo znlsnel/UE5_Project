@@ -51,23 +51,39 @@ public:
 	bool bSniperAim = false;
 
 public:
+	// 스프링암 Comp
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class USpringArmComponent* springArmComp;		// Spring Arm
+
+	// 카메라 Comp
 	UPROPERTY(BlueprintReadOnly, Category = Camera)
 		class UCameraComponent* tpsCamComp;			// Camera
+
+	// 권총 Mesh
 	UPROPERTY(VisibleAnywhere, category = GunMesh)
 		class USkeletalMeshComponent* pistolMeshComp;	// Pistol
 
+	// 소총 Mesh
 	UPROPERTY(VisibleAnywhere, category = GunMesh)
 		class UStaticMeshComponent* ripleMeshComp;	// Sniper
 
-	// Factory
+	// 총알 Factory
 	UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
 		TSubclassOf<class ABullet> bulletFactory; // 총알 공장
 
+	// 스코프 조준 UI Widget
 	UPROPERTY(EditDefaultsOnly, Category = SniperUI)
 		TSubclassOf<class UUserWidget> sniperUIFactory;
 	class UUserWidget* _sniperUI;
 
+	// 총알 이펙트 Particle
+	UPROPERTY(EditAnywhere, Category = BulletEffect)
+		class UParticleSystem* bulletEffectFactory;
+	
+	// 일반 조준 크로스헤어 UI 위젯
+	UPROPERTY(EditDeFaultsOnly, Category = CrosshairUIFactory)
+		TSubclassOf<class UUserWidget> crosshairUIFactory;
+	// 크로스헤어 인스턴스
+	class UUserWidget* _crosshairUI;
 
 };
