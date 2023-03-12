@@ -159,7 +159,9 @@
             "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\dialoguetypes.generated.h",
             "c:\\program files\\epic games\\ue_5.0\\engine\\source\\runtime\\engine\\classes\\kismet\\gameplaystaticstypes.h",
             "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\gameplaystaticstypes.generated.h",
-            "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\gameplaystatics.generated.h"
+            "c:\\program files\\epic games\\ue_5.0\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\gameplaystatics.generated.h",
+            "c:\\development\\git\\ue5_project\\tpsproject\\source\\tpsproject\\public\\enemyfsm.h",
+            "c:\\development\\git\\ue5_project\\tpsproject\\intermediate\\build\\win64\\unrealeditor\\inc\\tpsproject\\enemyfsm.generated.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []

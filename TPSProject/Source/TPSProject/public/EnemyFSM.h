@@ -45,6 +45,9 @@ public:
 	// 죽음 상태
 	void DieState();
 
+	// 피격 알림 이벤트 함수
+	void OnDamageProcess();
+
 public:
 	// EnemyState
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSM)
@@ -56,6 +59,31 @@ public:
 	// 경과 시간
 	float currentTime = 0;
 
+	// 타깃
+	UPROPERTY(VisibleAnywhere, Category = FSM)
+		class ATPSPlayer* target;
 
+	// 소유 액터
+	UPROPERTY()
+		class AEnemy* me;
 
+	// 공격 범위
+	UPROPERTY(EditAnywhere, Category = FSM)
+		float attackRange = 150.f;
+	
+	// 공격 대기 시간
+	UPROPERTY(EditAnywhere, Category = FSM)
+		float attackDelayTime = 2.0f;
+
+	// 체력
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+		int32 hp = 3;
+
+	UPROPERTY(EditAnywhere, Category = FSM)
+		float damageDelayTime = 2.0f;
+	
+	UPROPERTY(EditAnywhere, Category = FSM)
+		float dieSpeed = 50.0f;
+
+	
 };
