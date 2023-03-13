@@ -16,7 +16,7 @@ ATPSPlayer::ATPSPlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("SkeletalMesh'/Game/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("SkeletalMesh'/Game/Assets/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
 
 	if (TempMesh.Succeeded())
 	{
@@ -43,6 +43,10 @@ ATPSPlayer::ATPSPlayer()
 		tpsCamComp->bUsePawnControlRotation = false;
 	}
 
+	// Animation Mode
+	{
+		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	}
 	// Gun Skeletal Mesh Component
 	{
 		// 스켈레탈 메시 컴포넌트 등록
@@ -50,7 +54,7 @@ ATPSPlayer::ATPSPlayer()
 		// 부모 컴포넌트 등록
 		pistolMeshComp->SetupAttachment(GetMesh());
 		// 스켈레탈메시 데이터 로드
-		ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Weapons/Pistol/Mesh/SK_Pistol.SK_Pistol'"));
+		ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Assets/Weapons/Pistol/Mesh/SK_Pistol.SK_Pistol'"));
 		
 		// 데이터 로드가 성공했다면
 		if (TempGunMesh.Succeeded())
@@ -65,7 +69,7 @@ ATPSPlayer::ATPSPlayer()
 		ripleMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SniperGunComp"));
 		ripleMeshComp->SetupAttachment(GetMesh());
 
-		ConstructorHelpers::FObjectFinder<UStaticMesh> TempSniperGun(TEXT("StaticMesh'/Game/Weapons/Rifle/Mesh/SM_Rifle.SM_Rifle'"));
+		ConstructorHelpers::FObjectFinder<UStaticMesh> TempSniperGun(TEXT("StaticMesh'/Game/Assets/Weapons/Rifle/Mesh/SM_Rifle.SM_Rifle'"));
 		if (TempSniperGun.Succeeded())
 		{
 			ripleMeshComp->SetStaticMesh(TempSniperGun.Object);

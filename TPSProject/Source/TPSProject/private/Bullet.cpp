@@ -36,7 +36,7 @@ ABullet::ABullet()
 		bodyMeshComp->SetRelativeLocation(FVector(0, 0, -12.5));
 		
 		// Mesh Setting
-		ConstructorHelpers::FObjectFinder<UStaticMesh> Sphere(TEXT("StaticMesh'/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
+		ConstructorHelpers::FObjectFinder<UStaticMesh> Sphere(TEXT("StaticMesh'/Game/Assets/StarterContent/Shapes/Shape_Sphere.Shape_Sphere'"));
 		bodyMeshComp->SetStaticMesh(Sphere.Object);
 		
 	}
