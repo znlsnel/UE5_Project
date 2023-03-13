@@ -3,12 +3,15 @@
 
 #include "TPSPlayer.h"
 #include "Bullet.h"
+#include "EnemyFSM.h"
+#include "PlayerAnim.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
 #include <Blueprint/UserWidget.h>
 #include <Kismet/GameplayStatics.h>
-#include "EnemyFSM.h"
+#include <GameFramework/CharacterMovementComponent.h>
+
 
 // Sets default values
 ATPSPlayer::ATPSPlayer()
@@ -52,7 +55,7 @@ ATPSPlayer::ATPSPlayer()
 		// 스켈레탈 메시 컴포넌트 등록
 		pistolMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
 		// 부모 컴포넌트 등록
-		pistolMeshComp->SetupAttachment(GetMesh());
+		pistolMeshComp->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
 		// 스켈레탈메시 데이터 로드
 		ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Assets/Weapons/Pistol/Mesh/SK_Pistol.SK_Pistol'"));
 		
@@ -62,18 +65,20 @@ ATPSPlayer::ATPSPlayer()
 			// 스켈레탈메시 데이터 할당
 			pistolMeshComp->SetSkeletalMesh(TempGunMesh.Object);
 			// 위치 조정하기
-			pistolMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
+			pistolMeshComp->SetRelativeLocation(FVector(-7.98, 3.21, -0.89));
+			pistolMeshComp->SetRelativeRotation(FRotator(0, 110, 0));
 		}
 
 		// Sniper Gun Component
 		ripleMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SniperGunComp"));
-		ripleMeshComp->SetupAttachment(GetMesh());
+		ripleMeshComp->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
 
 		ConstructorHelpers::FObjectFinder<UStaticMesh> TempSniperGun(TEXT("StaticMesh'/Game/Assets/Weapons/Rifle/Mesh/SM_Rifle.SM_Rifle'"));
 		if (TempSniperGun.Succeeded())
 		{
 			ripleMeshComp->SetStaticMesh(TempSniperGun.Object);
-			ripleMeshComp->SetRelativeLocation(FVector(-22, 55, 120));
+			ripleMeshComp->SetRelativeLocation(FVector(-25.74, 0.7, 5.76));
+			ripleMeshComp->SetRelativeRotation(FRotator(0, 110, 10));
 			
 		}
 	}
@@ -96,6 +101,7 @@ void ATPSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
 	//  스나이퍼 UI 위젯 인스턴스 생성
 	_sniperUI = CreateWidget(GetWorld(), sniperUIFactory);
 	// 일반 조준 크로스헤어 UI
@@ -142,7 +148,8 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAction(TEXT("GetRiple"), IE_Pressed, this, &ATPSPlayer::GetRiple);
 	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Pressed, this, &ATPSPlayer::SniperAim);
 	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Released, this, &ATPSPlayer::SniperAim);
-
+	PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &ATPSPlayer::InputRun);
+	PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this, &ATPSPlayer::InputRun);
 }
 
 void ATPSPlayer::Turn(float value)
@@ -173,6 +180,9 @@ void ATPSPlayer::InputJump()
 
 void ATPSPlayer::InputFire()
 {
+	auto anim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+	anim->PlayAttackAnim();
+
 	if (bUsingPistolGun)
 	{
 		FTransform firePosition = pistolMeshComp->GetSocketTransform(TEXT("Muzzle"));
@@ -268,6 +278,21 @@ void ATPSPlayer::SniperAim()
 		tpsCamComp->SetFieldOfView(90.0f);
 		_crosshairUI->AddToViewport();
 	}
+}
+
+void ATPSPlayer::InputRun()
+{
+	auto movement = GetCharacterMovement();
+
+	if (movement->MaxWalkSpeed > walkSpeed)
+	{
+		movement->MaxWalkSpeed = walkSpeed;
+	}
+	else
+	{
+		movement->MaxWalkSpeed = runSpeed;
+	}
+
 }
 
 

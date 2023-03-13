@@ -38,17 +38,16 @@ public:
 	void GetPistol();					// 권총 장착
 	void GetRiple();					// 소총 장착
 	void SniperAim();					// 스코프 모드
-
+	void InputRun();
 
 public:
-	// 이동 속도
-	UPROPERTY(EditAnywhere, Category = PlayerSetting)
-		float walkSpeed = 600;
 
 	// 이동 방향
 	FVector direction = FVector(0,0,0);
 	bool bUsingPistolGun = true;
 	bool bSniperAim = false;
+	UPROPERTY(EditAnywhere, Category = PlayerSetting) float walkSpeed = 200;
+	UPROPERTY(EditAnywhere, Category = PlayerSetting) float runSpeed = 600;
 
 public:
 	// 스프링암 Comp
@@ -67,6 +66,12 @@ public:
 	UPROPERTY(VisibleAnywhere, category = GunMesh)
 		class UStaticMeshComponent* ripleMeshComp;	// Sniper
 
+	// 총알 이펙트 Particle
+	UPROPERTY(EditAnywhere, Category = BulletEffect)
+		class UParticleSystem* bulletEffectFactory;
+	class UUserWidget* _sniperUI;
+
+
 	// 총알 Factory
 	UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
 		TSubclassOf<class ABullet> bulletFactory; // 총알 공장
@@ -74,16 +79,15 @@ public:
 	// 스코프 조준 UI Widget
 	UPROPERTY(EditDefaultsOnly, Category = SniperUI)
 		TSubclassOf<class UUserWidget> sniperUIFactory;
-	class UUserWidget* _sniperUI;
 
-	// 총알 이펙트 Particle
-	UPROPERTY(EditAnywhere, Category = BulletEffect)
-		class UParticleSystem* bulletEffectFactory;
-	
 	// 일반 조준 크로스헤어 UI 위젯
 	UPROPERTY(EditDeFaultsOnly, Category = CrosshairUIFactory)
 		TSubclassOf<class UUserWidget> crosshairUIFactory;
 	// 크로스헤어 인스턴스
 	class UUserWidget* _crosshairUI;
+
+
+
+
 
 };
