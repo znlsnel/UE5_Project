@@ -30,4 +30,5 @@ public:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = FSMComponent)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)
 		class UEnemyFSM* fsm;
+
 };

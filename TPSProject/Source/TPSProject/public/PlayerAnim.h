@@ -29,4 +29,5 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
 		class UAnimMontage* attackAnimMontage;
+
 };

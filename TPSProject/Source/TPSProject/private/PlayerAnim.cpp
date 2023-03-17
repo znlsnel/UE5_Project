@@ -14,6 +14,8 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 	// 플레이어로 캐스트
 	auto player = Cast<ATPSPlayer>(ownerPawn);
 
+	
+
 	if (player)
 	{
 		// 앞뒤 방향 체크

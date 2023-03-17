@@ -48,6 +48,9 @@
     <ClCompile Include="..\..\Source\TPSProject\private\Enemy.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\EnemyAnim.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\EnemyFSM.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -70,6 +73,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Enemy.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\EnemyAnim.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\EnemyFSM.h">

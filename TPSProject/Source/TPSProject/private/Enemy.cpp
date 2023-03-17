@@ -11,14 +11,21 @@ AEnemy::AEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 																							
 	// 1. 스켈레탈메시 데이터 로드
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("SkeletalMesh'/Game/Assets/Characters/Mannequins/Meshes/SKM_Quinn.SKM_Quinn'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("SkeletalMesh'/Game/Assets/ParagonRiktor/Characters/Heroes/Riktor/Meshes/Riktor.Riktor'"));
 	if (tempMesh.Succeeded())
 	{
 		GetMesh()->SetSkeletalMesh(tempMesh.Object);
+		GetMesh()->SetRelativeScale3D(FVector(0.88));
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -88), FRotator(0, -90, 0));
 	}
 	fsm = CreateDefaultSubobject<UEnemyFSM>(TEXT("FSM"));
 	
+	ConstructorHelpers::FClassFinder<UAnimInstance> tempClass(TEXT("AnimBlueprint'/Game/Animation/ABP_Enemy.ABP_Enemy_C'"));
+	if (tempClass.Succeeded())
+	{
+		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+		GetMesh()->SetAnimInstanceClass(tempClass.Class);
+	}
 }
 
 // Called when the game starts or when spawned

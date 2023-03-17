@@ -83,6 +83,12 @@ ATPSPlayer::ATPSPlayer()
 		}
 	}
 
+	// 총알 사운드
+	ConstructorHelpers::FObjectFinder<USoundBase> tempSound(TEXT("SoundWave'/Game/Assets/Sounds/Rifle.Rifle'"));
+	if (tempSound.Succeeded())
+	{
+		bulletSound = tempSound.Object;
+	}
 	// Self
 	{
 		bUseControllerRotationYaw = true;
@@ -108,6 +114,8 @@ void ATPSPlayer::BeginPlay()
 	_crosshairUI = CreateWidget(GetWorld(), crosshairUIFactory);
 	// 일반 조준 UI 등록
 	_crosshairUI->AddToViewport();
+
+	
 
 	// 권총 들기
 	GetPistol();
@@ -180,8 +188,22 @@ void ATPSPlayer::InputJump()
 
 void ATPSPlayer::InputFire()
 {
-	auto anim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
-	anim->PlayAttackAnim();
+	// UGameplayStatics::PlaySound2D(GetWorld(), bulletSound);
+
+	//APlayerController* controller = GetWorld()->GetFirstPlayerController();
+	//controller->PlayerCameraManager->StartCameraShake(cameraShake);
+
+	//UPlayerAnim* anim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+
+	//if (anim)
+	//{
+	//	anim->PlayAttackAnim();
+
+	//}
+	//else
+	//{
+	//	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("anim 없다는데? ?? ??"), true, true, FLinearColor::Green, 2.0f);
+	//}
 
 	if (bUsingPistolGun)
 	{
@@ -265,7 +287,7 @@ void ATPSPlayer::SniperAim()
 		bSniperAim = true;
 		// 스나이퍼 조준 UI 등록
 		_sniperUI->AddToViewport();
-		tpsCamComp->SetFieldOfView(45.0f);
+		//tpsCamComp->SetFieldOfView(45.0f);
 		_crosshairUI->RemoveFromParent();
 	}
 	// Released 입력 처리

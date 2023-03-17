@@ -42,6 +42,8 @@ public:
 
 public:
 
+
+
 	// 이동 방향
 	FVector direction = FVector(0,0,0);
 	bool bUsingPistolGun = true;
@@ -86,8 +88,10 @@ public:
 	// 크로스헤어 인스턴스
 	class UUserWidget* _crosshairUI;
 
+	UPROPERTY(EditDefaultsOnly, Category = CameraMotion)
+		TSubclassOf<class UCameraShakeBase> cameraShake;
 
-
-
+	UPROPERTY(EditDefaultsOnly, Category = Sound)
+		class USoundBase* bulletSound;
 
 };
