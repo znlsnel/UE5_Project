@@ -39,6 +39,8 @@ public:
 	void GetRiple();					// ¼ÒÃÑ ÀåÂø
 	void SniperAim();					// ½ºÄÚÇÁ ¸ðµå
 	void InputRun();
+	void PickUp();
+	void PickDown();
 
 public:
 
@@ -48,6 +50,9 @@ public:
 	FVector direction = FVector(0,0,0);
 	bool bUsingPistolGun = true;
 	bool bSniperAim = false;
+	bool bisPickUpZone = false;
+	bool bPickingUp = false;
+
 	UPROPERTY(EditAnywhere, Category = PlayerSetting) float walkSpeed = 200;
 	UPROPERTY(EditAnywhere, Category = PlayerSetting) float runSpeed = 600;
 
@@ -94,4 +99,20 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Sound)
 		class USoundBase* bulletSound;
 
+	UPROPERTY(BlueprintReadWrite, Category = weaponOpen)
+		bool bRipleOpen = false;
+
+	UPROPERTY(BlueprintReadWrite, Category = weaponOpen)
+		bool bPistolOpen = true;
+
+	UFUNCTION()
+		void BeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+		void EndOverlap(
+			UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor,
+			UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex
+		);
 };

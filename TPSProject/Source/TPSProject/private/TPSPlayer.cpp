@@ -5,12 +5,14 @@
 #include "Bullet.h"
 #include "EnemyFSM.h"
 #include "PlayerAnim.h"
+#include "Gun.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
 #include <Blueprint/UserWidget.h>
 #include <Kismet/GameplayStatics.h>
 #include <GameFramework/CharacterMovementComponent.h>
+#include <Components/CapsuleComponent.h>
 
 
 // Sets default values
@@ -27,6 +29,13 @@ ATPSPlayer::ATPSPlayer()
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -88), FRotator(0, -90, 0));
 		
 	}
+
+	// Bind Collision Event
+	{
+		GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ATPSPlayer::BeginOverlap);
+		GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ATPSPlayer::EndOverlap);
+	}
+		//OnComponentBeginOverlap.AddDynamic(this, &AGun::BeginOverlap);
 
 	// Spring Arm Comp
 	{
@@ -107,7 +116,7 @@ void ATPSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed =	 runSpeed;
 	//  스나이퍼 UI 위젯 인스턴스 생성
 	_sniperUI = CreateWidget(GetWorld(), sniperUIFactory);
 	// 일반 조준 크로스헤어 UI
@@ -158,6 +167,8 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Released, this, &ATPSPlayer::SniperAim);
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &ATPSPlayer::InputRun);
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this, &ATPSPlayer::InputRun);
+	PlayerInputComponent->BindAction(TEXT("PickUp"), IE_Pressed, this, &ATPSPlayer::PickUp);
+	PlayerInputComponent->BindAction(TEXT("PickUp"), IE_Released, this, &ATPSPlayer::PickDown);
 }
 
 void ATPSPlayer::Turn(float value)
@@ -270,6 +281,8 @@ void ATPSPlayer::GetPistol()
 
 void ATPSPlayer::GetRiple()
 {
+	if (bRipleOpen == false) return;
+
 	// 소총으로 변경
 	bUsingPistolGun = false;
 	pistolMeshComp->SetVisibility(false);
@@ -306,15 +319,63 @@ void ATPSPlayer::InputRun()
 {
 	auto movement = GetCharacterMovement();
 
-	if (movement->MaxWalkSpeed > walkSpeed)
+	// pressed
+	if (movement->MaxWalkSpeed >= runSpeed)
 	{
 		movement->MaxWalkSpeed = walkSpeed;
 	}
+	// released
 	else
 	{
 		movement->MaxWalkSpeed = runSpeed;
 	}
 
+}
+
+void ATPSPlayer::PickUp()
+{
+	if (bisPickUpZone == false) return;
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("pickUpZone : true"), true, true, FLinearColor::Black, 2.0f);
+
+	bPickingUp = true;
+
+
+}
+
+void ATPSPlayer::PickDown()
+{
+	if (bisPickUpZone == false) return;
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("pickUpZone : false"), true, true, FLinearColor::Black, 2.0f);
+
+	bPickingUp = false;
+
+}
+
+
+
+void ATPSPlayer::BeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	AGun* tempWidget = Cast<AGun>(OtherActor);
+	
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("pickUpZone : Begin"), true, true, FLinearColor::Black, 2.0f);
+
+
+	if (tempWidget)
+	{
+		bisPickUpZone = true;
+	}
+}
+
+void ATPSPlayer::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	AGun* tempWidget = Cast<AGun>(OtherActor);
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("pickUpZone : End"), true, true, FLinearColor::Black, 2.0f);
+
+	if (tempWidget)
+	{
+		bisPickUpZone = false;
+		bPickingUp = false;
+	}
 }
 
 
