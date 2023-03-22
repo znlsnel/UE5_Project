@@ -44,9 +44,15 @@ public:
 	void DamageState();
 	// 죽음 상태
 	void DieState();
-
 	// 피격 알림 이벤트 함수
 	void OnDamageProcess();
+
+	// 랜덤 위치 가져오기
+	bool GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
+
+	// 길 찾기 수행시 랜덤 위치
+	FVector randomPos;
+
 
 public:
 	// EnemyState
@@ -88,6 +94,10 @@ public:
 	// 사용중인 애니메이션 블루프린트
 	UPROPERTY()
 		class UEnemyAnim* anim;
+
+	// Enumey를 소유하고 있는  AIController
+	UPROPERTY()
+		class AAIController* ai;
 
 
 };

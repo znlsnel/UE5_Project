@@ -75,6 +75,7 @@ void AGun::PickUpCheck()
 		if (player->bPickingUp && pickUpWD->IsInViewport() == false)
 		{
 			pickUpWD->AddToViewport();
+			
 		}
 
 		if (player->bPickingUp == false && pickUpWD->IsInViewport())

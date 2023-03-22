@@ -7,6 +7,7 @@
 #include "TPSProject.h"
 #include "EnemyAnim.h"
 
+#include <AIController.h>
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/CapsuleComponent.h>
@@ -34,6 +35,8 @@ void UEnemyFSM::BeginPlay()
 	me = Cast<AEnemy>(GetOwner());
 
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
+
+	ai = Cast<AAIController>(me->GetController());
 }
 
 
@@ -97,7 +100,9 @@ void UEnemyFSM::MoveState()
 {
 	FVector destination = target->GetActorLocation();
 	FVector dir = destination - me->GetActorLocation();
-	me->AddMovementInput(dir.GetSafeNormal());
+	//me->AddMovementInput(dir.GetSafeNormal());
+
+	ai->MoveToLocation(destination);
 
 	if (dir.Length() < attackRange)
 	{
@@ -189,5 +194,11 @@ void UEnemyFSM::OnDamageProcess()
 		currentTime = 0;
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+}
+
+bool UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest)
+{
+
+	return false;
 }
 

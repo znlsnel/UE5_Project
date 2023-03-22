@@ -8,7 +8,16 @@ public class TPSProject : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" , "UMG"});
+		PublicDependencyModuleNames.AddRange(new string[] 
+		{ 
+			"Core", 
+			"CoreUObject", 
+			"Engine", 
+			"InputCore" ,
+			"UMG", 
+			"NavigationSystem", 
+			"AIModule"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
