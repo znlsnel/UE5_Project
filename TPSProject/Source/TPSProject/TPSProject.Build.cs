@@ -18,7 +18,7 @@ public class TPSProject : ModuleRules
 			"NavigationSystem", 
 			"AIModule"
 		});
-
+		
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
 		// Uncomment if you are using Slate UI

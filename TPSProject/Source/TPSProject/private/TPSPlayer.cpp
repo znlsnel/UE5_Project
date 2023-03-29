@@ -1,24 +1,32 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "TPSPlayer.h"
-#include "Bullet.h"
-#include "EnemyFSM.h"
-#include "PlayerAnim.h"
-#include "Gun.h"
-
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
+
 #include <Blueprint/UserWidget.h>
-#include <Kismet/GameplayStatics.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <Components/CapsuleComponent.h>
+#include <Kismet/GameplayStatics.h>
+#include <Kismet/KismetSystemLibrary.h>
+
+
+#include "Gun.h"
+#include "PlayerMove.h"
+#include "PlayerFire.h"
+#include "TPSPlayer.h"
+
+
 
 
 // Sets default values
 ATPSPlayer::ATPSPlayer()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	//SubObjects
+	{
+		playerMove = CreateDefaultSubobject<UPlayerMove>(TEXT("PlayerMove"));
+		//playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
+	}
+
 	PrimaryActorTick.bCanEverTick = true;
 
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("SkeletalMesh'/Game/Assets/Characters/Mannequins/Meshes/SKM_Manny.SKM_Manny'"));
@@ -27,7 +35,7 @@ ATPSPlayer::ATPSPlayer()
 	{
 		GetMesh()->SetSkeletalMesh(TempMesh.Object);
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -88), FRotator(0, -90, 0));
-		
+
 	}
 
 	// Bind Collision Event
@@ -35,12 +43,12 @@ ATPSPlayer::ATPSPlayer()
 		GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ATPSPlayer::BeginOverlap);
 		GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ATPSPlayer::EndOverlap);
 	}
-		//OnComponentBeginOverlap.AddDynamic(this, &AGun::BeginOverlap);
+	//OnComponentBeginOverlap.AddDynamic(this, &AGun::BeginOverlap);
 
-	// Spring Arm Comp
+// Spring Arm Comp
 	{
 		springArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
-	
+
 		// RootComponent 는 계층구조상 캡슐 콜리전 컴포넌트를 의미함
 		springArmComp->SetupAttachment(RootComponent);
 		springArmComp->SetRelativeLocation(FVector(0, 70, 70));
@@ -59,6 +67,7 @@ ATPSPlayer::ATPSPlayer()
 	{
 		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	}
+
 	// Gun Skeletal Mesh Component
 	{
 		// 스켈레탈 메시 컴포넌트 등록
@@ -67,7 +76,7 @@ ATPSPlayer::ATPSPlayer()
 		pistolMeshComp->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
 		// 스켈레탈메시 데이터 로드
 		ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Assets/Weapons/Pistol/Mesh/SK_Pistol.SK_Pistol'"));
-		
+
 		// 데이터 로드가 성공했다면
 		if (TempGunMesh.Succeeded())
 		{
@@ -88,16 +97,10 @@ ATPSPlayer::ATPSPlayer()
 			ripleMeshComp->SetStaticMesh(TempSniperGun.Object);
 			ripleMeshComp->SetRelativeLocation(FVector(-25.74, 0.7, 5.76));
 			ripleMeshComp->SetRelativeRotation(FRotator(0, 110, 10));
-			
+
 		}
 	}
 
-	// 총알 사운드
-	ConstructorHelpers::FObjectFinder<USoundBase> tempSound(TEXT("SoundWave'/Game/Assets/Sounds/Rifle.Rifle'"));
-	if (tempSound.Succeeded())
-	{
-		bulletSound = tempSound.Object;
-	}
 	// Self
 	{
 		bUseControllerRotationYaw = true;
@@ -109,25 +112,16 @@ ATPSPlayer::ATPSPlayer()
 	}
 
 
+		
 }
 
-// Called when the game starts or when spawned
+
+
 void ATPSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetCharacterMovement()->MaxWalkSpeed =	 runSpeed;
-	//  스나이퍼 UI 위젯 인스턴스 생성
-	_sniperUI = CreateWidget(GetWorld(), sniperUIFactory);
-	// 일반 조준 크로스헤어 UI
-	_crosshairUI = CreateWidget(GetWorld(), crosshairUIFactory);
-	// 일반 조준 UI 등록
-	_crosshairUI->AddToViewport();
-
 	
-
-	// 권총 들기
-	GetPistol();
 }
 
 // Called every frame
@@ -135,202 +129,28 @@ void ATPSPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
-	Move();
 }
 
-void ATPSPlayer::Move()
-{
-	// 플레이어 이동
-	// GetControlRotation - 플레이어 폰을 컨트롤하고 있는 컨트롤러의 방향을 FRotator 타입으로 넘겨줌
-	// FTransform으로 Transform 인스턴트를 생성
-	// TrasnformVector 는 특정한 vector를 local vector로 변환시켜줌
-	direction = FTransform(GetControlRotation()).TransformVector(direction);
-	AddMovementInput(direction);
-	direction = FVector(0, 0, 0);
-}
+
 
 // Called to bind functionality to input
 void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	onInputBindingDelegate.Broadcast(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis(TEXT("Turn"), this, & ATPSPlayer::Turn);
-	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, & ATPSPlayer::LookUp);
-	PlayerInputComponent->BindAxis(TEXT("Horizontal"), this, &ATPSPlayer::InputHorizontal);
-	PlayerInputComponent->BindAxis(TEXT("Vertical"), this, &ATPSPlayer::InputVertical);
-	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ATPSPlayer::InputJump);
-	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &ATPSPlayer::InputFire);
-	PlayerInputComponent->BindAction(TEXT("GetPistol"), IE_Pressed, this, &ATPSPlayer::GetPistol);
-	PlayerInputComponent->BindAction(TEXT("GetRiple"), IE_Pressed, this, &ATPSPlayer::GetRiple);
-	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Pressed, this, &ATPSPlayer::SniperAim);
-	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Released, this, &ATPSPlayer::SniperAim);
-	PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &ATPSPlayer::InputRun);
-	PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this, &ATPSPlayer::InputRun);
 	PlayerInputComponent->BindAction(TEXT("PickUp"), IE_Pressed, this, &ATPSPlayer::PickUp);
 	PlayerInputComponent->BindAction(TEXT("PickUp"), IE_Released, this, &ATPSPlayer::PickDown);
-}
-
-void ATPSPlayer::Turn(float value)
-{
-	AddControllerYawInput(value);
-}
-
-void ATPSPlayer::LookUp(float value)
-{
-	AddControllerPitchInput(value);
-}
-
-void ATPSPlayer::InputHorizontal(float value)
-{
-	direction.Y = value;
-}
-
-void ATPSPlayer::InputVertical(float value)
-{
-	direction.X = value;
-}
-
-void ATPSPlayer::InputJump()
-{
-	Jump();
-}
-
-
-void ATPSPlayer::InputFire()
-{
-	// UGameplayStatics::PlaySound2D(GetWorld(), bulletSound);
-
-	//APlayerController* controller = GetWorld()->GetFirstPlayerController();
-	//controller->PlayerCameraManager->StartCameraShake(cameraShake);
-
-	//UPlayerAnim* anim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
-
-	//if (anim)
-	//{
-	//	anim->PlayAttackAnim();
-
-	//}
-	//else
-	//{
-	//	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("anim 없다는데? ?? ??"), true, true, FLinearColor::Green, 2.0f);
-	//}
-
-	if (bUsingPistolGun)
-	{
-		FTransform firePosition = pistolMeshComp->GetSocketTransform(TEXT("Muzzle"));
-		GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
-	}
-	else if (bSniperAim)
-	{
-		// LineTrace의 시작 위치
-		FVector startPos = tpsCamComp->GetComponentLocation(); // 카메라의 월드좌표
-		//LineTrace의 종료 위치
-		FVector endPos = startPos + tpsCamComp->GetForwardVector() * 5000;
-
-		// LineTrace의 충돌 정보를 담을 변수
-		FHitResult hitInfo;
-
-		// 충돌 옵션 설정 변수
-		FCollisionQueryParams params;
-
-		// 자기 자신은 충돌에서 제외
-		params.AddIgnoredActor(this);
-
-		// Channel 필터를 이용한 LineTrace 충돌 검출 (충돌 정보, 시작 위치, 종료 위치, 검출 채널, 충돌 옵션) 
-		bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
-
-		// LineTrace가 부딪혔을때
-		if (bHit)
-		{
-			// 충돌 파편 효과 트랜스폼
-			FTransform bulletTrans;
-			// 부딪힌 위치 할당
-			bulletTrans.SetLocation(hitInfo.ImpactPoint);
-			// 총알 파편 효과 인스턴스 생성
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletEffectFactory, bulletTrans);
-
-			auto hitComp = hitInfo.GetComponent();
-			// 컴포넌트가 있고 물리가 적용되어있다면
-			if (hitComp && hitComp->IsSimulatingPhysics())
-			{
-				// 날려버릴 힘과 방향이 필요
-				FVector force = -hitInfo.ImpactNormal * hitComp->GetMass() * 500000;
-				// 그 방향으로 날리기
-				hitComp->AddForce(force);
-			}
-
-			// 부딪힌 대상이 적인지 판단하기
-			auto enemy = hitInfo.GetActor()->GetDefaultSubobjectByName(TEXT("FSM"));
-			if (enemy)
-			{
-				auto enemyFSM = Cast<UEnemyFSM>(enemy);
-				enemyFSM->OnDamageProcess();
-			}
-		}
-	}
-}
-
-void ATPSPlayer::GetPistol()
-{
-	// 권총으로 변경
-	bUsingPistolGun = true;
-	pistolMeshComp->SetVisibility(true);
-	ripleMeshComp->SetVisibility(false);
-}
-
-void ATPSPlayer::GetRiple()
-{
-	if (bRipleOpen == false) return;
-
-	// 소총으로 변경
-	bUsingPistolGun = false;
-	pistolMeshComp->SetVisibility(false);
-	ripleMeshComp->SetVisibility(true);
-}
-
-void ATPSPlayer::SniperAim()
-{
-	if (bUsingPistolGun == true) return;
-
-	// Pressed 입력 처리
-	if (bSniperAim == false)
-	{
-		// 스나이퍼 조준 모드 활성화!
-		bSniperAim = true;
-		// 스나이퍼 조준 UI 등록
-		_sniperUI->AddToViewport();
-		//tpsCamComp->SetFieldOfView(45.0f);
-		_crosshairUI->RemoveFromParent();
-	}
-	// Released 입력 처리
-	else
-	{
-		// 스나이퍼 조준 모드 비활성화!
-		bSniperAim = false;
-		// 스나이퍼 조준 UI 등록
-		_sniperUI->RemoveFromParent();
-		tpsCamComp->SetFieldOfView(90.0f);
-		_crosshairUI->AddToViewport();
-	}
-}
-
-void ATPSPlayer::InputRun()
-{
-	auto movement = GetCharacterMovement();
-
-	// pressed
-	if (movement->MaxWalkSpeed >= runSpeed)
-	{
-		movement->MaxWalkSpeed = walkSpeed;
-	}
-	// released
-	else
-	{
-		movement->MaxWalkSpeed = runSpeed;
-	}
 
 }
+
+
+
+
+
+
+
+
 
 void ATPSPlayer::PickUp()
 {

@@ -78,7 +78,7 @@ void AGun::PickUpCheck()
 			
 		}
 
-		if (player->bPickingUp == false && pickUpWD->IsInViewport())
+		else if (player->bPickingUp == false && pickUpWD->IsInViewport())
 		{
 			pickUpWD->RemoveFromViewport();
 		}

@@ -11,6 +11,7 @@
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/CapsuleComponent.h>
+#include <NavigationSystem.h>
 
 // Sets default values for this component's properties
 UEnemyFSM::UEnemyFSM()
@@ -51,27 +52,22 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	{
 		case EEnemyState::Idle:
 			IdleState();
-			//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Idle"), true, true, FLinearColor::Green, 2.0f);
 			break;
 
 		case EEnemyState::Move:
 			MoveState();
-			//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Move"), true, true, FLinearColor::Green, 2.0f);
 			break;
 
 		case EEnemyState::Attack:
 			AttackState();
-			//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Attack"), true, true, FLinearColor::Black, 2.0f);
 			break;
 
 		case EEnemyState ::Damage:
 			DamageState();
-			//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage"), true, true, FLinearColor::Green, 2.0f);
 			break;
 
 		case EEnemyState::Die:
 			DieState();
-			//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Die"), true, true, FLinearColor::Green, 2.0f);
 			break;
 
 	}
@@ -93,6 +89,8 @@ void UEnemyFSM::IdleState()
 		currentTime = 0;
 
 		anim->animState = mState;
+
+		GetRandomPositionInNavMesh(me->GetActorLocation(), 500, randomPos);
 	}
 }
 
@@ -101,17 +99,58 @@ void UEnemyFSM::MoveState()
 	FVector destination = target->GetActorLocation();
 	FVector dir = destination - me->GetActorLocation();
 	//me->AddMovementInput(dir.GetSafeNormal());
+	//ai->MoveToLocation(destination);
 
-	ai->MoveToLocation(destination);
+	// NavigationSystem 객체 얻어오기
+	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 
+	// 목적지 길 찾기 경로 데이터 검색
+	// FindPathSync()함수는 FPathFindingQuery 구조체 정보가 필요합니다. 
+	// 이 쿼리(질의문)을 내비게이션 시스템에 전달해 길 찾기 정보를 찾아내려고 합니다. 이를 위해 FPathFindingQuery 타입의 변수를 query를 선언
+	FPathFindingQuery query;
+	FAIMoveRequest req;
+
+	// 목적지에서 인지할 수 있는 거리
+	req.SetAcceptanceRadius(3);
+	req.SetGoalLocation(destination);
+
+	// 길 찾기를 위한 쿼리 생성
+	ai->BuildPathfindingQuery(req, query);
+
+	// 길 찾기 결과 가져오기
+	FPathFindingResult r = ns->FindPathSync(query);
+
+	// 목적지 까지의 길찾기 성공 여부 확인
+	if (r.Result == ENavigationQueryResult::Success)
+	{
+		// 타깃쪽으로 이동
+		ai->MoveToLocation(destination);
+	}
+	else
+	{
+		// 랜덤한 위치로 이동
+		auto result = ai->MoveToLocation(randomPos);
+		
+		// 목적지에 도착하면
+		if (result == EPathFollowingRequestResult::AlreadyAtGoal)
+		{
+			// 새로운 랜덤 위치 가져오기
+			GetRandomPositionInNavMesh(me->GetActorLocation(), 500, randomPos);
+		}
+	}
+
+
+	// 타깃과 가까워지면 공격 상태로 전환
 	if (dir.Length() < attackRange)
 	{
-		mState = EEnemyState::Attack;
+		ai->StopMovement();
 
+		mState = EEnemyState::Attack;
 		anim->animState = mState;
 		anim->bAttackPlay = true;
 		currentTime = attackDelayTime;
 	}
+
 }
 
 void UEnemyFSM::AttackState()
@@ -194,11 +233,18 @@ void UEnemyFSM::OnDamageProcess()
 		currentTime = 0;
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+
+	ai->StopMovement();
 }
 
 bool UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest)
 {
+	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+	FNavLocation loc;
 
-	return false;
+	bool result = ns->GetRandomReachablePointInRadius(centerLocation, radius, loc);
+	dest = loc.Location;
+
+	return result;
 }
 

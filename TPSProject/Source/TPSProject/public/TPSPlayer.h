@@ -6,6 +6,9 @@
 #include "GameFramework/Character.h"
 #include "TPSPlayer.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FInputBindingDelegate, class UInputComponent*);
+
+
 UCLASS()
 class TPSPROJECT_API ATPSPlayer : public ACharacter
 {
@@ -13,12 +16,12 @@ class TPSPROJECT_API ATPSPlayer : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	ATPSPlayer();
+	FInputBindingDelegate onInputBindingDelegate;
 
-	void Move();
 
 protected:
 	// Called when the game starts or when spawned
+	ATPSPlayer();
 	virtual void BeginPlay() override;
 
 public:	
@@ -29,16 +32,12 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Input System
-	void Turn(float value);				// 좌우 회전
-	void LookUp(float value);			// 상하 회전
-	void InputHorizontal(float value);	// 좌우 이동
-	void InputVertical(float value);		// 상하 이동
-	void InputJump();					// 점프
-	void InputFire();					// 총알 발사
-	void GetPistol();					// 권총 장착
-	void GetRiple();					// 소총 장착
-	void SniperAim();					// 스코프 모드
-	void InputRun();
+
+
+
+
+
+
 	void PickUp();
 	void PickDown();
 
@@ -46,17 +45,15 @@ public:
 
 
 
-	// 이동 방향
-	FVector direction = FVector(0,0,0);
-	bool bUsingPistolGun = true;
-	bool bSniperAim = false;
+
+
 	bool bisPickUpZone = false;
 	bool bPickingUp = false;
 
-	UPROPERTY(EditAnywhere, Category = PlayerSetting) float walkSpeed = 200;
-	UPROPERTY(EditAnywhere, Category = PlayerSetting) float runSpeed = 600;
 
 public:
+
+// COMP=====================================================================
 	// 스프링암 Comp
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class USpringArmComponent* springArmComp;		// Spring Arm
@@ -73,31 +70,30 @@ public:
 	UPROPERTY(VisibleAnywhere, category = GunMesh)
 		class UStaticMeshComponent* ripleMeshComp;	// Sniper
 
-	// 총알 이펙트 Particle
-	UPROPERTY(EditAnywhere, Category = BulletEffect)
-		class UParticleSystem* bulletEffectFactory;
-	class UUserWidget* _sniperUI;
+	// PlayerMove
+	UPROPERTY(VisibleAnywhere, Category = Component)
+		class UPlayerBaseComponent* playerMove;
+
+	// PlayerFire
+	UPROPERTY(VisibleAnywhere, Category = Component)
+		class UPlayerBaseComponent* playerFire;
+//==========================================================================
+
+// Detail =====================================================================
 
 
-	// 총알 Factory
-	UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
-		TSubclassOf<class ABullet> bulletFactory; // 총알 공장
 
-	// 스코프 조준 UI Widget
-	UPROPERTY(EditDefaultsOnly, Category = SniperUI)
-		TSubclassOf<class UUserWidget> sniperUIFactory;
 
-	// 일반 조준 크로스헤어 UI 위젯
-	UPROPERTY(EditDeFaultsOnly, Category = CrosshairUIFactory)
-		TSubclassOf<class UUserWidget> crosshairUIFactory;
-	// 크로스헤어 인스턴스
-	class UUserWidget* _crosshairUI;
 
-	UPROPERTY(EditDefaultsOnly, Category = CameraMotion)
-		TSubclassOf<class UCameraShakeBase> cameraShake;
 
-	UPROPERTY(EditDefaultsOnly, Category = Sound)
-		class USoundBase* bulletSound;
+
+
+
+
+
+// ===========================================================================
+// 
+// 변수 ========================================================================
 
 	UPROPERTY(BlueprintReadWrite, Category = weaponOpen)
 		bool bRipleOpen = false;
@@ -105,6 +101,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = weaponOpen)
 		bool bPistolOpen = true;
 
+// Collision 관련 ================================================================
 	UFUNCTION()
 		void BeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -115,4 +112,7 @@ public:
 			UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex
 		);
+
+// ===========================================================================
+
 };
