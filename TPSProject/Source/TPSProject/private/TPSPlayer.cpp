@@ -24,7 +24,7 @@ ATPSPlayer::ATPSPlayer()
 	//SubObjects
 	{
 		playerMove = CreateDefaultSubobject<UPlayerMove>(TEXT("PlayerMove"));
-		//playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
+		playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
 	}
 
 	PrimaryActorTick.bCanEverTick = true;
@@ -121,7 +121,7 @@ void ATPSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	hp = initialHp;
 }
 
 // Called every frame
@@ -130,8 +130,6 @@ void ATPSPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
-
 
 // Called to bind functionality to input
 void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -173,6 +171,8 @@ void ATPSPlayer::PickDown()
 
 
 
+
+
 void ATPSPlayer::BeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AGun* tempWidget = Cast<AGun>(OtherActor);
@@ -196,6 +196,22 @@ void ATPSPlayer::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		bisPickUpZone = false;
 		bPickingUp = false;
 	}
+}
+
+void ATPSPlayer::OnHitEvent()
+{
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damaged!!!"));
+	hp -= 5;
+	if (hp <= 0)
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Player is Dead!"));
+		OnGameOver();
+	}
+}
+
+void ATPSPlayer::OnGameOver_Implementation()
+{
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
 }
 
 

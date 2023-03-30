@@ -9,6 +9,7 @@
 
 #include <Blueprint/UserWidget.h>
 #include <Kismet/GameplayStatics.h>
+#include <Kismet/KismetSystemLibrary.h>
 #include <Camera/CameraComponent.h>
 
 UPlayerFire::UPlayerFire()
@@ -124,6 +125,7 @@ void UPlayerFire::GetPistol()
 {
 	// 권총으로 변경
 	bUsingPistolGun = true;
+
 	me->pistolMeshComp->SetVisibility(true);
 	me->ripleMeshComp->SetVisibility(false);
 }

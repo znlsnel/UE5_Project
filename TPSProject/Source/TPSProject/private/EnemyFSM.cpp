@@ -92,7 +92,7 @@ void UEnemyFSM::IdleState()
 
 		GetRandomPositionInNavMesh(me->GetActorLocation(), 500, randomPos);
 	}
-}
+} 
 
 void UEnemyFSM::MoveState()
 {
@@ -161,7 +161,7 @@ void UEnemyFSM::AttackState()
 	// 2. °ø°Ý ½Ã°£ÀÌ µÆÀ¸´Ï±õ
 	if (currentTime > attackDelayTime)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Attack!!!"), true, true, FLinearColor::Green, 2.0f);
+		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Attack!!!"), true, true, FLinearColor::Green, 2.0f);
 		currentTime = 0;
 
 		anim->bAttackPlay = true;

@@ -32,21 +32,10 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Input System
-
-
-
-
-
-
 	void PickUp();
 	void PickDown();
 
 public:
-
-
-
-
-
 	bool bisPickUpZone = false;
 	bool bPickingUp = false;
 
@@ -77,19 +66,20 @@ public:
 	// PlayerFire
 	UPROPERTY(VisibleAnywhere, Category = Component)
 		class UPlayerBaseComponent* playerFire;
-//==========================================================================
+//======================================================================
 
 // Detail =====================================================================
+	// 현재 체력
+	UPROPERTY(EditDefaultsOnly, Category = Health)
+		int32 hp;
 
+	// 초기 hp값
+	UPROPERTY(EditDefaultsOnly, Category = Health)
+		int32 initialHp = 10;
 
-
-
-
-
-
-
-
-
+	// 피격 달했을 때 처리
+	UFUNCTION(BlueprintCallable, Category = Health)
+		void OnHitEvent();
 
 // ===========================================================================
 // 
@@ -114,5 +104,7 @@ public:
 		);
 
 // ===========================================================================
-
+// 함수========================================================================
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Health)
+		void OnGameOver();
 };

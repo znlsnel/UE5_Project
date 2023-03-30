@@ -20,12 +20,12 @@ AEnemy::AEnemy()
 	}
 	fsm = CreateDefaultSubobject<UEnemyFSM>(TEXT("FSM"));
 	
-	ConstructorHelpers::FClassFinder<UAnimInstance> tempClass(TEXT("AnimBlueprint'/Game/Animation/ABP_Enemy.ABP_Enemy_C'"));
-	if (tempClass.Succeeded())
-	{
-		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-		GetMesh()->SetAnimInstanceClass(tempClass.Class);
-	}
+	//ConstructorHelpers::FClassFinder<UAnimInstance> tempClass(TEXT("AnimBlueprint'/Game/Animation/ABP_Enemy.ABP_Enemy'"));
+	//if (tempClass.Succeeded())
+	//{
+	//	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	//	GetMesh()->SetAnimInstanceClass(tempClass.Class);
+	//}
 
 	// 월드에 배치되거나 스폰될 때 자동으로
 	// AIController부터 Possess될 수 있도록 설정
