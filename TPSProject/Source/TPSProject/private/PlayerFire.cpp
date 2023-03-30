@@ -65,7 +65,7 @@ void UPlayerFire::InputFire()
 		anim->PlayAttackAnim();
 	}
 
-	if (bUsingPistolGun)
+	if (bUsingPistol)
 	{
 		FTransform firePosition = me->pistolMeshComp->GetSocketTransform(TEXT("Muzzle"));
 		GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
@@ -124,10 +124,12 @@ void UPlayerFire::InputFire()
 void UPlayerFire::GetPistol()
 {
 	// 권총으로 변경
-	bUsingPistolGun = true;
+	bUsingPistol = true;
 
 	me->pistolMeshComp->SetVisibility(true);
 	me->ripleMeshComp->SetVisibility(false);
+
+	me->OnUsingPistol(bUsingPistol);
 }
 
 void UPlayerFire::GetRiple()
@@ -135,14 +137,16 @@ void UPlayerFire::GetRiple()
 	if (me->bRipleOpen == false) return;
 
 	// 소총으로 변경
-	bUsingPistolGun = false;
+	bUsingPistol = false;
 	me->pistolMeshComp->SetVisibility(false);
 	me->ripleMeshComp->SetVisibility(true);
+
+	me->OnUsingPistol(bUsingPistol);
 }
 
 void UPlayerFire::SniperAim()
 {
-	if (bUsingPistolGun == true) return;
+	if (bUsingPistol == true) return;
 
 	// Pressed 입력 처리
 	if (bSniperAim == false)

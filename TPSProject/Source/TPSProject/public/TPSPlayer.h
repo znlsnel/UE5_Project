@@ -70,11 +70,11 @@ public:
 
 // Detail =====================================================================
 	// 현재 체력
-	UPROPERTY(EditDefaultsOnly, Category = Health)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Health)
 		int32 hp;
 
 	// 초기 hp값
-	UPROPERTY(EditDefaultsOnly, Category = Health)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Health)
 		int32 initialHp = 10;
 
 	// 피격 달했을 때 처리
@@ -107,4 +107,6 @@ public:
 // 함수========================================================================
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Health)
 		void OnGameOver();
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Health)
+		void OnUsingPistol(bool isGrenade);
 };

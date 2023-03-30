@@ -27,7 +27,6 @@ public:
 	void GetRiple();					// 家醚 厘馒
 	void SniperAim();					// 胶内橇 葛靛
 
-	bool bUsingPistolGun = true;
 	bool bSniperAim = false;
 
 public:
@@ -62,5 +61,8 @@ public:
 	// 醚家府
 	UPROPERTY(EditDefaultsOnly, Category = Sound)
 		class USoundBase* bulletSound;
+
+	UPROPERTY(BlueprintReadOnly)
+		bool bUsingPistol = true;
 
 };
