@@ -22,7 +22,7 @@ class TPSPROJECT_API UPlayerFire : public UPlayerBaseComponent
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
 
 public:
-	void InputFire();					// รัพห น฿ป็
+	void InputFire();		
 	void GetPistol();					// ฑวรั ภๅย๘
 	void GetRiple();					// ผารั ภๅย๘
 	void SniperAim();					// ฝบฤฺวม ธ๐ตๅ

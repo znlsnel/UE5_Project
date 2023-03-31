@@ -43,7 +43,7 @@ void UPlayerFire::BeginPlay()
 	// 일반 조준 UI 등록
 	_crosshairUI->AddToViewport();
 
-	// 권총 들기
+	me->OnInitialization();
 	GetPistol();
 }
 
@@ -68,6 +68,26 @@ void UPlayerFire::InputFire()
 	if (bUsingPistol)
 	{
 		FTransform firePosition = me->pistolMeshComp->GetSocketTransform(TEXT("Muzzle"));
+
+		FVector TraceStartPoint;
+		FRotator TraceStartRotation;
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT TraceStartPoint, TraceStartRotation);
+
+		float traceLength = 5000.f;
+		TraceStartPoint = firePosition.GetLocation();
+		FVector LineTraceEnd = TraceStartPoint + TraceStartRotation.Vector() * traceLength;
+
+		DrawDebugLine(
+			GetWorld(),
+			TraceStartPoint,
+			LineTraceEnd,
+			FColor(255, 0, 0),
+			false,
+			2.f,
+			0.f,
+			10.f
+		);
+
 		GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
 	}
 	else if (bSniperAim)

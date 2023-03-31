@@ -40,7 +40,7 @@ ABullet::ABullet()
 		bodyMeshComp->SetStaticMesh(Sphere.Object);
 		
 	}
-
+	
 	// Projectile Setting
 	{
 		// 발사체 컴포넌트
@@ -55,8 +55,10 @@ ABullet::ABullet()
 		movementComp->bShouldBounce = true;
 		//반동 값
 		movementComp->Bounciness = 0.3f;
+		
 	}
-
+	
+	
 	// Setting
 	{
 		//InitialLifeSpan = 2.0f;

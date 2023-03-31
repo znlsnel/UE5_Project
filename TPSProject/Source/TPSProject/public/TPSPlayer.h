@@ -109,4 +109,6 @@ public:
 		void OnGameOver();
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Health)
 		void OnUsingPistol(bool isGrenade);
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Initialization)
+		void OnInitialization();
 };

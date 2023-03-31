@@ -110,8 +110,7 @@ ATPSPlayer::ATPSPlayer()
 			JumpMaxCount = 2;
 		}
 	}
-
-
+	
 		
 }
 
