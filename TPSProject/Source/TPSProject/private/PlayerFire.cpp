@@ -11,6 +11,7 @@
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Camera/CameraComponent.h>
+#include <Math/UnrealMathVectorCommon.h>
 
 UPlayerFire::UPlayerFire()
 {
@@ -88,7 +89,9 @@ void UPlayerFire::InputFire()
 			10.f
 		);
 
-		GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+		
+		
+		//GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
 	}
 	else if (bSniperAim)
 	{

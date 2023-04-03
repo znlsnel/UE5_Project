@@ -17,6 +17,11 @@ class TPSPROJECT_API UPlayerAnim : public UAnimInstance
 public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void PlayAttackAnim();
+	
+	void UpdateTurn();
+	void UpdateTurnAnimation();
+	
+
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 		float speed = 0;
@@ -26,8 +31,27 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 		float direction = 0;
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
+		bool isMoving = false;
+
 	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
 		class UAnimMontage* attackAnimMontage;
+	
+	class ATPSPlayer* player;
 
+	// ROOT BONE ROTATION
+	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
+		float pitch = 0.f;
+	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
+		float rootYawOffset = 0.f;
+	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
+		float characterYaw = 0.f;
+	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
+		float prevCharacterYaw = 0.f;
+	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
+		float prevRotationCurve = 0.f;
+	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
+		float rotationCurve = 0.f;
+	
 };
