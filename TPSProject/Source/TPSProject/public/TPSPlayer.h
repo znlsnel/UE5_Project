@@ -66,6 +66,7 @@ public:
 	// PlayerFire
 	UPROPERTY(VisibleAnywhere, Category = Component)
 		class UPlayerBaseComponent* playerFire;
+
 //======================================================================
 
 // Detail =====================================================================

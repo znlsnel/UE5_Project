@@ -43,8 +43,11 @@ void UPlayerFire::BeginPlay()
 	_crosshairUI = CreateWidget(GetWorld(), crosshairUIFactory);
 	// 일반 조준 UI 등록
 	_crosshairUI->AddToViewport();
+	controller = GetWorld()->GetFirstPlayerController();
 
 	me->OnInitialization();
+
+
 	GetPistol();
 }
 
@@ -55,11 +58,6 @@ void UPlayerFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 void UPlayerFire::InputFire()
 {
-	// UGameplayStatics::PlaySound2D(GetWorld(), bulletSound);
-
-	//APlayerController* controller = GetWorld()->GetFirstPlayerController();
-	//controller->PlayerCameraManager->StartCameraShake(cameraShake);
-
 	UPlayerAnim* anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
 	if (anim)
 	{
@@ -68,6 +66,10 @@ void UPlayerFire::InputFire()
 
 	if (bUsingPistol)
 	{
+		
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), bulletSound, me->GetActorLocation());
+		//controller->PlayerCameraManager->StartCameraShake(cameraShake);
+
 		FTransform firePosition = me->pistolMeshComp->GetSocketTransform(TEXT("Muzzle"));
 
 		FVector TraceStartPoint;
@@ -178,7 +180,7 @@ void UPlayerFire::SniperAim()
 		bSniperAim = true;
 		// 스나이퍼 조준 UI 등록
 		_sniperUI->AddToViewport();
-		//tpsCamComp->SetFieldOfView(45.0f);
+		me->tpsCamComp->SetFieldOfView(45.0f);
 		_crosshairUI->RemoveFromParent();
 	}
 	// Released 입력 처리

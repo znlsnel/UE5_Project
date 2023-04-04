@@ -10,6 +10,7 @@
 #include <Kismet/KismetSystemLibrary.h>
 
 
+#include "FootIkActorComponent.h"
 #include "Gun.h"
 #include "PlayerMove.h"
 #include "PlayerFire.h"

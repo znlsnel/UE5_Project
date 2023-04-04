@@ -1,33 +1,42 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "FootIkActorComponent.h"
 #include "PlayerAnim.h"
 #include "TPSPlayer.h"
 
 #include <GameFramework/CharacterMovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
 #include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/KismetMathLibrary.h>
 #include <Animation/AnimSequence.h>
+
+UPlayerAnim::UPlayerAnim()
+{
+	footIkComp = CreateDefaultSubobject<UFootIkActorComponent>(TEXT("FootIKComp"));
+}
 
 void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
-	
+	//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("RootYawOffset : %f"), rootYawOffset));
+
 	if (!player)
 	{
 		auto ownerPawn = TryGetPawnOwner();
 		player = Cast<ATPSPlayer>(ownerPawn);
 	}
 	
+
 	if (player)
 	{
 		// 菊第 规氢 眉农
 		FVector velocity = player->GetVelocity();
 
-		isMoving = velocity.Length() != 0;
 
 		FVector forwardVector = player->GetActorForwardVector();
-		speed = FVector::DotProduct(velocity, forwardVector);
+
+		speed = FVector::DotProduct(forwardVector, velocity);
 
 		// 谅快 规氢 眉农
 		FVector rightVector = player->GetActorRightVector();
@@ -41,6 +50,7 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 
 		UpdateTurn();
 		UpdateTurnAnimation();
+
 	}
 
 }
@@ -54,34 +64,37 @@ void UPlayerAnim::UpdateTurn()
 {
 	pitch = player->GetBaseAimRotation().Pitch;
 	
-	if (speed > 0)
+	if (speed != 0)
 	{
 		characterYaw = player->GetActorRotation().Yaw;
 		prevCharacterYaw = characterYaw;
-		rootYawOffset = 0.0f;
-
-		return;
+		
+		rootYawOffset = 0.f;
 	}
 
 	prevCharacterYaw = characterYaw;
 	characterYaw = player->GetActorRotation().Yaw;
 	float tempYawOffset = rootYawOffset + (prevCharacterYaw - characterYaw);
+
 	rootYawOffset = UKismetMathLibrary::NormalizeAxis(tempYawOffset);
 }
 
 void UPlayerAnim::UpdateTurnAnimation()
 {
+
 	if (GetCurveValue(TEXT("isTurning")))
 	{
 		prevRotationCurve = rotationCurve;
 		rotationCurve = GetCurveValue(TEXT("Rotation"));
-		float tempYawOffset = rootYawOffset + (rotationCurve - prevRotationCurve);
-		rootYawOffset = UKismetMathLibrary::Clamp(-90, tempYawOffset, 90);
-		
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("RootYawOffset : %f"), rootYawOffset));
+
+		float tempYawOffset = rootYawOffset + (prevRotationCurve - rotationCurve);
+
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT(" tempYawOffset : %f"), tempYawOffset));
+
+		rootYawOffset = UKismetMathLibrary::Clamp(tempYawOffset , -90, 90);
+
 	}
 
-	
 }
 
 

@@ -15,6 +15,7 @@ class TPSPROJECT_API UPlayerAnim : public UAnimInstance
 	GENERATED_BODY()
 	
 public:
+	UPlayerAnim();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	void PlayAttackAnim();
 	
@@ -31,9 +32,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 		float direction = 0;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
-		bool isMoving = false;
 
 	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
 		class UAnimMontage* attackAnimMontage;
@@ -54,4 +52,7 @@ public:
 	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
 		float rotationCurve = 0.f;
 	
+	UPROPERTY(visibleAnywhere, blueprintReadOnly, Category = FootIK)
+		class UFootIkActorComponent* footIkComp;
+
 };

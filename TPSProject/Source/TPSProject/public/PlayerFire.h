@@ -65,4 +65,5 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		bool bUsingPistol = true;
 
+	class APlayerController* controller;
 };
