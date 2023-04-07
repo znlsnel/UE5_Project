@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "FootIkActorComponent.h"
 #include "PlayerAnim.h"
 #include "TPSPlayer.h"
 
@@ -13,7 +12,6 @@
 
 UPlayerAnim::UPlayerAnim()
 {
-	footIkComp = CreateDefaultSubobject<UFootIkActorComponent>(TEXT("FootIKComp"));
 }
 
 void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)

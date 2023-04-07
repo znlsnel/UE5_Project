@@ -36,7 +36,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
 		class UAnimMontage* attackAnimMontage;
 	
-	class ATPSPlayer* player;
+	UPROPERTY(blueprintReadOnly, Category = player)
+		class ATPSPlayer* player;
 
 	// ROOT BONE ROTATION
 	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
@@ -52,7 +53,5 @@ public:
 	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
 		float rotationCurve = 0.f;
 	
-	UPROPERTY(visibleAnywhere, blueprintReadOnly, Category = FootIK)
-		class UFootIkActorComponent* footIkComp;
 
 };

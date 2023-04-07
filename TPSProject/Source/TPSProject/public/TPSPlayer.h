@@ -67,6 +67,8 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Component)
 		class UPlayerBaseComponent* playerFire;
 
+	UPROPERTY(VisibleAnywhere, blueprintReadOnly, Category = IkFoot)
+		class UFootIkActorComponent* IKFootComp;
 //======================================================================
 
 // Detail =====================================================================

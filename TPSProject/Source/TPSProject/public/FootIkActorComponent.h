@@ -35,8 +35,8 @@ public:
 	struct SkeletonIKTraceInfo FootTrace(float TraceDistance, FName SocketName);
 	FRotator NormalToRotator(FVector Vector);
 	void UpdateFootRotation(float DeltaTime, FRotator TargetValue, FRotator* FootRotatorValue, float InterpSpeed);
-
-
+	void UpdateCapsuleHalfHeight(float DeltaTime, float HipsShift, bool ResetDefault);
+	void UpdateFootOffset(float DeltaTime, float TargetValue, float* EffectorValue, float InterpSpeed);
 
 public:
 	float capsuleHalfHeight;
@@ -46,4 +46,11 @@ public:
 		FRotator LeftFootRotation;
 	UPROPERTY(blueprintReadOnly, category = FootIK)
 		FRotator RightFootRotation;
+	UPROPERTY(blueprintReadOnly, category = FootIK)
+		float	m_LeftFootOffset;
+	UPROPERTY(blueprintReadOnly, category = FootIK)
+		float	m_RightFootOffset;
+	UPROPERTY(blueprintReadOnly, category = FootIK)
+		float	m_HipsOffset;
 };
+
