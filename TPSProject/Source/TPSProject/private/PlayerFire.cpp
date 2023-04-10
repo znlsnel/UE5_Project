@@ -70,29 +70,27 @@ void UPlayerFire::InputFire()
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), bulletSound, me->GetActorLocation());
 		//controller->PlayerCameraManager->StartCameraShake(cameraShake);
 
-		FTransform firePosition = me->pistolMeshComp->GetSocketTransform(TEXT("Muzzle"));
-
 		FVector TraceStartPoint;
 		FRotator TraceStartRotation;
 		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT TraceStartPoint, TraceStartRotation);
 
 		float traceLength = 5000.f;
-		TraceStartPoint = firePosition.GetLocation();
 		FVector LineTraceEnd = TraceStartPoint + TraceStartRotation.Vector() * traceLength;
 
-		DrawDebugLine(
-			GetWorld(),
-			TraceStartPoint,
-			LineTraceEnd,
-			FColor(255, 0, 0),
-			false,
-			2.f,
-			0.f,
-			10.f
-		);
+		FHitResult pHitResult;
+		TArray<AActor*> pIgnore;
+		pIgnore.Add(GetOwner());
 
-		
-		
+		bool isHit = UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStartPoint, LineTraceEnd, UEngineTypes::ConvertToTraceType(ECC_Visibility), true, pIgnore, EDrawDebugTrace::None, pHitResult, true);
+
+		if (isHit)
+			LineTraceEnd = pHitResult.ImpactPoint;
+
+		FTransform firePosition = me->pistolMeshComp->GetSocketTransform(TEXT("Muzzle"));
+		TraceStartPoint = firePosition.GetLocation();
+
+		//DrawDebugLine(GetWorld(), TraceStartPoint, LineTraceEnd, FColor(255, 0, 0), false, 2.f, 0.f, 10.f);
+		me->LineTraceEndPos = LineTraceEnd;
 		//GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
 	}
 	else if (bSniperAim)
@@ -144,6 +142,8 @@ void UPlayerFire::InputFire()
 			}
 		}
 	}
+
+	me->FireEffect();
 }
 
 void UPlayerFire::GetPistol()

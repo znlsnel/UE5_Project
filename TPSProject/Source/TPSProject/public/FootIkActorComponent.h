@@ -47,10 +47,10 @@ public:
 	UPROPERTY(blueprintReadOnly, category = FootIK)
 		FRotator RightFootRotation;
 	UPROPERTY(blueprintReadOnly, category = FootIK)
-		float	m_LeftFootOffset;
+		float	LeftFootOffset;
 	UPROPERTY(blueprintReadOnly, category = FootIK)
-		float	m_RightFootOffset;
+		float	RightFootOffset;
 	UPROPERTY(blueprintReadOnly, category = FootIK)
-		float	m_HipsOffset;
+		float	HipsOffset;
 };
 

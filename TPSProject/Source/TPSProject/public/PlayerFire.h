@@ -26,9 +26,11 @@ public:
 	void GetPistol();					// ±ÇÃÑ ÀåÂø
 	void GetRiple();					// ¼ÒÃÑ ÀåÂø
 	void SniperAim();					// ½ºÄÚÇÁ ¸ðµå
+	
 
 	bool bSniperAim = false;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bUsingPistol = true;
 public:
 
 
@@ -62,8 +64,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = Sound)
 		class USoundBase* bulletSound;
 
+
+
 	UPROPERTY(BlueprintReadOnly)
-		bool bUsingPistol = true;
+		FVector LeftHandlePos;
 
 	class APlayerController* controller;
 };

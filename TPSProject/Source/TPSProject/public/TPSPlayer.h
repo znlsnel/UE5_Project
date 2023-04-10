@@ -52,11 +52,11 @@ public:
 		class UCameraComponent* tpsCamComp;			// Camera
 
 	// ±ÇÃÑ Mesh
-	UPROPERTY(VisibleAnywhere, category = GunMesh)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = GunMesh)
 		class USkeletalMeshComponent* pistolMeshComp;	// Pistol
 
 	// ¼ÒÃÑ Mesh
-	UPROPERTY(VisibleAnywhere, category = GunMesh)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = GunMesh)
 		class UStaticMeshComponent* ripleMeshComp;	// Sniper
 
 	// PlayerMove
@@ -93,7 +93,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = weaponOpen)
 		bool bPistolOpen = true;
-
+	UPROPERTY(BlueprintReadWrite, Category = Fire)
+		FVector LineTraceEndPos;
 // Collision °ü·Ã ================================================================
 	UFUNCTION()
 		void BeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -114,4 +115,6 @@ public:
 		void OnUsingPistol(bool isGrenade);
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Initialization)
 		void OnInitialization();
+	UFUNCTION(BlueprintImplementableEvent, Category = Effect)
+		void FireEffect();
 };

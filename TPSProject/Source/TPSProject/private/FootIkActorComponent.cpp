@@ -40,22 +40,23 @@ void UFootIkActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	SkeletonIKTraceInfo leftFootTrace = FootTrace(100.f, "foot_l");
-	SkeletonIKTraceInfo rightFootTrace = FootTrace(100.0f, "foot_r");
+	SkeletonIKTraceInfo leftFootTrace = FootTrace(50.f, "foot_l");
+	SkeletonIKTraceInfo rightFootTrace = FootTrace(50.f, "foot_r");
 	
 	UpdateFootRotation(DeltaTime, NormalToRotator(leftFootTrace.ImpactLocation), &LeftFootRotation, 13.0f);
 	UpdateFootRotation(DeltaTime, NormalToRotator(rightFootTrace.ImpactLocation), &RightFootRotation, 13.0f);
 
-	float HipsOffset = UKismetMathLibrary::Min(leftFootTrace.Offset, rightFootTrace.Offset);
+	float tempHipsOffset = UKismetMathLibrary::Min(leftFootTrace.Offset, rightFootTrace.Offset);
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("HipsOffset : %f"), tempHipsOffset));
+
+	if (tempHipsOffset < 0.0f == false)
+		tempHipsOffset = 0.0f;
 	
-	if (HipsOffset < 0.0f == false) 
-		HipsOffset = 0.0f;
+	UpdateFootOffset(DeltaTime, tempHipsOffset, &HipsOffset, 13.0f);
+	UpdateFootOffset(DeltaTime, leftFootTrace.Offset - tempHipsOffset, &LeftFootOffset, 13.0f);
+	UpdateFootOffset(DeltaTime, -1 * (rightFootTrace.Offset - tempHipsOffset), &RightFootOffset, 13.0f);
 
-	UpdateFootOffset(DeltaTime, HipsOffset, &m_HipsOffset, 13.0f);
-	UpdateFootOffset(DeltaTime, leftFootTrace.Offset - HipsOffset, &m_LeftFootOffset, 13.0f);
-	UpdateFootOffset(DeltaTime, -1 * (rightFootTrace.Offset - HipsOffset), &m_RightFootOffset, 13.0f);
-
-	UpdateCapsuleHalfHeight(DeltaTime, HipsOffset, false);
+	//UpdateCapsuleHalfHeight(DeltaTime, tempHipsOffset, false);
 	
 
 
@@ -67,11 +68,13 @@ struct SkeletonIKTraceInfo UFootIkActorComponent::FootTrace(float TraceDistance,
 {
 	SkeletonIKTraceInfo TraceInfo;
 
+	// 양 발의 위치를 가져옴
 	FVector socketLocation = player->GetMesh()->GetSocketLocation(socketName);
-
-
+	
+	// LineTrace의 StartPoint = 발의 x,y 좌표 + 캐릭터의 중간 높이
 	FVector startPoint = FVector(socketLocation.X, socketLocation.Y, player->GetActorLocation().Z);
-	FVector endPorint = FVector(socketLocation.X, socketLocation.Y,
+	// LineTrace의 endPoint = 발의 x,y좌표 + (캐릭터의 발바닥 높이 - TraceDistance)만큼의 높이
+	FVector endPoint = FVector(socketLocation.X, socketLocation.Y,
 		(player->GetActorLocation().Z - capsuleHalfHeight) - TraceDistance);
 
 	FHitResult pHitResult;
@@ -82,16 +85,16 @@ struct SkeletonIKTraceInfo UFootIkActorComponent::FootTrace(float TraceDistance,
 	EDrawDebugTrace::Type eDebug = EDrawDebugTrace::None;
 	if (bDebug == true) eDebug = EDrawDebugTrace::ForOneFrame;
 
-	bool bResult = UKismetSystemLibrary::LineTraceSingle(GetWorld(), startPoint, endPorint,
+
+	bool bResult = UKismetSystemLibrary::LineTraceSingle(GetWorld(), startPoint, endPoint,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility), true, pIgnore, eDebug, pHitResult, true);
 
 	
-	//! Set ImpactNormal and Offset from HitResult
 	TraceInfo.ImpactLocation = pHitResult.Normal;
-	if (pHitResult.IsValidBlockingHit() == true)
+	if (pHitResult.IsValidBlockingHit())
 	{
 		float fImpactLegth = (pHitResult.ImpactPoint - pHitResult.TraceEnd).Size();
-		TraceInfo.Offset = 5.0f + (fImpactLegth - TraceDistance);
+		TraceInfo.Offset = 3.0f + (fImpactLegth - TraceDistance);
 	}
 	else
 	{
@@ -101,10 +104,14 @@ struct SkeletonIKTraceInfo UFootIkActorComponent::FootTrace(float TraceDistance,
 	return TraceInfo;
 }
 
+
 //IK_FootTrace함수에서 나온 땅위치 값 바탕으로 바닥 Normal Vector를 알 수 있다. 
 FRotator UFootIkActorComponent::NormalToRotator(FVector Vector)
 {
+	// DegAtan2는 두 인자 간 비율의 역탄젠트를 계산하고 결과를 도 단위로 반환해줌
+	// vector의 Y와 Z로 Roll을 계산
 	float fAtan2_1 = UKismetMathLibrary::DegAtan2(Vector.Y, Vector.Z);
+	// vector의 X와 Z로 Pitch를 계산
 	float fAtan2_2 = UKismetMathLibrary::DegAtan2(Vector.X, Vector.Z);
 	fAtan2_2 *= -1.0f;
 	FRotator pResult = FRotator(fAtan2_2, 0.0f, fAtan2_1);
