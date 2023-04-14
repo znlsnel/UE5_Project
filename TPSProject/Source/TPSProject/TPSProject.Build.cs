@@ -16,7 +16,10 @@ public class TPSProject : ModuleRules
 			"InputCore" ,
 			"UMG", 
 			"NavigationSystem", 
-			"AIModule"
+			"AIModule",
+			"Niagara",
+			"PhysicsCore"
+			
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

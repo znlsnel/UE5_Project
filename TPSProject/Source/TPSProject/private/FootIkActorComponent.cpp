@@ -47,7 +47,7 @@ void UFootIkActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	UpdateFootRotation(DeltaTime, NormalToRotator(rightFootTrace.ImpactLocation), &RightFootRotation, 13.0f);
 
 	float tempHipsOffset = UKismetMathLibrary::Min(leftFootTrace.Offset, rightFootTrace.Offset);
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("HipsOffset : %f"), tempHipsOffset));
+
 
 	if (tempHipsOffset < 0.0f == false)
 		tempHipsOffset = 0.0f;

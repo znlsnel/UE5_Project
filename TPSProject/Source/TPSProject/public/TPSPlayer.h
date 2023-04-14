@@ -55,9 +55,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = GunMesh)
 		class USkeletalMeshComponent* pistolMeshComp;	// Pistol
 
+
 	// ¼ÒÃÑ Mesh
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = GunMesh)
 		class UStaticMeshComponent* ripleMeshComp;	// Sniper
+
 
 	// PlayerMove
 	UPROPERTY(VisibleAnywhere, Category = Component)
@@ -93,8 +95,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = weaponOpen)
 		bool bPistolOpen = true;
+
 	UPROPERTY(BlueprintReadWrite, Category = Fire)
-		FVector LineTraceEndPos;
+		FHitResult FireHitResult;
+
 // Collision °ü·Ã ================================================================
 	UFUNCTION()
 		void BeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

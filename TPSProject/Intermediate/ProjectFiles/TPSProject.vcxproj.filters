@@ -87,6 +87,21 @@
     <ClCompile Include="..\..\Source\TPSProject\private\TPSProjectGameModeBase.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Weapon.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\WeaponData.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Weapon_Pistol.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Weapon_Rifle.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Weapon_Shotgun.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <Filter Include="Source\TPSProject\public">
       <UniqueIdentifier>{68A94EF8-D612-391B-AA07-FA4C4DBF9FA4}</UniqueIdentifier>
     </Filter>
@@ -133,6 +148,21 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\TPSProjectGameModeBase.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Weapon.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\WeaponData.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Weapon_Pistol.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Weapon_Rifle.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Weapon_Shotgun.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
   </ItemGroup>

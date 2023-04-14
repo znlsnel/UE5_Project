@@ -82,7 +82,7 @@ void UPlayerAnim::UpdateTurnAnimation()
 
 	if (GetCurveValue(TEXT("isTurning")))
 	{
-		prevRotationCurve = rotationCurve;
+		prevRotationCurve = rotationCurve; 
 		rotationCurve = GetCurveValue(TEXT("Rotation"));
 
 		float tempYawOffset = rootYawOffset + (prevRotationCurve - rotationCurve);

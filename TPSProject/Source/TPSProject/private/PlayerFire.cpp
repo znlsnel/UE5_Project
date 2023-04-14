@@ -67,8 +67,12 @@ void UPlayerFire::InputFire()
 	if (bUsingPistol)
 	{
 		
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), bulletSound, me->GetActorLocation());
+		//UGameplayStatics::PlaySoundAtLocation(GetWorld(), bulletSound, me->GetActorLocation());
 		//controller->PlayerCameraManager->StartCameraShake(cameraShake);
+
+		//ConstructorHelpers::FObjectFinder<UAnimationAsset> tempAnim(TEXT("AnimSequence'/Game/Assets/Weapons/Pistol/Animations/Weap_Pistol_Fire.Weap_Pistol_Fire'"));
+		//if (tempAnim.Succeeded())
+		//	me->pistolMeshComp->PlayAnimation(tempAnim.Object, false);
 
 		FVector TraceStartPoint;
 		FRotator TraceStartRotation;
@@ -90,7 +94,7 @@ void UPlayerFire::InputFire()
 		TraceStartPoint = firePosition.GetLocation();
 
 		//DrawDebugLine(GetWorld(), TraceStartPoint, LineTraceEnd, FColor(255, 0, 0), false, 2.f, 0.f, 10.f);
-		me->LineTraceEndPos = LineTraceEnd;
+		me->FireHitResult = pHitResult;
 		//GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
 	}
 	else if (bSniperAim)

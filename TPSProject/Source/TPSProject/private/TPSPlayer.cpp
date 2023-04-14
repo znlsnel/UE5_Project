@@ -8,14 +8,13 @@
 #include <Components/CapsuleComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
-
+#include <Components/SkeletalMeshComponent.h>
 
 #include "FootIkActorComponent.h"
 #include "Gun.h"
 #include "PlayerMove.h"
 #include "PlayerFire.h"
 #include "TPSPlayer.h"
-
 
 
 
@@ -27,7 +26,9 @@ ATPSPlayer::ATPSPlayer()
 		playerMove = CreateDefaultSubobject<UPlayerMove>(TEXT("PlayerMove"));
 		playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
 		IKFootComp = CreateDefaultSubobject<UFootIkActorComponent>(TEXT("IKFootComp"));
+		//myWeapon = CreateDefaultSubobject<UWeapon>(TEXT("weapon"));
 	}
+
 
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -71,37 +72,35 @@ ATPSPlayer::ATPSPlayer()
 	}
 
 	// Gun Skeletal Mesh Component
+	// 스켈레탈 메시 컴포넌트 등록
+	pistolMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
+	// 부모 컴포넌트 등록
+	pistolMeshComp->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
+	// 스켈레탈메시 데이터 로드
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Assets/Weapons/Pistol/Mesh/SK_Pistol.SK_Pistol'"));
+
+	// 데이터 로드가 성공했다면
+	if (TempGunMesh.Succeeded())
 	{
-		// 스켈레탈 메시 컴포넌트 등록
-		pistolMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
-		// 부모 컴포넌트 등록
-		pistolMeshComp->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
-		// 스켈레탈메시 데이터 로드
-		ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Assets/Weapons/Pistol/Mesh/SK_Pistol.SK_Pistol'"));
-
-		// 데이터 로드가 성공했다면
-		if (TempGunMesh.Succeeded())
-		{
-			// 스켈레탈메시 데이터 할당
-			pistolMeshComp->SetSkeletalMesh(TempGunMesh.Object);
-			// 위치 조정하기
-			pistolMeshComp->SetRelativeLocation(FVector(-7.98, 3.21, -0.89));
-			pistolMeshComp->SetRelativeRotation(FRotator(0, 110, 0));
-		}
-
-		// Sniper Gun Component
-		ripleMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SniperGunComp"));
-		ripleMeshComp->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
-
-		ConstructorHelpers::FObjectFinder<UStaticMesh> TempSniperGun(TEXT("StaticMesh'/Game/Assets/Weapons/Rifle/Mesh/SM_Rifle.SM_Rifle'"));
-		if (TempSniperGun.Succeeded())
-		{
-			ripleMeshComp->SetStaticMesh(TempSniperGun.Object);
-			ripleMeshComp->SetRelativeLocation(FVector(-25.74, 0.7, 5.76));
-			ripleMeshComp->SetRelativeRotation(FRotator(0, 110, 10));
-
-		}
+		// 스켈레탈메시 데이터 할당
+		pistolMeshComp->SetSkeletalMesh(TempGunMesh.Object);
+		pistolMeshComp->SetRelativeLocation(FVector(-7.98, 3.21, -0.89));
+		pistolMeshComp->SetRelativeRotation(FRotator(0, 110, 0));
 	}
+		
+	// Sniper Gun Component
+	ripleMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SniperGunComp"));
+	ripleMeshComp->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> TempSniperGun(TEXT("StaticMesh'/Game/Assets/Weapons/Rifle/Mesh/SM_Rifle.SM_Rifle'"));
+	if (TempSniperGun.Succeeded())
+	{
+		ripleMeshComp->SetStaticMesh(TempSniperGun.Object);
+		ripleMeshComp->SetRelativeLocation(FVector(-25.74, 0.7, 5.76));
+		ripleMeshComp->SetRelativeRotation(FRotator(0, 110, 10));
+
+	}
+	
 
 	// Self
 	{
@@ -112,8 +111,8 @@ ATPSPlayer::ATPSPlayer()
 			JumpMaxCount = 2;
 		}
 	}
-	
-		
+
+
 }
 
 
