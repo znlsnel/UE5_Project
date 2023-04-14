@@ -16,4 +16,6 @@ class TPSPROJECT_API AWeapon_Pistol : public AWeapon
 	
 public:
 	AWeapon_Pistol();
+	virtual void Initialization(class ATPSPlayer* player)override;
+
 };

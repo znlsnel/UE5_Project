@@ -3,6 +3,12 @@
 
 #include "Weapon_Pistol.h"
 
+void AWeapon_Pistol::Initialization(ATPSPlayer* player)
+{
+	Super::Initialization(player);
+	SetActorRotation(FRotator(0, -90, 0));
+}
+
 AWeapon_Pistol::AWeapon_Pistol()
 {
 	weaponMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComp"));
@@ -19,3 +25,5 @@ AWeapon_Pistol::AWeapon_Pistol()
 	FireSpread = 2.0f;
 	attachCharacterSocketName = FName("weapon_r_pistol");
 }
+
+

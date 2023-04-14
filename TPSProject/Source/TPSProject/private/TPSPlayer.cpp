@@ -9,7 +9,12 @@
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/SkeletalMeshComponent.h>
+#include <Blueprint/UserWidget.h>
 
+#include "ScreenUI.h"
+#include "Weapon_Pistol.h"
+#include "Weapon_Rifle.h"
+#include "Weapon_Shotgun.h"
 #include "FootIkActorComponent.h"
 #include "Gun.h"
 #include "PlayerMove.h"
@@ -26,8 +31,8 @@ ATPSPlayer::ATPSPlayer()
 		playerMove = CreateDefaultSubobject<UPlayerMove>(TEXT("PlayerMove"));
 		playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
 		IKFootComp = CreateDefaultSubobject<UFootIkActorComponent>(TEXT("IKFootComp"));
-		//myWeapon = CreateDefaultSubobject<UWeapon>(TEXT("weapon"));
 	}
+
 
 
 	PrimaryActorTick.bCanEverTick = true;
@@ -102,6 +107,7 @@ ATPSPlayer::ATPSPlayer()
 	}
 	
 
+
 	// Self
 	{
 		bUseControllerRotationYaw = true;
@@ -121,6 +127,12 @@ void ATPSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	screenUI = Cast<UScreenUI>(CreateWidget(GetWorld(), ScreenUIFactory));
+	screenUI->Initialization(this);
+
+	pistol = GetWorld()->SpawnActor<AWeapon_Pistol>(myPistol);
+	pistol->Initialization(this);
+
 	hp = initialHp;
 }
 
@@ -128,6 +140,7 @@ void ATPSPlayer::BeginPlay()
 void ATPSPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	tickUpdateFunctions.Broadcast();
 }
 
 // Called to bind functionality to input

@@ -26,12 +26,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void SetNiagaraSysrem();
-
+	virtual void Initialization(class ATPSPlayer* player);
+	
 public:
-	class ATPSPlayer* owner;
+	class ATPSPlayer* myPlayer;
 
-	UPROPERTY(VisibleAnywhere, category = weaponMesh)
+	UPROPERTY(EditAnywhere, category = weaponMesh)
 		class USkeletalMeshComponent* weaponMeshComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)

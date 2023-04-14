@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "ScreenUI.h"
 #include "PlayerFire.h"
 #include "PlayerAnim.h"
 #include "TPSPlayer.h"
@@ -37,7 +37,7 @@ void UPlayerFire::SetupInputBinding(UInputComponent* PlayerInputComponent)
 void UPlayerFire::BeginPlay()
 {
 	Super::BeginPlay();
-	//  스나이퍼 UI 위젯 인스턴스 생성
+	//  스나이퍼 UI 위젯 인스턴스  생성
 	_sniperUI = CreateWidget(GetWorld(), sniperUIFactory);
 	// 일반 조준 크로스헤어 UI
 	_crosshairUI = CreateWidget(GetWorld(), crosshairUIFactory);
@@ -155,6 +155,7 @@ void UPlayerFire::GetPistol()
 	// 권총으로 변경
 	bUsingPistol = true;
 
+	if (me->screenUI) me->screenUI->WeaponSwap();
 	me->pistolMeshComp->SetVisibility(true);
 	me->ripleMeshComp->SetVisibility(false);
 
@@ -167,6 +168,8 @@ void UPlayerFire::GetRiple()
 
 	// 소총으로 변경
 	bUsingPistol = false;
+
+	if (me->screenUI) me->screenUI->WeaponSwap();
 	me->pistolMeshComp->SetVisibility(false);
 	me->ripleMeshComp->SetVisibility(true);
 

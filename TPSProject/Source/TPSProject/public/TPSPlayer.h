@@ -7,7 +7,7 @@
 #include "TPSPlayer.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FInputBindingDelegate, class UInputComponent*);
-
+DECLARE_MULTICAST_DELEGATE(FTickUpdateFunctions);
 
 UCLASS()
 class TPSPROJECT_API ATPSPlayer : public ACharacter
@@ -17,7 +17,7 @@ class TPSPROJECT_API ATPSPlayer : public ACharacter
 public:
 	// Sets default values for this character's properties
 	FInputBindingDelegate onInputBindingDelegate;
-
+	FTickUpdateFunctions tickUpdateFunctions;
 
 protected:
 	// Called when the game starts or when spawned
@@ -112,6 +112,21 @@ public:
 		);
 
 // ===========================================================================
+
+
+// 무기========================================================================
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class AWeapon_Pistol> myPistol;
+	class AWeapon_Pistol* pistol;
+//===========================================================================
+
+// U I ========================================================================
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UScreenUI> ScreenUIFactory;
+	UPROPERTY(blueprintReadWrite, category = UI)
+		class UScreenUI* screenUI;
+//===========================================================================
+
 // 함수========================================================================
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Health)
 		void OnGameOver();
