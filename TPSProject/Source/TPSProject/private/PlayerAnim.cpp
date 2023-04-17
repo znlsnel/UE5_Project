@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PlayerAnim.h"
+#include "PlayerFire.h"
+#include "Weapon.h"
 #include "TPSPlayer.h"
 
 #include <GameFramework/CharacterMovementComponent.h>
@@ -55,7 +56,7 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 
 void UPlayerAnim::PlayAttackAnim()
 {
-	Montage_Play(attackAnimMontage);
+	Montage_Play(player->playerFire->GetWeapon()->CharacterFireAM);
 }
 
 void UPlayerAnim::UpdateTurn()
@@ -87,10 +88,7 @@ void UPlayerAnim::UpdateTurnAnimation()
 
 		float tempYawOffset = rootYawOffset + (prevRotationCurve - rotationCurve);
 
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT(" tempYawOffset : %f"), tempYawOffset));
-
 		rootYawOffset = UKismetMathLibrary::Clamp(tempYawOffset , -90, 90);
-
 	}
 
 }

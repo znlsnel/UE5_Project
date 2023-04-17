@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "WeaponData.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "TPSPlayer.generated.h"
@@ -34,7 +35,7 @@ public:
 	// Input System
 	void PickUp();
 	void PickDown();
-
+	
 public:
 	bool bisPickUpZone = false;
 	bool bPickingUp = false;
@@ -51,23 +52,13 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = Camera)
 		class UCameraComponent* tpsCamComp;			// Camera
 
-	// ±ÇÃÑ Mesh
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = GunMesh)
-		class USkeletalMeshComponent* pistolMeshComp;	// Pistol
-
-
-	// ¼ÒÃÑ Mesh
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = GunMesh)
-		class UStaticMeshComponent* ripleMeshComp;	// Sniper
-
-
 	// PlayerMove
 	UPROPERTY(VisibleAnywhere, Category = Component)
 		class UPlayerBaseComponent* playerMove;
 
 	// PlayerFire
 	UPROPERTY(VisibleAnywhere, Category = Component)
-		class UPlayerBaseComponent* playerFire;
+		class UPlayerFire* playerFire;
 
 	UPROPERTY(VisibleAnywhere, blueprintReadOnly, Category = IkFoot)
 		class UFootIkActorComponent* IKFootComp;
@@ -111,29 +102,26 @@ public:
 			int32 OtherBodyIndex
 		);
 
-// ===========================================================================
-
-
 // ¹«±â========================================================================
-	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<class AWeapon_Pistol> myPistol;
-	class AWeapon_Pistol* pistol;
-//===========================================================================
+
+
 
 // U I ========================================================================
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<class UScreenUI> ScreenUIFactory;
 	UPROPERTY(blueprintReadWrite, category = UI)
 		class UScreenUI* screenUI;
-//===========================================================================
+
 
 // ÇÔ¼ö========================================================================
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Health)
 		void OnGameOver();
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Health)
-		void OnUsingPistol(bool isGrenade);
+	//UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Health)
+	//	void OnUsingPistol(bool isGrenade);
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Initialization)
 		void OnInitialization();
-	UFUNCTION(BlueprintImplementableEvent, Category = Effect)
-		void FireEffect();
+	//UFUNCTION(BlueprintImplementableEvent, Category = Effect)
+	//	void FireEffect();
+
+	//
 };

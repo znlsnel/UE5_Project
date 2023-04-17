@@ -1,12 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Weapon_Pistol.h"
 
-void AWeapon_Pistol::Initialization(ATPSPlayer* player)
+#include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/GameplayStatics.h>
+
+void AWeapon_Pistol::SynchronizeWhitPlayer(ATPSPlayer* player)
 {
-	Super::Initialization(player);
-	SetActorRotation(FRotator(0, -90, 0));
+	Super::SynchronizeWhitPlayer(player);
+	SetActorRelativeLocation(FVector(-7.0, 3.8, -0.5));
 }
 
 AWeapon_Pistol::AWeapon_Pistol()
@@ -24,6 +26,13 @@ AWeapon_Pistol::AWeapon_Pistol()
 	FireBulletCount = 1;
 	FireSpread = 2.0f;
 	attachCharacterSocketName = FName("weapon_r_pistol");
+}
+
+void AWeapon_Pistol::Attack()
+{
+	Super::Attack();
+
+
 }
 
 

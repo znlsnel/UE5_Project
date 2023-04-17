@@ -16,4 +16,5 @@ class TPSPROJECT_API AWeapon_Shotgun : public AWeapon
 	
 public:
 	AWeapon_Shotgun();
+	virtual void SynchronizeWhitPlayer(class ATPSPlayer* player)override;
 };

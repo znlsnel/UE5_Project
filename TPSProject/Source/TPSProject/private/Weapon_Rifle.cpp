@@ -20,3 +20,14 @@ AWeapon_Rifle::AWeapon_Rifle()
 	FireSpread = 2.0f;
 	attachCharacterSocketName = FName("weapon_r_pistol");
 }
+
+void AWeapon_Rifle::SynchronizeWhitPlayer(ATPSPlayer* player)
+{
+	Super::SynchronizeWhitPlayer(player);
+	SetActorRelativeLocation(FVector(12.58, 3.9, 1.02));
+}
+
+void AWeapon_Rifle::Attack()
+{
+	Super::Attack();
+}

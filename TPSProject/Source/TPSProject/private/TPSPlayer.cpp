@@ -1,5 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "TPSPlayer.h"
+#include "ScreenUI.h"
+#include "Weapon_Pistol.h"
+#include "Weapon_Rifle.h"
+#include "Weapon_Shotgun.h"
+#include "Weapon.h"
+#include "FootIkActorComponent.h"
+#include "Gun.h"
+#include "PlayerMove.h"
+#include "PlayerFire.h"
+
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
 
@@ -11,15 +22,6 @@
 #include <Components/SkeletalMeshComponent.h>
 #include <Blueprint/UserWidget.h>
 
-#include "ScreenUI.h"
-#include "Weapon_Pistol.h"
-#include "Weapon_Rifle.h"
-#include "Weapon_Shotgun.h"
-#include "FootIkActorComponent.h"
-#include "Gun.h"
-#include "PlayerMove.h"
-#include "PlayerFire.h"
-#include "TPSPlayer.h"
 
 
 
@@ -60,7 +62,7 @@ ATPSPlayer::ATPSPlayer()
 		// RootComponent 는 계층구조상 캡슐 콜리전 컴포넌트를 의미함
 		springArmComp->SetupAttachment(RootComponent);
 		springArmComp->SetRelativeLocation(FVector(0, 70, 70));
-		springArmComp->TargetArmLength = 400;
+		springArmComp->TargetArmLength = 250;
 		springArmComp->bUsePawnControlRotation = true;
 	}
 
@@ -75,37 +77,6 @@ ATPSPlayer::ATPSPlayer()
 	{
 		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	}
-
-	// Gun Skeletal Mesh Component
-	// 스켈레탈 메시 컴포넌트 등록
-	pistolMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
-	// 부모 컴포넌트 등록
-	pistolMeshComp->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
-	// 스켈레탈메시 데이터 로드
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("SkeletalMesh'/Game/Assets/Weapons/Pistol/Mesh/SK_Pistol.SK_Pistol'"));
-
-	// 데이터 로드가 성공했다면
-	if (TempGunMesh.Succeeded())
-	{
-		// 스켈레탈메시 데이터 할당
-		pistolMeshComp->SetSkeletalMesh(TempGunMesh.Object);
-		pistolMeshComp->SetRelativeLocation(FVector(-7.98, 3.21, -0.89));
-		pistolMeshComp->SetRelativeRotation(FRotator(0, 110, 0));
-	}
-		
-	// Sniper Gun Component
-	ripleMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SniperGunComp"));
-	ripleMeshComp->SetupAttachment(GetMesh(), TEXT("hand_rSocket"));
-
-	ConstructorHelpers::FObjectFinder<UStaticMesh> TempSniperGun(TEXT("StaticMesh'/Game/Assets/Weapons/Rifle/Mesh/SM_Rifle.SM_Rifle'"));
-	if (TempSniperGun.Succeeded())
-	{
-		ripleMeshComp->SetStaticMesh(TempSniperGun.Object);
-		ripleMeshComp->SetRelativeLocation(FVector(-25.74, 0.7, 5.76));
-		ripleMeshComp->SetRelativeRotation(FRotator(0, 110, 10));
-
-	}
-	
 
 
 	// Self
@@ -129,10 +100,7 @@ void ATPSPlayer::BeginPlay()
 
 	screenUI = Cast<UScreenUI>(CreateWidget(GetWorld(), ScreenUIFactory));
 	screenUI->Initialization(this);
-
-	pistol = GetWorld()->SpawnActor<AWeapon_Pistol>(myPistol);
-	pistol->Initialization(this);
-
+	
 	hp = initialHp;
 }
 
@@ -209,6 +177,11 @@ void ATPSPlayer::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		bPickingUp = false;
 	}
 }
+
+
+
+
+
 
 void ATPSPlayer::OnHitEvent()
 {

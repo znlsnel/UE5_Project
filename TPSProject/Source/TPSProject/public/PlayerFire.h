@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "WeaponData.h"
 #include "CoreMinimal.h"
 #include "PlayerBaseComponent.h"
 
@@ -23,16 +24,35 @@ class TPSPROJECT_API UPlayerFire : public UPlayerBaseComponent
 
 public:
 	void InputFire();		
-	void GetPistol();					// 권총 장착
-	void GetRiple();					// 소총 장착
+	void EquipSecondaryWeapon();					// 보조무기 장착
+	void EquipPrimaryWeapon();					// 주무기 장착
 	void SniperAim();					// 스코프 모드
-	
+	void InitializeWeapon();
+
+	class AWeapon* GetWeapon();
+	void EquipWeapon(WeaponSlotType slotType);
 
 	bool bSniperAim = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bUsingPistol = true;
-public:
 
+public:
+	// 무기
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
+		WeaponType currWeapon = WeaponType::Pistol;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
+		WeaponSlotType currSlot = WeaponSlotType::SecondarySlot;
+
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class AWeapon> pistol;
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class AWeapon> rifle;
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class AWeapon> shotgun;
+
+	class AWeapon* primaryWeapon;
+	class AWeapon_Pistol* secondaryWeapon;
 
 	// 카메라 쉐이크
 	UPROPERTY(EditDefaultsOnly, Category = CameraMotion)

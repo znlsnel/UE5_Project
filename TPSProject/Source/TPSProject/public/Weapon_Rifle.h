@@ -13,7 +13,9 @@ UCLASS()
 class TPSPROJECT_API AWeapon_Rifle : public AWeapon
 {
 	GENERATED_BODY()
-	
+
 public:
 	AWeapon_Rifle();
+	virtual void SynchronizeWhitPlayer(class ATPSPlayer* player)override;
+	virtual void Attack()override;
 };

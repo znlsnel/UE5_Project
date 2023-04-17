@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include <Components/CapsuleComponent.h>
-#include <Kismet/KismetSystemLibrary.h>
-#include <Kismet/KismetMathLibrary.h>
 
 #include "FootIkActorComponent.h"
 #include "TPSPlayer.h"
 
+#include <Components/CapsuleComponent.h>
+#include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/KismetMathLibrary.h>
 
 // Sets default values for this component's properties
 UFootIkActorComponent::UFootIkActorComponent()

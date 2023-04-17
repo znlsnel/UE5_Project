@@ -7,6 +7,7 @@
 #include "NiagaraComponent.h"
 #include "CoreMinimal.h"
 #include "WeaponData.generated.h"
+
 /**
  * 
  */
@@ -21,29 +22,40 @@ public:
 UENUM(BlueprintType)
 enum class WeaponType : uint8
 {
-	Pistol,
-	Rifle,
-	Shotgun
+	Pistol		UMETA(DisplayName="Pistol"),
+	Rifle			UMETA(DisplayName = "Rifle"),
+	Shotgun		UMETA(DisplayName = "Shotgun"),
 };
 
 UENUM(BlueprintType)
 enum class AmmoType : uint8
 {
-	PistolAmmo,
-	RifleAmmo,
-	ShotgunAmmo
+	PistolAmmo		UMETA(DisplayName = "PistolAmmo"),
+	RifleAmmo		UMETA(DisplayName = "RifleAmmo"),
+	ShotgunAmmo	UMETA(DisplayName = "ShotgunAmmo"),
 };
 
 UENUM(BlueprintType)
 enum class WeaponSlotType : uint8
 {
-	PrimarySlot, // 주 무기 슬롯
-	SecondarySlot, // 보조 무기 슬롯 
+	PrimarySlot		UMETA(DisplayName = "PrimarySlot"),
+	SecondarySlot	UMETA(DisplayName = "SecondarySlot"),
 };
 
+USTRUCT(BlueprintType)
+struct TPSPROJECT_API FWeaponInfo
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UTexture* Textrue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int ZOrder;
+};
 
 USTRUCT(BlueprintType)
-struct FImpactInfo
+struct TPSPROJECT_API FImpactInfo
 {
 	GENERATED_BODY()
 public:
@@ -62,12 +74,12 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FSpareAmmoInfo
+struct TPSPROJECT_API FSpareAmmoInfo
 {
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TEnumAsByte<AmmoType> ammoType;
+		AmmoType ammoType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int ammo;
@@ -75,3 +87,4 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int maxAmmo;
 };
+

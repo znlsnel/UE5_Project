@@ -10,3 +10,5 @@ WeaponData::WeaponData()
 WeaponData::~WeaponData()
 {
 }
+
+

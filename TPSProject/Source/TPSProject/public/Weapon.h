@@ -1,10 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "WeaponData.h"
+#include <Kismet/KismetSystemLibrary.h>
 #include <Chaos/ChaosEngineInterface.h>
 
+#include "PlayerAnim.h"
+#include "TPSPlayer.h"
+#include "WeaponData.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraDataInterfaceArrayFunctionLibrary.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
@@ -26,10 +31,16 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	virtual void Initialization(class ATPSPlayer* player);
-	
+	virtual void SynchronizeWhitPlayer(ATPSPlayer* player);
+	virtual void Attack();
+	FHitResult LineTrace();
+	void HideWeapon();
+	void UncoverWeapon();
+
 public:
-	class ATPSPlayer* myPlayer;
+	ATPSPlayer* myPlayer;
+	UPlayerAnim* anim;
+	bool isSynchronized = false;
 
 	UPROPERTY(EditAnywhere, category = weaponMesh)
 		class USkeletalMeshComponent* weaponMeshComp;
@@ -73,7 +84,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		TMap<TEnumAsByte<EPhysicalSurface>, FImpactInfo> arrayPhysicalSurface;
-		//TEnumAsByte<EPhysicalSurface> ImpactInfoMap = EPhysicalSurface::SurfaceType1;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		int Ammo;
