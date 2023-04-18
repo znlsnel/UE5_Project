@@ -62,6 +62,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, blueprintReadOnly, Category = IkFoot)
 		class UFootIkActorComponent* IKFootComp;
+
+	UPROPERTY(VisibleAnywhere)
+		class UPickupManager* pickupManager;
 //======================================================================
 
 // Detail =====================================================================

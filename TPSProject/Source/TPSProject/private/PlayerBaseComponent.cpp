@@ -6,7 +6,6 @@
 
 void UPlayerBaseComponent::InitializeComponent()
 {
-
 	me = Cast<ATPSPlayer>(GetOwner());
 	moveComp = me->GetCharacterMovement();
 

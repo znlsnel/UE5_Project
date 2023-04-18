@@ -27,10 +27,11 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-public:
 	// 사용자 입력 맵핑 처리 함수
 	virtual void SetupInputBinding(class UInputComponent* PlayerInputComponent) {};
+
+public:
+
 
 public:
 	UPROPERTY()

@@ -7,11 +7,25 @@
 void AWeapon::SynchronizeWhitPlayer(ATPSPlayer* player)
 {
 	myPlayer = player;
+
+	DiscardWeaponIfAlreadyExists();
+
+
+	RemovePickupCollision();
+
 	SetActorLocation(myPlayer->GetMesh()->GetSocketLocation("hand_rSocket"));
+	
 	AttachToComponent(myPlayer->GetMesh(), FAttachmentTransformRules::KeepWorldTransform, TEXT("hand_rSocket"));
-	SetActorRotation(FRotator(0, -90, 0));
+
+	SetActorRelativeRotation(FRotator(0, 90, 0));
 	anim = Cast<UPlayerAnim>(myPlayer->GetMesh()->GetAnimInstance());
 	isSynchronized = true;
+}
+
+void AWeapon::UnSynchronizeWhitPlayer()
+{
+	DetachRootComponentFromParent();
+	SetActorLocation(myPlayer->GetActorLocation());
 }
 
 void AWeapon::Attack()
@@ -58,7 +72,7 @@ FHitResult AWeapon::LineTrace()
 {
 	FVector TraceStartPoint;
 	FRotator TraceStartRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT TraceStartPoint, TraceStartRotation);
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT TraceStartPoint, OUT TraceStartRotation);
 
 	float traceLength = 5000.f;
 	FVector LineTraceEnd = TraceStartPoint + TraceStartRotation.Vector() * traceLength;
@@ -90,19 +104,59 @@ void AWeapon::UncoverWeapon()
 	weaponMeshComp->SetVisibility(true);
 }
 
+void AWeapon::DiscardWeaponIfAlreadyExists()
+{
+	AWeapon* tempWeapon = myPlayer->playerFire->primaryWeapon;
+
+	tempWeapon = weaponSlotType == WeaponSlotType::PrimarySlot ? myPlayer->playerFire->primaryWeapon : myPlayer->playerFire->secondaryWeapon;
+	
+	if (tempWeapon != nullptr && tempWeapon != this)
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("WTF!?")));
+
+		tempWeapon->UnSynchronizeWhitPlayer();
+	}
+
+	switch (weaponSlotType)
+	{
+	case WeaponSlotType::PrimarySlot:
+		myPlayer->playerFire->primaryWeapon = this;
+		myPlayer->playerFire->EquipPrimaryWeapon();
+		break;
+	case WeaponSlotType::SecondarySlot:
+		myPlayer->playerFire->secondaryWeapon = this;
+		myPlayer->playerFire->EquipSecondaryWeapon();
+		break;
+	}
+}
+
+void AWeapon::CreatePickupCollision()
+{
+	if (pickupCollision)
+		pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+}
+
+void AWeapon::RemovePickupCollision()
+{
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("wow..")));
+
+	if (pickupCollision) 
+		pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+}
+
 // Sets default values
 AWeapon::AWeapon()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+	Tags.Add(TEXT("Weapon"));
+	//CreatePickupCollision();
 }
 
 // Called when the game starts or when spawned
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame

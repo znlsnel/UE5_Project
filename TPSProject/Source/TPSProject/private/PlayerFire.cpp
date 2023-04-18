@@ -69,6 +69,8 @@ void UPlayerFire::InputFire()
 
 void UPlayerFire::EquipSecondaryWeapon()
 {
+	if (secondaryWeapon == nullptr) return;
+
 	currSlot = WeaponSlotType::SecondarySlot;
 	currWeapon = secondaryWeapon->weaponType;
 	EquipWeapon(currSlot);
@@ -76,6 +78,8 @@ void UPlayerFire::EquipSecondaryWeapon()
 
 void UPlayerFire::EquipPrimaryWeapon()
 {
+	if (primaryWeapon == nullptr) return;
+
 	currSlot = WeaponSlotType::PrimarySlot;
 	currWeapon = primaryWeapon->weaponType;
 	EquipWeapon(currSlot);
@@ -112,8 +116,8 @@ void UPlayerFire::InitializeWeapon()
 	secondaryWeapon = GetWorld()->SpawnActor<AWeapon_Pistol>(pistol);
 	secondaryWeapon->SynchronizeWhitPlayer(me);
 
-	primaryWeapon = GetWorld()->SpawnActor<AWeapon_Rifle>(rifle);
-	primaryWeapon->SynchronizeWhitPlayer(me);
+	//primaryWeapon = GetWorld()->SpawnActor<AWeapon_Rifle>(rifle);
+	//primaryWeapon->SynchronizeWhitPlayer(me);
 
 	currWeapon = WeaponType::Pistol;
 	currSlot = WeaponSlotType::SecondarySlot;
@@ -137,13 +141,14 @@ void UPlayerFire::EquipWeapon(WeaponSlotType slotType)
 	switch (slotType)
 	{
 	case WeaponSlotType::PrimarySlot:
-		primaryWeapon->UncoverWeapon();
-		secondaryWeapon->HideWeapon();
+		if (primaryWeapon) primaryWeapon->UncoverWeapon();
+		if (secondaryWeapon) secondaryWeapon->HideWeapon();
 		break;
 	case WeaponSlotType::SecondarySlot:
-		secondaryWeapon->UncoverWeapon();
-		primaryWeapon->HideWeapon();
+		if (secondaryWeapon) secondaryWeapon->UncoverWeapon();
+		if (primaryWeapon) primaryWeapon->HideWeapon();
 		break;
 	}
 	if (me->screenUI) me->screenUI->WeaponSwap();
 }
+

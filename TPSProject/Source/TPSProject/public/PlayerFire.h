@@ -32,6 +32,7 @@ public:
 	class AWeapon* GetWeapon();
 	void EquipWeapon(WeaponSlotType slotType);
 
+
 	bool bSniperAim = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bUsingPistol = true;
@@ -52,7 +53,7 @@ public:
 		TSubclassOf<class AWeapon> shotgun;
 
 	class AWeapon* primaryWeapon;
-	class AWeapon_Pistol* secondaryWeapon;
+	class AWeapon* secondaryWeapon;
 
 	// 카메라 쉐이크
 	UPROPERTY(EditDefaultsOnly, Category = CameraMotion)

@@ -10,6 +10,7 @@
 #include "Gun.h"
 #include "PlayerMove.h"
 #include "PlayerFire.h"
+#include "PickupManager.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -33,6 +34,7 @@ ATPSPlayer::ATPSPlayer()
 		playerMove = CreateDefaultSubobject<UPlayerMove>(TEXT("PlayerMove"));
 		playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
 		IKFootComp = CreateDefaultSubobject<UFootIkActorComponent>(TEXT("IKFootComp"));
+		pickupManager = CreateDefaultSubobject<UPickupManager>(TEXT("PickUpManager"));
 	}
 
 
@@ -116,10 +118,6 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	onInputBindingDelegate.Broadcast(PlayerInputComponent);
-
-	PlayerInputComponent->BindAction(TEXT("PickUp"), IE_Pressed, this, &ATPSPlayer::PickUp);
-	PlayerInputComponent->BindAction(TEXT("PickUp"), IE_Released, this, &ATPSPlayer::PickDown);
-
 }
 
 

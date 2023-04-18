@@ -1,9 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+
+#include <Components/BoxComponent.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Chaos/ChaosEngineInterface.h>
 
+#include "playerFire.h"
 #include "PlayerAnim.h"
 #include "TPSPlayer.h"
 #include "WeaponData.h"
@@ -32,18 +35,25 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	virtual void SynchronizeWhitPlayer(ATPSPlayer* player);
+	void UnSynchronizeWhitPlayer();
 	virtual void Attack();
 	FHitResult LineTrace();
 	void HideWeapon();
 	void UncoverWeapon();
+	void DiscardWeaponIfAlreadyExists();
+	void CreatePickupCollision();
+	void RemovePickupCollision();
 
 public:
 	ATPSPlayer* myPlayer;
 	UPlayerAnim* anim;
 	bool isSynchronized = false;
 
-	UPROPERTY(EditAnywhere, category = weaponMesh)
+	UPROPERTY(VisibleAnywhere, category = weaponMesh)
 		class USkeletalMeshComponent* weaponMeshComp;
+
+	UPROPERTY(VisibleAnywhere)
+		class UBoxComponent* pickupCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
 		 WeaponType weaponType = WeaponType::Pistol;

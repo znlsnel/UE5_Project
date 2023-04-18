@@ -18,4 +18,9 @@ class TPSPROJECT_API UPickUpPB : public UUserWidget
 public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bCompletePickUp = false;
+
+	UPROPERTY(BlueprintReadOnly)
+		class ATPSPlayer* myPlayer;
+
+
 };
