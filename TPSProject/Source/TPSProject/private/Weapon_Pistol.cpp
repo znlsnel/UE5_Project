@@ -14,8 +14,8 @@ void AWeapon_Pistol::SynchronizeWhitPlayer(ATPSPlayer* player)
 AWeapon_Pistol::AWeapon_Pistol()
 {
 	weaponMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComp"));
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("SkeletalMesh'/Game/Assets/Weapons/Pistol/Mesh/SK_Pistol.SK_Pistol'"));
 
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("SkeletalMesh'/Game/Assets/Weapons/Pistol/Mesh/SK_Pistol.SK_Pistol'"));
 	if (tempMesh.Succeeded())
 		weaponMeshComp->SkeletalMesh = tempMesh.Object;
 
@@ -25,7 +25,8 @@ AWeapon_Pistol::AWeapon_Pistol()
 	pickupCollision->SetRelativeScale3D(FVector(0.5, 1.3, 0.6));
 	pickupCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 	pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	weaponMeshComp->SetupAttachment(pickupCollision);
+	RootComponent = pickupCollision;
+	weaponMeshComp->SetupAttachment(RootComponent);
 
 	weaponType = WeaponType::Pistol;
 	ammoType = AmmoType::PistolAmmo;
@@ -34,6 +35,7 @@ AWeapon_Pistol::AWeapon_Pistol()
 	FireBulletCount = 1;
 	FireSpread = 2.0f;
 	attachCharacterSocketName = FName("weapon_r_pistol");
+
 
 
 

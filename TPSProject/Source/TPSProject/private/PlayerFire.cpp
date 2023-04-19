@@ -10,6 +10,7 @@
 #include "TPSPlayer.h"
 #include "EnemyFSM.h"
 #include "Bullet.h"
+#include "PlayerUI.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Kismet/GameplayStatics.h>
@@ -47,6 +48,8 @@ void UPlayerFire::BeginPlay()
 	_crosshairUI = CreateWidget(GetWorld(), crosshairUIFactory);
 	// 일반 조준 UI 등록
 	_crosshairUI->AddToViewport();
+
+
 	controller = GetWorld()->GetFirstPlayerController();
 
 	me->OnInitialization();
@@ -70,7 +73,7 @@ void UPlayerFire::InputFire()
 void UPlayerFire::EquipSecondaryWeapon()
 {
 	if (secondaryWeapon == nullptr) return;
-
+	
 	currSlot = WeaponSlotType::SecondarySlot;
 	currWeapon = secondaryWeapon->weaponType;
 	EquipWeapon(currSlot);
@@ -149,6 +152,7 @@ void UPlayerFire::EquipWeapon(WeaponSlotType slotType)
 		if (primaryWeapon) primaryWeapon->HideWeapon();
 		break;
 	}
-	if (me->screenUI) me->screenUI->WeaponSwap();
+	if (me->playerUI->screenUI) me->playerUI->screenUI->WeaponSwap();
+
 }
 

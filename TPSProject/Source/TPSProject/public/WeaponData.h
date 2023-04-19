@@ -48,8 +48,8 @@ struct TPSPROJECT_API FWeaponInfo
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UTexture* Textrue;
-
+		class UTexture2D* Textrue;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int ZOrder;
 };

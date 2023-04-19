@@ -17,7 +17,7 @@ class TPSPROJECT_API UPlayerAnim : public UAnimInstance
 public:
 	UPlayerAnim();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-	void PlayAttackAnim();
+	void PlayPlayerMontage(class UAnimMontage* animMontage);
 	
 	void UpdateTurn();
 	void UpdateTurnAnimation();

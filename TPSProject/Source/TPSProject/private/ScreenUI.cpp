@@ -6,6 +6,11 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/Image.h>
 
+
+
+
+
+
 void UScreenUI::UpdateScreenUI()
 {
 	hpRatio = static_cast<float>(myPlayer->hp) / static_cast<float>(myPlayer->initialHp);
@@ -14,11 +19,44 @@ void UScreenUI::UpdateScreenUI()
 
 void UScreenUI::Initialization(ATPSPlayer* player)
 {
-	AddToViewport();
 	myPlayer = player;
+
 	myPlayer->tickUpdateFunctions.AddUObject(this, &UScreenUI::UpdateScreenUI);
+
+	
+	AddToViewport();
 	WeaponSwap();
+
 }
+
+void UScreenUI::SetupInputBinding(UInputComponent* PlayerInputComponent)
+{
+	PlayerInputComponent->BindAction(TEXT("Inventory"), IE_Pressed, this, &UScreenUI::ToggleInventory);
+}
+
+void UScreenUI::ToggleInventory()
+{
+	APlayerController* pc = GetWorld()->GetFirstPlayerController();
+
+	if (bOpenInventory)
+	{
+		pc->bShowMouseCursor = false;
+		pc->bEnableClickEvents = false;
+		pc->bEnableMouseOverEvents = false;
+		bOpenInventory = false;
+	}
+	else
+	{
+		pc->bShowMouseCursor = true;
+		pc->bEnableClickEvents = true;
+		pc->bEnableMouseOverEvents = true;
+		bOpenInventory = true;
+	}
+
+	BP_ToggleInventory();
+}
+
+
 
 void UScreenUI::WeaponSwap_Implementation()
 {
@@ -36,7 +74,19 @@ void UScreenUI::WeaponSwap_Implementation()
 		secondaryInfo.ZOrder = 2;
 		break;
 	}
-
 	
+	switch (myPlayer->playerFire->currWeapon)
+	{
+	case WeaponType::Rifle:
+		primaryInfo.Textrue = RifleUI;
+		break;
+	case WeaponType::Shotgun:
+		primaryInfo.Textrue = ShotgunUI;
+		break;
+	}
+	
+	if (myPlayer->playerFire->primaryWeapon == nullptr)
+		primaryInfo.Textrue = TransParentUI;
+
 	UKismetSystemLibrary::PrintString(GetWorld(), tempStr);
 }

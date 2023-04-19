@@ -18,24 +18,29 @@ class TPSPROJECT_API UScreenUI : public UUserWidget
 	GENERATED_BODY()
 
 public:
+
 	void UpdateScreenUI();
 	void Initialization(class ATPSPlayer* player);
-
+	void SetupInputBinding(class UInputComponent* PlayerInputComponent);
+	void ToggleInventory();
 public:
 	class ATPSPlayer* myPlayer;
 
-
+	UPROPERTY(BlueprintReadOnly)
+		bool bOpenInventory = false;
 	UPROPERTY(EditAnywhere, blueprintReadWrite, category = Player)
 		float hpRatio;
 	UPROPERTY(EditAnywhere, blueprintReadWrite, category = Player)
 		FString hpInfo;
 	
 	UPROPERTY(EditAnywhere)
-		UTexture* PistolUI;
+		UTexture2D* PistolUI;
 	UPROPERTY(EditAnywhere)
-		UTexture* RifleUI;
+		UTexture2D* RifleUI;
 	UPROPERTY(EditAnywhere)
-		UTexture* ShotgunUI;
+		UTexture2D* ShotgunUI;
+	UPROPERTY(EditAnywhere)
+		UTexture2D* TransParentUI;
 
 	UPROPERTY(BlueprintReadWrite)
 		FWeaponInfo primaryInfo;
@@ -48,5 +53,8 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 		void WeaponSwap();
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void BP_ToggleInventory();
 
 };

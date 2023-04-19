@@ -54,9 +54,9 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 
 }
 
-void UPlayerAnim::PlayAttackAnim()
+void UPlayerAnim::PlayPlayerMontage(UAnimMontage* animMontage)
 {
-	Montage_Play(player->playerFire->GetWeapon()->CharacterFireAM);
+	Montage_Play(animMontage);
 }
 
 void UPlayerAnim::UpdateTurn()

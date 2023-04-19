@@ -7,6 +7,7 @@
 #include "Weapon_Rifle.h"
 #include "Weapon_Shotgun.h"
 #include "WeaponData.h"
+#include "PickUpPB.h"
 
 #include <Kismet/KismetSystemLibrary.h>
 
@@ -15,6 +16,9 @@ void UPickupManager::SetupInputBinding(UInputComponent* PlayerInputComponent)
 {
 	PlayerInputComponent->BindAction(TEXT("PickUp"), IE_Pressed, this, &UPickupManager::PickupObject<true>);
 	PlayerInputComponent->BindAction(TEXT("PickUp"), IE_Released, this, &UPickupManager::PickupObject<false>);
+
+	_progressBarUI = Cast<UPickUpPB>(CreateWidget(GetWorld(), progressBarUI));
+	_progressBarUI->pickupManager = this;
 }
 
 void UPickupManager::PickupObject(bool isPressed)
@@ -25,23 +29,25 @@ void UPickupManager::PickupObject(bool isPressed)
 
 		FHitResult hitResult = LineTrace();
 
-		AActor* tempActor = hitResult.GetActor();
-		if (hitResult.bBlockingHit && tempActor && tempActor->ActorHasTag(TEXT("Weapon")))
+		tempWeapon = hitResult.GetActor();
+		if (hitResult.bBlockingHit && tempWeapon && tempWeapon->ActorHasTag(TEXT("Weapon")))
 		{
 			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Weapon!")));
 			// 프로그래스바
-			Cast<AWeapon>(tempActor)->SynchronizeWhitPlayer(me);
+			_progressBarUI->AddToViewport();
 		}
 		else
 		{
 			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("NO!")));
+	
 		}
 		
 	}
 	else
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Release")));
-
+		if (_progressBarUI->IsInViewport())
+			_progressBarUI->RemoveFromParent();
 	}
 }
 
@@ -62,4 +68,9 @@ FHitResult UPickupManager::LineTrace()
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(), startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility), true, IgnoreActor, EDrawDebugTrace::None, hitResult, true);
 
 	return hitResult;
+}
+
+void UPickupManager::CompletedProgressBar()
+{
+	Cast<AWeapon>(tempWeapon)->SynchronizeWhitPlayer(me);
 }

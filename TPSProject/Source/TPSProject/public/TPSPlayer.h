@@ -24,7 +24,7 @@ protected:
 	// Called when the game starts or when spawned
 	ATPSPlayer();
 	virtual void BeginPlay() override;
-
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -65,6 +65,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		class UPickupManager* pickupManager;
+
+	UPROPERTY(VisibleAnywhere)
+		class UPlayerUI* playerUI;
 //======================================================================
 
 // Detail =====================================================================
@@ -110,10 +113,7 @@ public:
 
 
 // U I ========================================================================
-	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<class UScreenUI> ScreenUIFactory;
-	UPROPERTY(blueprintReadWrite, category = UI)
-		class UScreenUI* screenUI;
+
 
 
 // ÇÔ¼ö========================================================================

@@ -10,7 +10,6 @@ void AWeapon::SynchronizeWhitPlayer(ATPSPlayer* player)
 
 	DiscardWeaponIfAlreadyExists();
 
-
 	RemovePickupCollision();
 
 	SetActorLocation(myPlayer->GetMesh()->GetSocketLocation("hand_rSocket"));
@@ -25,7 +24,15 @@ void AWeapon::SynchronizeWhitPlayer(ATPSPlayer* player)
 void AWeapon::UnSynchronizeWhitPlayer()
 {
 	DetachRootComponentFromParent();
-	SetActorLocation(myPlayer->GetActorLocation());
+
+	FVector tempPos = myPlayer->GetActorLocation();
+	FRotator tempRot = myPlayer->GetActorRotation();
+	tempPos += myPlayer->GetActorForwardVector() * 50;
+	tempPos.Z = 0;
+	tempRot.Pitch = 0;
+
+	SetActorLocation(tempPos);
+	SetActorRotation(tempRot);
 }
 
 void AWeapon::Attack()
@@ -34,7 +41,7 @@ void AWeapon::Attack()
 
 	weaponMeshComp->PlayAnimation(WeaponFireAnim, false);
 	if (anim) 
-		anim->PlayAttackAnim();
+		anim->PlayPlayerMontage(CharacterFireAM);
 	else
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("No anim")));
@@ -97,11 +104,16 @@ FHitResult AWeapon::LineTrace()
 void AWeapon::HideWeapon()
 {
 	weaponMeshComp->SetVisibility(false);
+
 }
 
 void AWeapon::UncoverWeapon()
 {
 	weaponMeshComp->SetVisibility(true);
+	if (anim)
+	{
+		anim->PlayPlayerMontage(CharacterEquipAM);
+	}
 }
 
 void AWeapon::DiscardWeaponIfAlreadyExists()

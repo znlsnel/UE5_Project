@@ -18,7 +18,8 @@ AWeapon_Rifle::AWeapon_Rifle()
 	pickupCollision->SetRelativeScale3D(FVector(0.5, 1.3, 0.6));
 	pickupCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 	pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	weaponMeshComp->SetupAttachment(pickupCollision);
+	RootComponent = pickupCollision;
+	weaponMeshComp->SetupAttachment(RootComponent);
 
 	weaponType = WeaponType::Rifle;
 	ammoType = AmmoType::RifleAmmo;

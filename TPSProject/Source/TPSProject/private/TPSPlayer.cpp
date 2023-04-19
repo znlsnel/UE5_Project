@@ -11,6 +11,7 @@
 #include "PlayerMove.h"
 #include "PlayerFire.h"
 #include "PickupManager.h"
+#include "PlayerUI.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -35,6 +36,7 @@ ATPSPlayer::ATPSPlayer()
 		playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
 		IKFootComp = CreateDefaultSubobject<UFootIkActorComponent>(TEXT("IKFootComp"));
 		pickupManager = CreateDefaultSubobject<UPickupManager>(TEXT("PickUpManager"));
+		playerUI = CreateDefaultSubobject<UPlayerUI>(TEXT("UI"));
 	}
 
 
@@ -100,9 +102,7 @@ void ATPSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	screenUI = Cast<UScreenUI>(CreateWidget(GetWorld(), ScreenUIFactory));
-	screenUI->Initialization(this);
-	
+
 	hp = initialHp;
 }
 
@@ -117,7 +117,9 @@ void ATPSPlayer::Tick(float DeltaTime)
 void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	
 	onInputBindingDelegate.Broadcast(PlayerInputComponent);
+
 }
 
 

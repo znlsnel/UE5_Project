@@ -21,4 +21,14 @@ public:
 	void PickupObject() { PickupObject(b); }
 	void PickupObject(bool isPressed);
 	FHitResult LineTrace();
+
+	// PrograssBar
+	UPROPERTY(EditDeFaultsOnly, Category = ProgressBar)
+		TSubclassOf<class UPickUpPB> progressBarUI;
+	class UPickUpPB* _progressBarUI;
+
+	AActor* tempWeapon;
+
+	UFUNCTION(BlueprintCallable)
+		void CompletedProgressBar();
 };

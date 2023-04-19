@@ -18,8 +18,9 @@ AWeapon_Shotgun::AWeapon_Shotgun()
 	pickupCollision->SetRelativeScale3D(FVector(0.5, 1.3, 0.6));
 	pickupCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);
 	pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	weaponMeshComp->SetupAttachment(pickupCollision);
-	
+	RootComponent = pickupCollision;
+	weaponMeshComp->SetupAttachment(RootComponent);
+
 	weaponType = WeaponType::Shotgun;
 	ammoType = AmmoType::ShotgunAmmo;
 	weaponSlotType = WeaponSlotType::PrimarySlot;
@@ -34,5 +35,5 @@ AWeapon_Shotgun::AWeapon_Shotgun()
 void AWeapon_Shotgun::SynchronizeWhitPlayer(ATPSPlayer* player)
 {
 	Super::SynchronizeWhitPlayer(player);
-	SetActorRelativeLocation(FVector(17.5, 1.38, 1.13));
+	SetActorRelativeLocation(FVector(13.5, 1.38, 1.13));
 }
