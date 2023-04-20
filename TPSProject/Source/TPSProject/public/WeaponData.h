@@ -25,6 +25,7 @@ enum class WeaponType : uint8
 	Pistol		UMETA(DisplayName="Pistol"),
 	Rifle			UMETA(DisplayName = "Rifle"),
 	Shotgun		UMETA(DisplayName = "Shotgun"),
+	None		UMETA(DisplayName = "Pistol"),
 };
 
 UENUM(BlueprintType)
@@ -33,6 +34,7 @@ enum class AmmoType : uint8
 	PistolAmmo		UMETA(DisplayName = "PistolAmmo"),
 	RifleAmmo		UMETA(DisplayName = "RifleAmmo"),
 	ShotgunAmmo	UMETA(DisplayName = "ShotgunAmmo"),
+	None		UMETA(DisplayName = "Pistol"),
 };
 
 UENUM(BlueprintType)
@@ -40,6 +42,7 @@ enum class WeaponSlotType : uint8
 {
 	PrimarySlot		UMETA(DisplayName = "PrimarySlot"),
 	SecondarySlot	UMETA(DisplayName = "SecondarySlot"),
+	None		UMETA(DisplayName = "Pistol"),
 };
 
 USTRUCT(BlueprintType)
@@ -53,6 +56,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int ZOrder;
 };
+
+USTRUCT(BlueprintType)
+struct TPSPROJECT_API FItemInfoinInventory
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UImage* itemImage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		AmmoType ammoType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		WeaponType weaponType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		WeaponSlotType weaponSlotType;
+};
+
 
 USTRUCT(BlueprintType)
 struct TPSPROJECT_API FImpactInfo

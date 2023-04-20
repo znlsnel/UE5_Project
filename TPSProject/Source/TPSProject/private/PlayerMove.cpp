@@ -2,6 +2,7 @@
 
 
 #include "PlayerMove.h"
+#include "PlayerUI.h"
 #include <Kismet/KismetSystemLibrary.h>
 UPlayerMove::UPlayerMove()
 {
@@ -41,11 +42,15 @@ void UPlayerMove::SetupInputBinding(UInputComponent* PlayerInputComponent)
 
 void UPlayerMove::Turn(float value)
 {
+	if (me->playerUI->isInventoryOpen()) return;
+
 	me->AddControllerYawInput(value);
 }
 
 void UPlayerMove::LookUp(float value)
 {
+	if (me->playerUI->isInventoryOpen()) return;
+
 	me->AddControllerPitchInput(value);
 }
 

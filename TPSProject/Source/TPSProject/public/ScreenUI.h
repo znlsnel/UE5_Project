@@ -26,6 +26,9 @@ public:
 public:
 	class ATPSPlayer* myPlayer;
 
+	UPROPERTY(EditAnywhere, blueprintReadWrite, Category = Inventory)
+		class UInventory* inventory;
+
 	UPROPERTY(BlueprintReadOnly)
 		bool bOpenInventory = false;
 	UPROPERTY(EditAnywhere, blueprintReadWrite, category = Player)

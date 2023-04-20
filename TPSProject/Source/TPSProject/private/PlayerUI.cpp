@@ -4,14 +4,11 @@
 #include "PlayerUI.h"
 #include "ScreenUI.h"
 
-void UPlayerUI::InitializeComponent()
+
+bool UPlayerUI::isInventoryOpen()
 {
-	Super::InitializeComponent();
-
-	me->onInputBindingDelegate.AddUObject(this, &UPlayerUI::SetupInputBinding);
-
+	return screenUI->bOpenInventory;
 }
-
 void UPlayerUI::BeginPlay()
 {
 	Super::BeginPlay();
@@ -23,6 +20,8 @@ void UPlayerUI::SetupInputBinding(UInputComponent* PlayerInputComponent)
 {
 	PlayerInputComponent->BindAction(TEXT("Inventory"), IE_Pressed, this, &UPlayerUI::ToggleInventory);
 }
+
+
 
 void UPlayerUI::ToggleInventory()
 {

@@ -15,14 +15,16 @@ class TPSPROJECT_API UPlayerUI : public UPlayerBaseComponent
 	GENERATED_BODY()
 	
 public:
-	virtual void InitializeComponent() override;
 	virtual void BeginPlay()override;
 	virtual void SetupInputBinding(class UInputComponent* PlayerInputComponent)override;
+	bool isInventoryOpen();
+
 public:
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<class UScreenUI> ScreenUIFactory;
 	UPROPERTY(blueprintReadWrite, category = UI)
 		class UScreenUI* screenUI;
+
 
 	
 	void ToggleInventory();
