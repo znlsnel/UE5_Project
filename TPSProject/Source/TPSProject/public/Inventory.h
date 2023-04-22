@@ -17,18 +17,24 @@ public: // 함수
 	UInventory(const FObjectInitializer &ObjectInitializer);
 	UFUNCTION(BlueprintCallable)
 		void SyncInventorySlot(TArray<class UWidget*> arry);
-
-	void TestFunction();
-	class UImage* testImage;
+	
+	void UpdateInventory();
+	void Initialization(class ATPSPlayer* player);
+	void AddItemToInventory(class AItem* Item);
+	void DestructPopup();
 
 public: // 변수
-	class ATPSPlayer* myPlayer;
+	class UTexture2D* testTexture;
+	UPROPERTY(BlueprintReadOnly)
+		class ATPSPlayer* myPlayer;
+	int32 top = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = Inventory)
 	TArray<class UInventorySlot*> InventorySlotArray;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = Inventory)
 	TArray<class UInventorySlot*> equipmentSlot;
+	class UInventorySlotPopup* InventorySlotPopup;
 
 	int InventorySize = 10;
 };

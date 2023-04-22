@@ -27,7 +27,7 @@ public:
 		TSubclassOf<class UPickUpPB> progressBarUI;
 	class UPickUpPB* _progressBarUI;
 
-	AActor* tempWeapon;
+	class AItem* pickupItem;
 
 	UFUNCTION(BlueprintCallable)
 		void CompletedProgressBar();

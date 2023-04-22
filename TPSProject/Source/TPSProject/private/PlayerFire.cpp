@@ -65,7 +65,11 @@ void UPlayerFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 void UPlayerFire::InputFire()
 {
-	if (me->playerUI->isInventoryOpen()) return;
+	if (me->playerUI->isInventoryOpen())
+	{
+		me->playerUI->GetMouseInput();
+		return;
+	}
 	AWeapon* tempWeapon = GetWeapon();
 	if (tempWeapon) tempWeapon->Attack();
 

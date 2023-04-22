@@ -17,10 +17,18 @@ class TPSPROJECT_API UInventorySlot : public UUserWidget
 	
 public: // 함수
 	UFUNCTION(BlueprintImplementableEvent)
-		void testChangeImage();
+		void UpdateInventory();
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ItemInfo)
-		FItemInfoinInventory ItemInfo;
+public:// 변수
+	UPROPERTY(BlueprintReadOnly)
+		class UInventory* Inventory;
 
+	UPROPERTY(BlueprintReadOnly)
+		ItemType itemType = ItemType::Ammo;
+
+	UPROPERTY(BlueprintReadWrite) 
+		class UTexture2D* ItemIcon;
+	
+	class AActor* Item;
+	
 };

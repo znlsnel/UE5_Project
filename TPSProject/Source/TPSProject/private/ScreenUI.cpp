@@ -24,7 +24,8 @@ void UScreenUI::Initialization(ATPSPlayer* player)
 
 	myPlayer->tickUpdateFunctions.AddUObject(this, &UScreenUI::UpdateScreenUI);
 	inventory = CreateWidget<UInventory>(GetWorld());
-	
+	inventory->Initialization(myPlayer);
+
 	AddToViewport();
 	WeaponSwap();
 

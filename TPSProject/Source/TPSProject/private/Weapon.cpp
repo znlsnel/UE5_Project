@@ -42,10 +42,7 @@ void AWeapon::Attack()
 	weaponMeshComp->PlayAnimation(WeaponFireAnim, false);
 	if (anim) 
 		anim->PlayPlayerMontage(CharacterFireAM);
-	else
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("No anim")));
-	}
+
 
 	GetWorld()->GetFirstPlayerController()-> PlayerCameraManager->StartCameraShake(FireCamShakeClass);
 
@@ -124,8 +121,6 @@ void AWeapon::DiscardWeaponIfAlreadyExists()
 	
 	if (tempWeapon != nullptr && tempWeapon != this)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("WTF!?")));
-
 		tempWeapon->UnSynchronizeWhitPlayer();
 	}
 
@@ -150,8 +145,6 @@ void AWeapon::CreatePickupCollision()
 
 void AWeapon::RemovePickupCollision()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("wow..")));
-
 	if (pickupCollision) 
 		pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 }
@@ -162,6 +155,8 @@ AWeapon::AWeapon()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Tags.Add(TEXT("Weapon"));
+
+	itemType = ItemType::Weapon;
 	//CreatePickupCollision();
 }
 

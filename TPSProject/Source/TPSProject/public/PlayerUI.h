@@ -18,6 +18,7 @@ public:
 	virtual void BeginPlay()override;
 	virtual void SetupInputBinding(class UInputComponent* PlayerInputComponent)override;
 	bool isInventoryOpen();
+	void GetMouseInput();
 
 public:
 	UPROPERTY(EditDefaultsOnly)
@@ -25,7 +26,5 @@ public:
 	UPROPERTY(blueprintReadWrite, category = UI)
 		class UScreenUI* screenUI;
 
-
-	
 	void ToggleInventory();
 };

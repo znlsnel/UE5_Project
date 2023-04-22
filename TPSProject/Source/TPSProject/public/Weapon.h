@@ -6,6 +6,7 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include <Chaos/ChaosEngineInterface.h>
 
+#include "Item.h"
 #include "playerFire.h"
 #include "PlayerAnim.h"
 #include "TPSPlayer.h"
@@ -19,7 +20,7 @@
 
 
 UCLASS()
-class TPSPROJECT_API AWeapon : public AActor
+class TPSPROJECT_API AWeapon : public AItem
 {
 	GENERATED_BODY()
 	
@@ -52,6 +53,7 @@ public:
 	UPROPERTY(VisibleAnywhere, category = weaponMesh)
 		class USkeletalMeshComponent* weaponMeshComp;
 
+
 	UPROPERTY(VisibleAnywhere)
 		class UBoxComponent* pickupCollision;
 
@@ -64,11 +66,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
 		WeaponSlotType weaponSlotType = WeaponSlotType::SecondarySlot;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = WeaponTypes)
-		UTexture* weaponIcon;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = WeaponTypes)
-		UTexture* ammoIcon;
+		UTexture2D* ammoIcon;
 
 	// ÃÑÀ» ½ð ÈÄ ´Ù½Ã ÃÑÀ» ½ò¼ö ÀÖÀ» ¶§±îÁöÀÇ µô·¹ÀÌ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)

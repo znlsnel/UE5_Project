@@ -8,6 +8,10 @@
 #include "Weapon_Shotgun.h"
 #include "WeaponData.h"
 #include "PickUpPB.h"
+#include "PlayerUI.h"
+#include "ScreenUI.h"
+#include "Inventory.h"
+#include "Item.h"
 
 #include <Kismet/KismetSystemLibrary.h>
 
@@ -25,27 +29,18 @@ void UPickupManager::PickupObject(bool isPressed)
 {
 	if (isPressed)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Press!")));
-
 		FHitResult hitResult = LineTrace();
 
-		tempWeapon = hitResult.GetActor();
-		if (hitResult.bBlockingHit && tempWeapon && tempWeapon->ActorHasTag(TEXT("Weapon")))
+		pickupItem = Cast<AItem>(hitResult.GetActor());
+		if (pickupItem && pickupItem->ActorHasTag(TEXT("Item")))
 		{
-			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Weapon!")));
-			// 프로그래스바
 			_progressBarUI->AddToViewport();
 		}
-		else
-		{
-			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("NO!")));
-	
-		}
+
 		
 	}
 	else
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Release")));
 		if (_progressBarUI->IsInViewport())
 			_progressBarUI->RemoveFromParent();
 	}
@@ -72,5 +67,8 @@ FHitResult UPickupManager::LineTrace()
 
 void UPickupManager::CompletedProgressBar()
 {
-	Cast<AWeapon>(tempWeapon)->SynchronizeWhitPlayer(me);
+	if (pickupItem == nullptr) return;
+	
+	me->playerUI->screenUI->inventory->AddItemToInventory(pickupItem);
+	//Cast<AWeapon>(pickupItem)->SynchronizeWhitPlayer(me);
 }

@@ -18,8 +18,8 @@ public class TPSProject : ModuleRules
 			"NavigationSystem", 
 			"AIModule",
 			"Niagara",
-			"PhysicsCore"
-			
+			"PhysicsCore",
+			"SlateCore"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
