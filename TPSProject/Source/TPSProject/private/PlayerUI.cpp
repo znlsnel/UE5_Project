@@ -31,9 +31,6 @@ void UPlayerUI::GetMouseInput()
 {
 	FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
 
-	ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
-	UGameViewportClient* ViewportClient = GetWorld()->GetGameViewport();
-
 	UWidget* tempWidget = screenUI->inventory->InventorySlotPopup;
 
 	if (tempWidget && tempWidget->IsVisible())
@@ -41,11 +38,9 @@ void UPlayerUI::GetMouseInput()
 		FGeometry Geometry = tempWidget->GetCachedGeometry();
 
 		if (!Geometry.IsUnderLocation(MousePosition))
-			screenUI->inventory->DestructPopup();
-			
-		
+			screenUI->inventory->DisablePopup();
 	}
-	
+
 }
 
 

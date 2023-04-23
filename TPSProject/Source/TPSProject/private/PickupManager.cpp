@@ -34,6 +34,7 @@ void UPickupManager::PickupObject(bool isPressed)
 		pickupItem = Cast<AItem>(hitResult.GetActor());
 		if (pickupItem && pickupItem->ActorHasTag(TEXT("Item")))
 		{
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("PickUpObject"));
 			_progressBarUI->AddToViewport();
 		}
 
@@ -69,6 +70,7 @@ void UPickupManager::CompletedProgressBar()
 {
 	if (pickupItem == nullptr) return;
 	
-	me->playerUI->screenUI->inventory->AddItemToInventory(pickupItem);
+	pickupItem->myPlayer = me;
+	me->GetInventory()->AddItemToInventory(pickupItem);
 	//Cast<AWeapon>(pickupItem)->SynchronizeWhitPlayer(me);
 }

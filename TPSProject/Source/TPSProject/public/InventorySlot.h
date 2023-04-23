@@ -18,8 +18,11 @@ class TPSPROJECT_API UInventorySlot : public UUserWidget
 public: // 함수
 	UFUNCTION(BlueprintImplementableEvent)
 		void UpdateInventory();
+	void RemoveItemFromInventory();
 
 public:// 변수
+	bool isInUse = false;
+	
 	UPROPERTY(BlueprintReadOnly)
 		class UInventory* Inventory;
 
@@ -29,6 +32,6 @@ public:// 변수
 	UPROPERTY(BlueprintReadWrite) 
 		class UTexture2D* ItemIcon;
 	
-	class AActor* Item;
+	class AItem* Item;
 	
 };

@@ -23,8 +23,10 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void DropItemOnGround();
 
 public:
+	class ATPSPlayer* myPlayer;
 	ItemType itemType;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = WeaponTypes)
 		UTexture2D* ItemIcon;

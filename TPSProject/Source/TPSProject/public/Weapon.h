@@ -44,9 +44,9 @@ public:
 	void DiscardWeaponIfAlreadyExists();
 	void CreatePickupCollision();
 	void RemovePickupCollision();
+	void Reload();
 
 public:
-	ATPSPlayer* myPlayer;
 	UPlayerAnim* anim;
 	bool isSynchronized = false;
 
@@ -96,6 +96,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		TMap<TEnumAsByte<EPhysicalSurface>, FImpactInfo> arrayPhysicalSurface;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
+		int currAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		int Ammo;
@@ -109,6 +111,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		UAnimMontage* CharacterADSFireAM;
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		UAnimMontage* CharacterReloadAM;
 
@@ -121,4 +124,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		UAnimationAsset* WeaponReloadAnim;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
+		USoundBase* weaponDryClick;
 };

@@ -178,6 +178,11 @@ void ATPSPlayer::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	}
 }
 
+UInventory* ATPSPlayer::GetInventory()
+{
+	return playerUI->screenUI->inventory;
+}
+
 
 
 

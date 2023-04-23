@@ -2,6 +2,7 @@
 
 
 #include "Item.h"
+#include "TPSPlayer.h"
 
 // Sets default values
 AItem::AItem()
@@ -23,5 +24,19 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AItem::DropItemOnGround()
+{
+	//DetachRootComponentFromParent();
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	FVector tempPos = myPlayer->GetActorLocation();
+	FRotator tempRot = myPlayer->GetActorRotation();
+	tempPos += myPlayer->GetActorForwardVector() * 50;
+	tempPos.Z = 0;
+	tempRot.Pitch = 0;
+
+	SetActorLocation(tempPos);
+	SetActorRotation(tempRot);
 }
 

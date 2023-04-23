@@ -28,7 +28,7 @@ public:
 	void EquipPrimaryWeapon();					// 주무기 장착
 	void SniperAim();					// 스코프 모드
 	void InitializeWeapon();
-
+	void LoadBullet();
 	class AWeapon* GetWeapon();
 	void EquipWeapon(WeaponSlotType slotType);
 

@@ -125,6 +125,6 @@ public:
 		void OnInitialization();
 	//UFUNCTION(BlueprintImplementableEvent, Category = Effect)
 	//	void FireEffect();
-
+	class UInventory* GetInventory();
 	//
 };

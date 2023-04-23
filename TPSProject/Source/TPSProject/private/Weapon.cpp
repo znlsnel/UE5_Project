@@ -1,15 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Weapon.h"
+#include "Inventory.h"
 
 #include <Kismet/KismetSystemLibrary.h>
-
+#include <Kismet/GameplayStatics.h>
 void AWeapon::SynchronizeWhitPlayer(ATPSPlayer* player)
 {
 	myPlayer = player;
-
+	SetActorHiddenInGame(false);
 	DiscardWeaponIfAlreadyExists();
-
 	RemovePickupCollision();
 
 	SetActorLocation(myPlayer->GetMesh()->GetSocketLocation("hand_rSocket"));
@@ -19,25 +19,30 @@ void AWeapon::SynchronizeWhitPlayer(ATPSPlayer* player)
 	SetActorRelativeRotation(FRotator(0, 90, 0));
 	anim = Cast<UPlayerAnim>(myPlayer->GetMesh()->GetAnimInstance());
 	isSynchronized = true;
+	currAmmo = FMath::Min(Ammo, MagazineSize);
+
 }
 
 void AWeapon::UnSynchronizeWhitPlayer()
 {
-	DetachRootComponentFromParent();
+	//DetachRootComponentFromParent();
+	UInventory* inventory = myPlayer->GetInventory();
 
-	FVector tempPos = myPlayer->GetActorLocation();
-	FRotator tempRot = myPlayer->GetActorRotation();
-	tempPos += myPlayer->GetActorForwardVector() * 50;
-	tempPos.Z = 0;
-	tempRot.Pitch = 0;
+	bool bItemAdded = inventory->AddItemToInventory(this);
+	
+	if (bItemAdded == false)
+		DropItemOnGround();
 
-	SetActorLocation(tempPos);
-	SetActorRotation(tempRot);
 }
 
 void AWeapon::Attack()
 {
 	if (isSynchronized == false) return;
+	if (currAmmo == 0)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, weaponDryClick, myPlayer->GetActorLocation());
+		return;
+	}
 
 	weaponMeshComp->PlayAnimation(WeaponFireAnim, false);
 	if (anim) 
@@ -69,6 +74,8 @@ void AWeapon::Attack()
 		tempTracer->SetNiagaraVariablePosition(FString("User.MuzzlePostion"), weaponMeshComp->GetSocketLocation("Muzzle"));
 			
 	}
+
+	if (currAmmo) currAmmo--;
 }
 
 // Trace From Camera
@@ -147,6 +154,20 @@ void AWeapon::RemovePickupCollision()
 {
 	if (pickupCollision) 
 		pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+}
+
+void AWeapon::Reload()
+{
+	if (Ammo == 0) return;
+	int capacity = FMath::Min(FMath::Min(MagazineSize - -currAmmo, Ammo), MagazineSize);
+
+	currAmmo += capacity;
+	Ammo -= capacity;
+
+	if (anim)
+		anim->PlayPlayerMontage(CharacterReloadAM);
+	weaponMeshComp->PlayAnimation(WeaponReloadAnim, false);
+
 }
 
 // Sets default values

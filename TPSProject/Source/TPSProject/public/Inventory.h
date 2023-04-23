@@ -20,14 +20,14 @@ public: // 함수
 	
 	void UpdateInventory();
 	void Initialization(class ATPSPlayer* player);
-	void AddItemToInventory(class AItem* Item);
-	void DestructPopup();
+	bool AddItemToInventory(class AItem* Item);
+	void DisablePopup();
+	class UInventorySlot* FindFirstEmptySlot();
 
 public: // 변수
 	class UTexture2D* testTexture;
 	UPROPERTY(BlueprintReadOnly)
 		class ATPSPlayer* myPlayer;
-	int32 top = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = Inventory)
 	TArray<class UInventorySlot*> InventorySlotArray;

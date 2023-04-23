@@ -23,6 +23,7 @@ enum class ItemType : uint8
 {
 	Weapon		UMETA(DisplayName = "Weapon"),
 	Ammo		UMETA(DisplayName = "Ammo"),
+	None		UMETA(DisplayName = "None"),
 };
 
 UENUM(BlueprintType)

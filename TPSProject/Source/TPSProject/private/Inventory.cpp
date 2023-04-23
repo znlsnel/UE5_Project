@@ -6,6 +6,7 @@
 #include "InventorySlot.h"
 #include "InventorySlotPopup.h"
 #include "Item.h"
+#include "Weapon.h"
 
 #include <Styling/SlateBrush.h>
 #include <Engine/Texture2D.h>
@@ -44,22 +45,59 @@ void UInventory::Initialization(ATPSPlayer* player)
 	myPlayer = player;
 }
 
-void UInventory::AddItemToInventory(AItem* Item)
+bool UInventory::AddItemToInventory(AItem* Item)
 {
-	UInventorySlot* tempSlot = InventorySlotArray[top++];
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("AddITem! Index : %d"), top - 1));
+	bool isEquipable = false;
+	if (Item->itemType == ItemType::Weapon)
+	{
+		AWeapon* weapon = Cast<AWeapon>(Item);
 
-	tempSlot->Item = Item;
-	tempSlot->itemType = Item->itemType;
-	tempSlot->ItemIcon = Item->ItemIcon;
-	tempSlot->UpdateInventory();
+		switch (weapon->weaponSlotType)
+		{
+		case WeaponSlotType::PrimarySlot:
+			if (myPlayer->playerFire->primaryWeapon == nullptr) 
+				isEquipable = true;
+			break;
+		case WeaponSlotType::SecondarySlot:
+			if (myPlayer->playerFire->secondaryWeapon == nullptr)
+				isEquipable = true;
+			break;
+		}
+	}
+
+	if (isEquipable)
+	{
+		AWeapon* weapon = Cast<AWeapon>(Item);
+		weapon->SynchronizeWhitPlayer(myPlayer);
+	}
+	else
+	{
+		UInventorySlot* tempSlot = FindFirstEmptySlot();
+		if (tempSlot == nullptr) return false;
+		tempSlot->Item = Item;
+		tempSlot->itemType = Item->itemType;
+		tempSlot->ItemIcon = Item->ItemIcon;
+		tempSlot->isInUse = true;
+		tempSlot->UpdateInventory();
+		Item->SetActorHiddenInGame(true);
+	}
+	return true;
+
 }
 
-void UInventory::DestructPopup()
+void UInventory::DisablePopup()
 {
-	if (InventorySlotPopup)
+	if (InventorySlotPopup && InventorySlotPopup->IsInViewport())
 	{
 		InventorySlotPopup->RemoveFromParent();
-		InventorySlotPopup->Destruct();
 	}
+}
+
+UInventorySlot* UInventory::FindFirstEmptySlot()
+{
+	for (auto slot : InventorySlotArray)
+	{
+		if (slot->isInUse == false) return slot;
+	}
+	return nullptr;
 }

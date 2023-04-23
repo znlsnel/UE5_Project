@@ -33,6 +33,7 @@ UPlayerFire::UPlayerFire()
 void UPlayerFire::SetupInputBinding(UInputComponent* PlayerInputComponent)
 {
 	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &UPlayerFire::InputFire);
+	PlayerInputComponent->BindAction(TEXT("Reload"), IE_Pressed, this, &UPlayerFire::LoadBullet);
 	PlayerInputComponent->BindAction(TEXT("GetPistol"), IE_Pressed, this, &UPlayerFire::EquipSecondaryWeapon);
 	PlayerInputComponent->BindAction(TEXT("GetRiple"), IE_Pressed, this, &UPlayerFire::EquipPrimaryWeapon);
 	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Pressed, this, &UPlayerFire::SniperAim);
@@ -73,6 +74,12 @@ void UPlayerFire::InputFire()
 	AWeapon* tempWeapon = GetWeapon();
 	if (tempWeapon) tempWeapon->Attack();
 
+}
+
+void UPlayerFire::LoadBullet()
+{
+	AWeapon* tempWeapon = GetWeapon();
+	if (tempWeapon) tempWeapon->Reload();
 }
 
 void UPlayerFire::EquipSecondaryWeapon()
@@ -131,6 +138,8 @@ void UPlayerFire::InitializeWeapon()
 	currSlot = WeaponSlotType::SecondarySlot;
 	EquipWeapon(currSlot);
 }
+
+
 
 AWeapon* UPlayerFire::GetWeapon()
 {

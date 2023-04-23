@@ -60,4 +60,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void BP_ToggleInventory();
 
+	UFUNCTION(BlueprintCallable)
+		FString UpdateAmmoCount();
 };

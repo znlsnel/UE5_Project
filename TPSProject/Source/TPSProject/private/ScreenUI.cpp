@@ -3,6 +3,7 @@
 #include "PlayerFire.h"
 #include "TPSPlayer.h"
 #include "Inventory.h"
+#include "Weapon.h"
 
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/Image.h>
@@ -58,6 +59,14 @@ void UScreenUI::ToggleInventory()
 	}
 
 	BP_ToggleInventory();
+}
+
+FString UScreenUI::UpdateAmmoCount()
+{
+	AWeapon* weapon = myPlayer->playerFire->GetWeapon();
+	FString ammoString = FString::Printf(TEXT("%d / %d"), weapon->currAmmo, weapon->Ammo);
+
+	return ammoString;
 }
 
 
