@@ -24,10 +24,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void DropItemOnGround();
+	void CreatePickupCollision();
+	void RemovePickupCollision();
 
 public:
 	class ATPSPlayer* myPlayer;
 	ItemType itemType;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = WeaponTypes)
 		UTexture2D* ItemIcon;
+
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* pickupCollision;
+
 };

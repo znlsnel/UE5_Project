@@ -3,14 +3,19 @@
 
 #include "InventorySlot.h"
 #include "Item.h"
+#include <Containers/Array.h>
 
 void UInventorySlot::RemoveItemFromInventory()
 {
-	Item->SetActorHiddenInGame(false);
-	itemType = ItemType::None;
-	ItemIcon = nullptr;
-	Item = nullptr;
-	isInUse = false;
+	//Items.Last()->SetActorHiddenInGame(false);
+	Items.Pop();
 
-	UpdateInventory();
+	if (--itemCount == false)
+	{
+		itemType = ItemType::None;
+		ItemIcon = nullptr;
+		isInUse = false;
+		UpdateInventory();
+	}
+
 }

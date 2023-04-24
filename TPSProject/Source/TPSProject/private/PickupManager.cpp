@@ -31,6 +31,13 @@ void UPickupManager::PickupObject(bool isPressed)
 	{
 		FHitResult hitResult = LineTrace();
 
+		float length = FVector::Dist(me->GetActorLocation(), hitResult.ImpactPoint);
+
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Length : %f"), length));
+
+		if (length > pickupRange) return;
+
+		
 		pickupItem = Cast<AItem>(hitResult.GetActor());
 		if (pickupItem && pickupItem->ActorHasTag(TEXT("Item")))
 		{
@@ -59,7 +66,7 @@ FHitResult UPickupManager::LineTrace()
 
 	FHitResult hitResult;
 	TArray<AActor*> IgnoreActor;
-	IgnoreActor.Add(me);
+	IgnoreActor.Add(GetOwner());
 
 	UKismetSystemLibrary::LineTraceSingle(GetWorld(), startPoint, endPoint, UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility), true, IgnoreActor, EDrawDebugTrace::None, hitResult, true);
 

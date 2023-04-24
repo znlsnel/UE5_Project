@@ -27,11 +27,13 @@ public:// º¯¼ö
 		class UInventory* Inventory;
 
 	UPROPERTY(BlueprintReadOnly)
-		ItemType itemType = ItemType::Ammo;
+		ItemType itemType = ItemType::None;
 
 	UPROPERTY(BlueprintReadWrite) 
 		class UTexture2D* ItemIcon;
 	
-	class AItem* Item;
-	
+	TArray<class AItem*> Items;
+
+	UPROPERTY(BlueprintReadWrite)
+		int itemCount = 0;
 };

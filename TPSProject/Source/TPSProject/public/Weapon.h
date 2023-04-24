@@ -42,8 +42,6 @@ public:
 	void HideWeapon();
 	void UncoverWeapon();
 	void DiscardWeaponIfAlreadyExists();
-	void CreatePickupCollision();
-	void RemovePickupCollision();
 	void Reload();
 
 public:
@@ -54,8 +52,6 @@ public:
 		class USkeletalMeshComponent* weaponMeshComp;
 
 
-	UPROPERTY(VisibleAnywhere)
-		class UBoxComponent* pickupCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
 		 WeaponType weaponType = WeaponType::Pistol;

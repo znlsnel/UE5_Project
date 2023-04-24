@@ -83,7 +83,7 @@ struct SkeletonIKTraceInfo UFootIkActorComponent::FootTrace(float TraceDistance,
 
 	bool bDebug = true;
 	EDrawDebugTrace::Type eDebug = EDrawDebugTrace::None;
-	if (bDebug == true) eDebug = EDrawDebugTrace::ForOneFrame;
+	if (bDebug == true) eDebug = EDrawDebugTrace::None;
 
 
 	bool bResult = UKismetSystemLibrary::LineTraceSingle(GetWorld(), startPoint, endPoint,

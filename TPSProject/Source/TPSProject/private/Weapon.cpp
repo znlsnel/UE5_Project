@@ -60,8 +60,10 @@ void AWeapon::Attack()
 
 	UNiagaraComponent* tempTracer =  UNiagaraFunctionLibrary::SpawnSystemAttached(TracerNS, weaponMeshComp, TEXT(""), weaponMeshComp->GetSocketLocation(TEXT("Muzzle")), FRotator(0, 0, 0), EAttachLocation::KeepWorldPosition, true);
 
+
 	if (tempTracer)
 	{
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Tracer")));
 		tempTracer->SetNiagaraVariableBool(FString("User.Trigger"), true);
 
 		FVector tempPos = pHitResult.bBlockingHit ? pHitResult.ImpactPoint : pHitResult.TraceEnd;
@@ -101,7 +103,7 @@ FHitResult AWeapon::LineTrace()
 
 	isHit = UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStartPoint, LineTraceEnd, UEngineTypes::ConvertToTraceType(ECC_Visibility), true, pIgnore, EDrawDebugTrace::None, pHitResult, true);
 
-
+	
 	return pHitResult;
 }
 
@@ -144,22 +146,11 @@ void AWeapon::DiscardWeaponIfAlreadyExists()
 	}
 }
 
-void AWeapon::CreatePickupCollision()
-{
-	if (pickupCollision)
-		pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-}
-
-void AWeapon::RemovePickupCollision()
-{
-	if (pickupCollision) 
-		pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
-}
 
 void AWeapon::Reload()
 {
 	if (Ammo == 0) return;
-	int capacity = FMath::Min(FMath::Min(MagazineSize - -currAmmo, Ammo), MagazineSize);
+	int capacity = FMath::Min(FMath::Min(MagazineSize - currAmmo, Ammo), MagazineSize);
 
 	currAmmo += capacity;
 	Ammo -= capacity;

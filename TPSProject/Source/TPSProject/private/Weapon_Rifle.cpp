@@ -13,7 +13,6 @@ AWeapon_Rifle::AWeapon_Rifle()
 		weaponMeshComp->SkeletalMesh = tempMesh.Object;
 
 	pickupCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
-
 	pickupCollision->SetRelativeLocation(FVector(0, 9, 0));
 	pickupCollision->SetRelativeScale3D(FVector(0.5, 1.3, 0.6));
 	pickupCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldStatic);

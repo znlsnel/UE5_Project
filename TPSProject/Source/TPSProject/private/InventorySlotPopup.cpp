@@ -5,6 +5,7 @@
 #include "InventorySlot.h"
 #include "Inventory.h"
 #include "Weapon.h"
+#include "AmmoBox.h"
 
 #include <Blueprint/WidgetLayoutLibrary.h>
 
@@ -16,7 +17,7 @@ void UInventorySlotPopup::InitializePopup(UInventorySlot* InventorySlot)
 	myInventorySlot = InventorySlot;
 	myInventorySlot->Inventory->DisablePopup();
 
-	if (myInventorySlot->Item == nullptr) return;
+	if (myInventorySlot->Items[0] == nullptr) return;
 	AddToViewport();
 	
 	FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
@@ -35,14 +36,17 @@ void UInventorySlotPopup::EquipOrUseItem()
 	{
 	case ItemType::Weapon:
 	{
-		AWeapon* weapon = Cast<AWeapon>(myInventorySlot->Item);
+		AWeapon* weapon = Cast<AWeapon>(myInventorySlot->Items.Last());
 		myInventorySlot->RemoveItemFromInventory();
 		weapon->SynchronizeWhitPlayer(myInventorySlot->Inventory->myPlayer);
 	}
 		break;
 	case ItemType::Ammo:
-		myInventorySlot->RemoveItemFromInventory();
-
+	{
+		AAmmoBox* ammoBox = Cast<AAmmoBox>(myInventorySlot->Items.Last());
+		bool isAmmoBoxUsed = ammoBox->UseAmmoBox();
+		if (isAmmoBoxUsed) myInventorySlot->RemoveItemFromInventory();
+	}
 		break;
 	}
 	RemoveFromParent();
@@ -50,7 +54,7 @@ void UInventorySlotPopup::EquipOrUseItem()
 
 void UInventorySlotPopup::ThrowingItem()
 {
-	myInventorySlot->Item->DropItemOnGround();
+	myInventorySlot->Items.Last()->DropItemOnGround();
 	myInventorySlot->RemoveItemFromInventory();
 	RemoveFromParent();
 

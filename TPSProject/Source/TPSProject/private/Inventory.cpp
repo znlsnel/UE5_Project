@@ -7,6 +7,7 @@
 #include "InventorySlotPopup.h"
 #include "Item.h"
 #include "Weapon.h"
+#include "AmmoBox.h"
 
 #include <Styling/SlateBrush.h>
 #include <Engine/Texture2D.h>
@@ -64,6 +65,11 @@ bool UInventory::AddItemToInventory(AItem* Item)
 			break;
 		}
 	}
+	else if (Item->itemType == ItemType::Ammo)
+	{
+
+	}
+
 
 	if (isEquipable)
 	{
@@ -72,12 +78,14 @@ bool UInventory::AddItemToInventory(AItem* Item)
 	}
 	else
 	{
-		UInventorySlot* tempSlot = FindFirstEmptySlot();
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("GetItem"));
+		UInventorySlot* tempSlot = FindFirstEmptySlot(Item);
 		if (tempSlot == nullptr) return false;
-		tempSlot->Item = Item;
+		tempSlot->Items.Push(Item);
 		tempSlot->itemType = Item->itemType;
 		tempSlot->ItemIcon = Item->ItemIcon;
 		tempSlot->isInUse = true;
+		tempSlot->itemCount++;
 		tempSlot->UpdateInventory();
 		Item->SetActorHiddenInGame(true);
 	}
@@ -93,11 +101,31 @@ void UInventory::DisablePopup()
 	}
 }
 
-UInventorySlot* UInventory::FindFirstEmptySlot()
+UInventorySlot* UInventory::FindFirstEmptySlot(AItem* item)
 {
+	bool isFindedMatch = false;
+	for (auto slot : InventorySlotArray)
+	{
+		if (slot->itemType == item->itemType)
+		{
+			if (item->itemType == ItemType::Weapon && Cast<AWeapon>(slot->Items[0])->weaponType
+				== Cast<AWeapon>(item)->weaponType) isFindedMatch = true;
+			
+			else if (item->itemType == ItemType::Ammo && Cast<AAmmoBox>(slot->Items[0])->ammoType
+				== Cast<AAmmoBox>(item)->ammoType) isFindedMatch = true;
+		}
+		if (isFindedMatch)
+		{
+			return slot;
+		}
+	}
+
+
 	for (auto slot : InventorySlotArray)
 	{
 		if (slot->isInUse == false) return slot;
 	}
+
 	return nullptr;
 }
+

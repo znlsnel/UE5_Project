@@ -4,6 +4,8 @@
 #include "Item.h"
 #include "TPSPlayer.h"
 
+#include <Components/BoxComponent.h>
+#include <Kismet/KismetSystemLibrary.h>
 // Sets default values
 AItem::AItem()
 {
@@ -28,6 +30,7 @@ void AItem::Tick(float DeltaTime)
 
 void AItem::DropItemOnGround()
 {
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("DropItem"));
 	//DetachRootComponentFromParent();
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	FVector tempPos = myPlayer->GetActorLocation();
@@ -38,5 +41,23 @@ void AItem::DropItemOnGround()
 
 	SetActorLocation(tempPos);
 	SetActorRotation(tempRot);
+	SetActorHiddenInGame(false);
+
+}
+
+void AItem::CreatePickupCollision()
+{
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("CreateCollision"));
+	if (pickupCollision)
+		pickupCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+}
+
+void AItem::RemovePickupCollision()
+{
+	if (pickupCollision)
+		pickupCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	//pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 }
 

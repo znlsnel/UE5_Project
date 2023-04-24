@@ -22,13 +22,16 @@ public:
 	void PickupObject(bool isPressed);
 	FHitResult LineTrace();
 
+	UFUNCTION(BlueprintCallable)
+		void CompletedProgressBar();
+
+public:
 	// PrograssBar
 	UPROPERTY(EditDeFaultsOnly, Category = ProgressBar)
 		TSubclassOf<class UPickUpPB> progressBarUI;
 	class UPickUpPB* _progressBarUI;
 
 	class AItem* pickupItem;
-
-	UFUNCTION(BlueprintCallable)
-		void CompletedProgressBar();
+	UPROPERTY(EditAnywhere)
+		int pickupRange = 300;
 };

@@ -22,7 +22,8 @@ public: // 함수
 	void Initialization(class ATPSPlayer* player);
 	bool AddItemToInventory(class AItem* Item);
 	void DisablePopup();
-	class UInventorySlot* FindFirstEmptySlot();
+	class UInventorySlot* FindFirstEmptySlot(class AItem* item);
+
 
 public: // 변수
 	class UTexture2D* testTexture;
