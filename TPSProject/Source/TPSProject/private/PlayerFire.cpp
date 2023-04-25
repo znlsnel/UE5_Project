@@ -167,6 +167,9 @@ void UPlayerFire::EquipWeapon(WeaponSlotType slotType)
 		break;
 	}
 	if (me->playerUI->screenUI) me->playerUI->screenUI->WeaponSwap();
+	UPlayerAnim* anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
+
+	anim->weaponType = currWeapon;
 
 }
 

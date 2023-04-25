@@ -76,6 +76,7 @@ void UPlayerAnim::UpdateTurn()
 	float tempYawOffset = rootYawOffset + (prevCharacterYaw - characterYaw);
 
 	rootYawOffset = UKismetMathLibrary::NormalizeAxis(tempYawOffset);
+
 }
 
 void UPlayerAnim::UpdateTurnAnimation()

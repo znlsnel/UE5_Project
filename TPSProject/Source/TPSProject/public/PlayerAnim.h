@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "WeaponData.h"
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "PlayerAnim.generated.h"
@@ -21,12 +22,11 @@ public:
 	
 	void UpdateTurn();
 	void UpdateTurnAnimation();
-	
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 		float speed = 0;
-	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 		bool isInAir = false;
 
@@ -38,6 +38,9 @@ public:
 	
 	UPROPERTY(blueprintReadOnly, Category = player)
 		class ATPSPlayer* player;
+
+	UPROPERTY(blueprintReadOnly, Category = weaponType)
+		WeaponType weaponType = WeaponType::Pistol;
 
 	// ROOT BONE ROTATION
 	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
