@@ -170,6 +170,7 @@ void UPlayerFire::EquipWeapon(WeaponSlotType slotType)
 	UPlayerAnim* anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
 
 	anim->weaponType = currWeapon;
+	anim->weaponSlotType = currSlot;
 
 }
 

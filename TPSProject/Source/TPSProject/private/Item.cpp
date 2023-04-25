@@ -36,7 +36,7 @@ void AItem::DropItemOnGround()
 	FVector tempPos = myPlayer->GetActorLocation();
 	FRotator tempRot = myPlayer->GetActorRotation();
 	tempPos += myPlayer->GetActorForwardVector() * 50;
-	tempPos.Z = 0;
+	tempPos.Z = 232 - 149;
 	tempRot.Pitch = 0;
 
 	SetActorLocation(tempPos);

@@ -3,6 +3,8 @@
 
 #include "PlayerMove.h"
 #include "PlayerUI.h"
+#include "PlayerAnim.h"
+
 #include <Kismet/KismetSystemLibrary.h>
 UPlayerMove::UPlayerMove()
 {
@@ -15,12 +17,14 @@ void UPlayerMove::BeginPlay()
 	Super::BeginPlay();
 
 	moveComp->MaxWalkSpeed = runSpeed;
-
+	playerAnim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
 }
 
 void UPlayerMove::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	gameTime += DeltaTime;
 
 	Move();
 }
@@ -33,10 +37,18 @@ void UPlayerMove::SetupInputBinding(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &UPlayerMove::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("Horizontal"), this, &UPlayerMove::InputHorizontal);
 	PlayerInputComponent->BindAxis(TEXT("Vertical"), this, &UPlayerMove::InputVertical);
+
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &UPlayerMove::InputJump);
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &UPlayerMove::InputRun);
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this, &UPlayerMove::InputRun);
 
+	PlayerInputComponent->BindAction(TEXT("Dash_W"), IE_DoubleClick, this, &UPlayerMove::DoubleClick<DashType::W>);
+
+	PlayerInputComponent->BindAction(TEXT("Dash_A"), IE_DoubleClick, this, &UPlayerMove::DoubleClick<DashType::A>);
+
+	PlayerInputComponent->BindAction(TEXT("Dash_S"), IE_DoubleClick, this, &UPlayerMove::DoubleClick<DashType::S>);
+
+	PlayerInputComponent->BindAction(TEXT("Dash_D"), IE_DoubleClick, this, &UPlayerMove::DoubleClick<DashType::D>);
 }
 
 
@@ -96,4 +108,28 @@ void UPlayerMove::InputRun()
 		movement->MaxWalkSpeed = runSpeed;
 	}
 
+}
+
+void UPlayerMove::DoubleClick(DashType dashDirection)
+{
+	playerAnim->Dash(dashDirection);
+
+	//FVector DashPos = FVector(0,0,0);
+	//switch (dashDirection)
+	//{
+	//case DashType::W:
+	//	DashPos = FVector(200, 0, 0);
+	//	break;
+	//case DashType::A:
+	//	DashPos = FVector(0, -200, 0);
+	//	break;
+	//case DashType::S:
+	//	DashPos = FVector(-200, 0, 0);
+	//	break;
+	//case DashType::D:
+	//	DashPos = FVector(0, 200, 0);
+	//	break;
+	//}
+	//me->AddActorLocalOffset(DashPos);
+	return;
 }

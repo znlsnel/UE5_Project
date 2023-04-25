@@ -32,14 +32,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// Input System
-	void PickUp();
-	void PickDown();
-	
-public:
-	bool bisPickUpZone = false;
-	bool bPickingUp = false;
-
 
 public:
 

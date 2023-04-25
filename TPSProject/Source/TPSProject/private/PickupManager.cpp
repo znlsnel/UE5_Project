@@ -27,6 +27,12 @@ void UPickupManager::SetupInputBinding(UInputComponent* PlayerInputComponent)
 
 void UPickupManager::PickupObject(bool isPressed)
 {
+	if (_progressBarUI == nullptr)
+	{
+		_progressBarUI = Cast<UPickUpPB>(CreateWidget(GetWorld(), progressBarUI));
+		_progressBarUI->pickupManager = this;
+	}
+
 	if (isPressed)
 	{
 		FHitResult hitResult = LineTrace();
@@ -42,14 +48,12 @@ void UPickupManager::PickupObject(bool isPressed)
 		if (pickupItem && pickupItem->ActorHasTag(TEXT("Item")))
 		{
 			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("PickUpObject"));
-			_progressBarUI->AddToViewport();
+			if (_progressBarUI) _progressBarUI->AddToViewport();
 		}
-
-		
 	}
 	else
 	{
-		if (_progressBarUI->IsInViewport())
+		if (_progressBarUI && _progressBarUI->IsInViewport())
 			_progressBarUI->RemoveFromParent();
 	}
 }
@@ -78,6 +82,7 @@ void UPickupManager::CompletedProgressBar()
 	if (pickupItem == nullptr) return;
 	
 	pickupItem->myPlayer = me;
+
 	me->GetInventory()->AddItemToInventory(pickupItem);
 	//Cast<AWeapon>(pickupItem)->SynchronizeWhitPlayer(me);
 }

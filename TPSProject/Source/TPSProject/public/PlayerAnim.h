@@ -23,6 +23,9 @@ public:
 	void UpdateTurn();
 	void UpdateTurnAnimation();
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void Dash(DashType dashDirection);
+
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
 		float speed = 0;
@@ -41,6 +44,9 @@ public:
 
 	UPROPERTY(blueprintReadOnly, Category = weaponType)
 		WeaponType weaponType = WeaponType::Pistol;
+
+	UPROPERTY(blueprintReadOnly, Category = weaponType)
+		WeaponSlotType weaponSlotType = WeaponSlotType::None;
 
 	// ROOT BONE ROTATION
 	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)

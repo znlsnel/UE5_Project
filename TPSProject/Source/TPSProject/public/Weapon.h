@@ -51,7 +51,8 @@ public:
 	UPROPERTY(VisibleAnywhere, category = weaponMesh)
 		class USkeletalMeshComponent* weaponMeshComp;
 
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = WeaponVars)
+		class UNiagaraComponent* niagaraParticleComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
 		 WeaponType weaponType = WeaponType::Pistol;
@@ -122,4 +123,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		USoundBase* weaponDryClick;
+
+
+
+
 };

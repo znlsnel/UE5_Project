@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "WeaponData.h"
 #include "CoreMinimal.h"
 #include "PlayerBaseComponent.h"
 #include "PlayerMove.generated.h"
@@ -34,10 +35,18 @@ public:
 	void InputJump();					// 점프
 	void InputRun();
 
+	template<DashType type>
+	void DoubleClick() { DoubleClick(type); }
+
+	void DoubleClick(DashType dashType);
+
 	// 이동 방향
 	FVector direction = FVector(0, 0, 0);
+	double gameTime = 0;
+	double DoubleClickStartTime = 0;
 
 	UPROPERTY(EditAnywhere, Category = PlayerSetting) float walkSpeed = 200;
 	UPROPERTY(EditAnywhere, Category = PlayerSetting) float runSpeed = 600;
-
+	class UPlayerAnim* playerAnim;
+	DashType tempDashType = DashType::None;
 };

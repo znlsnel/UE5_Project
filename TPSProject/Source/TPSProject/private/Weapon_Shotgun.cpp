@@ -35,5 +35,6 @@ AWeapon_Shotgun::AWeapon_Shotgun()
 void AWeapon_Shotgun::SynchronizeWhitPlayer(ATPSPlayer* player)
 {
 	Super::SynchronizeWhitPlayer(player);
-	SetActorRelativeLocation(FVector(13.5, 1.38, 1.13));
+	SetActorRelativeLocation(FVector(-7.489, 1.55, 4.84));
+	SetActorRelativeRotation(FRotator(0.368, 100.34, -15.22));
 }

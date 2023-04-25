@@ -5,6 +5,7 @@
 
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/GameplayStatics.h>
+
 void AWeapon::SynchronizeWhitPlayer(ATPSPlayer* player)
 {
 	myPlayer = player;
@@ -170,6 +171,15 @@ AWeapon::AWeapon()
 
 	itemType = ItemType::Weapon;
 	//CreatePickupCollision();
+
+	niagaraParticleComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComp"));
+
+	ConstructorHelpers::FObjectFinder<UNiagaraSystem> tempNiagaraParticle(TEXT("NiagaraSystem'/Game/sA_PickupSet_1/Fx/NiagaraSystems/NS_Pickup_1.NS_Pickup_1'"));
+
+	if (tempNiagaraParticle.Succeeded())
+	{
+		niagaraParticleComp->SetAsset(tempNiagaraParticle.Object);
+	}
 }
 
 // Called when the game starts or when spawned

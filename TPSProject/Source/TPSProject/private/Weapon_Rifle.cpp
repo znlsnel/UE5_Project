@@ -35,7 +35,8 @@ void AWeapon_Rifle::SynchronizeWhitPlayer(ATPSPlayer* player)
 {
 	Super::SynchronizeWhitPlayer(player);
 
-	SetActorRelativeLocation(FVector(12.58, 3.9, 1.02));
+	SetActorRelativeLocation(FVector(-7.2, 1.53, 3.97));
+	SetActorRelativeRotation(FRotator(-0.035, 98.225, -11.73));
 }
 
 void AWeapon_Rifle::Attack()

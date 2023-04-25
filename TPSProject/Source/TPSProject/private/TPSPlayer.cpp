@@ -7,7 +7,6 @@
 #include "Weapon_Shotgun.h"
 #include "Weapon.h"
 #include "FootIkActorComponent.h"
-#include "Gun.h"
 #include "PlayerMove.h"
 #include "PlayerFire.h"
 #include "PickupManager.h"
@@ -35,7 +34,9 @@ ATPSPlayer::ATPSPlayer()
 		playerMove = CreateDefaultSubobject<UPlayerMove>(TEXT("PlayerMove"));
 		playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
 		IKFootComp = CreateDefaultSubobject<UFootIkActorComponent>(TEXT("IKFootComp"));
+
 		pickupManager = CreateDefaultSubobject<UPickupManager>(TEXT("PickUpManager"));
+
 		playerUI = CreateDefaultSubobject<UPlayerUI>(TEXT("UI"));
 	}
 
@@ -122,61 +123,6 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 }
 
-
-
-
-
-
-
-
-
-void ATPSPlayer::PickUp()
-{
-	if (bisPickUpZone == false) return;
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("pickUpZone : true"), true, true, FLinearColor::Black, 2.0f);
-
-	bPickingUp = true;
-
-
-}
-
-void ATPSPlayer::PickDown()
-{
-	if (bisPickUpZone == false) return;
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("pickUpZone : false"), true, true, FLinearColor::Black, 2.0f);
-
-	bPickingUp = false;
-
-}
-
-
-
-
-
-void ATPSPlayer::BeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	AGun* tempWidget = Cast<AGun>(OtherActor);
-	
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("pickUpZone : Begin"), true, true, FLinearColor::Black, 2.0f);
-
-
-	if (tempWidget)
-	{
-		bisPickUpZone = true;
-	}
-}
-
-void ATPSPlayer::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	AGun* tempWidget = Cast<AGun>(OtherActor);
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("pickUpZone : End"), true, true, FLinearColor::Black, 2.0f);
-
-	if (tempWidget)
-	{
-		bisPickUpZone = false;
-		bPickingUp = false;
-	}
-}
 
 UInventory* ATPSPlayer::GetInventory()
 {

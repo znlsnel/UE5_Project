@@ -8,7 +8,8 @@
 void AWeapon_Pistol::SynchronizeWhitPlayer(ATPSPlayer* player)
 {
 	Super::SynchronizeWhitPlayer(player);
-	SetActorRelativeLocation(FVector(-7.0, 3.8, -0.5));
+	SetActorRelativeLocation(FVector(-8.355, 1.8866, 0.3986));
+	SetActorRelativeRotation(FRotator(-23.35, 101.85, -14.97));
 }
 
 AWeapon_Pistol::AWeapon_Pistol()

@@ -29,9 +29,12 @@ public:
 	// PrograssBar
 	UPROPERTY(EditDeFaultsOnly, Category = ProgressBar)
 		TSubclassOf<class UPickUpPB> progressBarUI;
+
 	class UPickUpPB* _progressBarUI;
 
 	class AItem* pickupItem;
+
 	UPROPERTY(EditAnywhere)
 		int pickupRange = 300;
+
 };
