@@ -17,7 +17,8 @@ void UInventorySlotPopup::InitializePopup(UInventorySlot* InventorySlot)
 	myInventorySlot = InventorySlot;
 	myInventorySlot->Inventory->DisablePopup();
 
-	if (myInventorySlot->Items[0] == nullptr) return;
+
+	if (myInventorySlot->Items.IsEmpty()) return;
 	AddToViewport();
 	
 	FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());

@@ -24,8 +24,8 @@ AWeapon_Shotgun::AWeapon_Shotgun()
 	weaponType = WeaponType::Shotgun;
 	ammoType = AmmoType::ShotgunAmmo;
 	weaponSlotType = WeaponSlotType::PrimarySlot;
-	fireDelay = 0.4;
-	FireBulletCount = 1;
+	fireDelay = 1.2;
+	FireBulletCount = 8;
 	FireSpread = 2.0f;
 	attachCharacterSocketName = FName("weapon_r_pistol");
 

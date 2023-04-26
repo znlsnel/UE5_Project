@@ -19,5 +19,11 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		class UPickupManager* pickupManager;
 
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+		void PlayProgressBar();
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void StopProgressBar();
 
 };

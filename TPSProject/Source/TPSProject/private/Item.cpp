@@ -30,13 +30,12 @@ void AItem::Tick(float DeltaTime)
 
 void AItem::DropItemOnGround()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("DropItem"));
 	//DetachRootComponentFromParent();
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	FVector tempPos = myPlayer->GetActorLocation();
 	FRotator tempRot = myPlayer->GetActorRotation();
 	tempPos += myPlayer->GetActorForwardVector() * 50;
-	tempPos.Z = 232 - 149;
+	tempPos.Z = myPlayer->GetActorLocation().Z - 76;
 	tempRot.Pitch = 0;
 
 	SetActorLocation(tempPos);
@@ -47,7 +46,6 @@ void AItem::DropItemOnGround()
 
 void AItem::CreatePickupCollision()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("CreateCollision"));
 	if (pickupCollision)
 		pickupCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	//pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);

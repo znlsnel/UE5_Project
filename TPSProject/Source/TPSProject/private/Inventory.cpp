@@ -78,7 +78,6 @@ bool UInventory::AddItemToInventory(AItem* Item)
 	}
 	else
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("GetItem"));
 		UInventorySlot* tempSlot = FindFirstEmptySlot(Item);
 		if (tempSlot == nullptr) return false;
 		tempSlot->Items.Push(Item);

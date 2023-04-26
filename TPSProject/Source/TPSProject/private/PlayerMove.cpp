@@ -6,6 +6,7 @@
 #include "PlayerAnim.h"
 
 #include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/KismetMathLibrary.h>
 UPlayerMove::UPlayerMove()
 {
 	// Tick함수가 호출되도록 처리
@@ -114,22 +115,28 @@ void UPlayerMove::DoubleClick(DashType dashDirection)
 {
 	playerAnim->Dash(dashDirection);
 
-	//FVector DashPos = FVector(0,0,0);
-	//switch (dashDirection)
-	//{
-	//case DashType::W:
-	//	DashPos = FVector(200, 0, 0);
-	//	break;
-	//case DashType::A:
-	//	DashPos = FVector(0, -200, 0);
-	//	break;
-	//case DashType::S:
-	//	DashPos = FVector(-200, 0, 0);
-	//	break;
-	//case DashType::D:
-	//	DashPos = FVector(0, 200, 0);
-	//	break;
-	//}
-	//me->AddActorLocalOffset(DashPos);
-	return;
+	FVector ImpulseDirection;
+	switch (dashDirection)
+	{
+	case DashType::W:
+		ImpulseDirection = me->GetActorForwardVector();
+		break;
+	case DashType::A:
+		ImpulseDirection = -me->GetActorRightVector();
+		break;
+	case DashType::S:
+		ImpulseDirection = -me->GetActorForwardVector();
+		break;
+	case DashType::D:
+		ImpulseDirection = me->GetActorRightVector();
+		break;
+	}
+
+	float ImpulseMagnitude = 70000.0f;
+	FVector Impulse = ImpulseMagnitude * ImpulseDirection;
+	FVector Point = me->GetActorLocation();
+	
+	me->Jump();
+	me->GetCharacterMovement()->AddImpulse(Impulse);
+	//return;
 }

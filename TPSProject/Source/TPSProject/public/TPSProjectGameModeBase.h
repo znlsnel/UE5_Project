@@ -14,4 +14,9 @@ class TPSPROJECT_API ATPSProjectGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+protected:
+	ATPSProjectGameModeBase();
+
+public:
+	class AEnemyManager* EnemyManager;
 };

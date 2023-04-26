@@ -48,6 +48,9 @@
     <ClCompile Include="..\..\Source\TPSProject\private\Bullet.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Crosshair.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\Enemy.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -61,9 +64,6 @@
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\FootIkActorComponent.cpp">
-      <Filter>Source\TPSProject\private</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\TPSProject\private\Gun.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\Inventory.cpp">
@@ -135,6 +135,9 @@
     <ClInclude Include="..\..\Source\TPSProject\public\Bullet.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Crosshair.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Enemy.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
@@ -148,9 +151,6 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\FootIkActorComponent.h">
-      <Filter>Source\TPSProject\public</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\TPSProject\public\Gun.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Inventory.h">

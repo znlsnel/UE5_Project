@@ -11,6 +11,7 @@
 #include "EnemyFSM.h"
 #include "Bullet.h"
 #include "PlayerUI.h"
+#include "Crosshair.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Kismet/GameplayStatics.h>
@@ -28,28 +29,26 @@ UPlayerFire::UPlayerFire()
 			bulletSound = tempSound.Object;
 		}
 	}
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 void UPlayerFire::SetupInputBinding(UInputComponent* PlayerInputComponent)
 {
-	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &UPlayerFire::InputFire);
+	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &UPlayerFire::InputFire<true>);
+
+	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Released, this, &UPlayerFire::InputFire<false>);
+
 	PlayerInputComponent->BindAction(TEXT("Reload"), IE_Pressed, this, &UPlayerFire::LoadBullet);
 	PlayerInputComponent->BindAction(TEXT("GetPistol"), IE_Pressed, this, &UPlayerFire::EquipSecondaryWeapon);
 	PlayerInputComponent->BindAction(TEXT("GetRiple"), IE_Pressed, this, &UPlayerFire::EquipPrimaryWeapon);
-	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Pressed, this, &UPlayerFire::SniperAim);
-	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Released, this, &UPlayerFire::SniperAim);
+
+	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Pressed, this, &UPlayerFire::SniperAim<true>);
+	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Released, this, &UPlayerFire::SniperAim<false>);
 }
 
 void UPlayerFire::BeginPlay()
 {
 	Super::BeginPlay();
-	//  스나이퍼 UI 위젯 인스턴스  생성
-	_sniperUI = CreateWidget(GetWorld(), sniperUIFactory);
-	// 일반 조준 크로스헤어 UI
-	_crosshairUI = CreateWidget(GetWorld(), crosshairUIFactory);
-	// 일반 조준 UI 등록
-	_crosshairUI->AddToViewport();
-
 
 	controller = GetWorld()->GetFirstPlayerController();
 
@@ -64,8 +63,18 @@ void UPlayerFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 }
 
-void UPlayerFire::InputFire()
+
+
+void UPlayerFire::InputFire(bool isPressed)
 {
+	isFire = isPressed;
+	LoopFire();
+}
+
+void UPlayerFire::LoopFire()
+{
+	if (isFire == false) return;
+
 	if (me->playerUI->isInventoryOpen())
 	{
 		me->playerUI->GetMouseInput();
@@ -73,7 +82,9 @@ void UPlayerFire::InputFire()
 	}
 	AWeapon* tempWeapon = GetWeapon();
 	if (tempWeapon) tempWeapon->Attack();
+	me->playerUI->crosshair->AttackCrosshair();
 
+	GetWorld()->GetTimerManager().SetTimer(fireTimerHandle, this, &UPlayerFire::LoopFire, GetWeapon()->fireDelay);
 }
 
 void UPlayerFire::LoadBullet()
@@ -100,30 +111,12 @@ void UPlayerFire::EquipPrimaryWeapon()
 	EquipWeapon(currSlot);
 }
 
-void UPlayerFire::SniperAim()
+void UPlayerFire::SniperAim(bool isPressed)
 {
-	if (bUsingPistol == true) return;
-
-	// Pressed 입력 처리
-	if (bSniperAim == false)
-	{
-		// 스나이퍼 조준 모드 활성화!
-		bSniperAim = true;
-		// 스나이퍼 조준 UI 등록
-		_sniperUI->AddToViewport();
-		me->tpsCamComp->SetFieldOfView(45.0f);
-		_crosshairUI->RemoveFromParent();
-	}
-	// Released 입력 처리
+	if (isPressed)
+		me->tpsCamComp->SetFieldOfView(30.0f);
 	else
-	{
-		// 스나이퍼 조준 모드 비활성화!
-		bSniperAim = false;
-		// 스나이퍼 조준 UI 등록
-		_sniperUI->RemoveFromParent();
 		me->tpsCamComp->SetFieldOfView(90.0f);
-		_crosshairUI->AddToViewport();
-	}
 }
 
 void UPlayerFire::InitializeWeapon()
@@ -171,6 +164,7 @@ void UPlayerFire::EquipWeapon(WeaponSlotType slotType)
 
 	anim->weaponType = currWeapon;
 	anim->weaponSlotType = currSlot;
+	me->playerUI->crosshair->ChangeCrosshair(currWeapon);
 
 }
 

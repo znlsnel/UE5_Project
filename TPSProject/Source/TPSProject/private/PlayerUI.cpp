@@ -5,6 +5,7 @@
 #include "ScreenUI.h"
 #include "InventorySlotPopup.h"
 #include "Inventory.h"
+#include "Crosshair.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Kismet/KismetSystemLibrary.h>
@@ -15,11 +16,21 @@ bool UPlayerUI::isInventoryOpen()
 {
 	return screenUI->bOpenInventory;
 }
+
+void UPlayerUI::InitializeComponent()
+{
+	Super::InitializeComponent();
+	screenUI = Cast<UScreenUI>(CreateWidget(GetWorld(), ScreenUIFactory));
+	screenUI->Initialization(me);
+
+	crosshair = Cast<UCrosshair>(CreateWidget(GetWorld(), crosshairFactory));
+	crosshair->Initialization(me);
+}
+
 void UPlayerUI::BeginPlay()
 {
 	Super::BeginPlay();
-	screenUI = Cast<UScreenUI>(CreateWidget(GetWorld(), ScreenUIFactory));
-	screenUI->Initialization(me);
+
 }
 
 void UPlayerUI::SetupInputBinding(UInputComponent* PlayerInputComponent)

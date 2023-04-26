@@ -23,7 +23,6 @@ void UScreenUI::Initialization(ATPSPlayer* player)
 {
 	myPlayer = player;
 
-	myPlayer->tickUpdateFunctions.AddUObject(this, &UScreenUI::UpdateScreenUI);
 	inventory = CreateWidget<UInventory>(GetWorld());
 	inventory->Initialization(myPlayer);
 
@@ -43,7 +42,6 @@ void UScreenUI::ToggleInventory()
 
 	if (bOpenInventory)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Close Inventory")));
 		pc->bShowMouseCursor = false;
 		pc->bEnableClickEvents = false;
 		pc->bEnableMouseOverEvents = false;
@@ -51,7 +49,6 @@ void UScreenUI::ToggleInventory()
 	}
 	else
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Open Inventory")));
 		pc->bShowMouseCursor = true;
 		pc->bEnableClickEvents = true;
 		pc->bEnableMouseOverEvents = true;
@@ -101,5 +98,4 @@ void UScreenUI::WeaponSwap_Implementation()
 	if (myPlayer->playerFire->primaryWeapon == nullptr)
 		primaryInfo.Textrue = TransParentUI;
 
-	UKismetSystemLibrary::PrintString(GetWorld(), tempStr);
 }

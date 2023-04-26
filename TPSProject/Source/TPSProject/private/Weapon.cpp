@@ -22,6 +22,7 @@ void AWeapon::SynchronizeWhitPlayer(ATPSPlayer* player)
 	isSynchronized = true;
 	currAmmo = FMath::Min(Ammo, MagazineSize);
 
+	SetSync(true);
 }
 
 void AWeapon::UnSynchronizeWhitPlayer()
@@ -33,6 +34,7 @@ void AWeapon::UnSynchronizeWhitPlayer()
 	
 	if (bItemAdded == false)
 		DropItemOnGround();
+	SetSync(false);
 
 }
 
@@ -59,12 +61,14 @@ void AWeapon::Attack()
 
 	FHitResult pHitResult = LineTrace(); 
 
+	
+
 	UNiagaraComponent* tempTracer =  UNiagaraFunctionLibrary::SpawnSystemAttached(TracerNS, weaponMeshComp, TEXT(""), weaponMeshComp->GetSocketLocation(TEXT("Muzzle")), FRotator(0, 0, 0), EAttachLocation::KeepWorldPosition, true);
+
 
 
 	if (tempTracer)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Tracer")));
 		tempTracer->SetNiagaraVariableBool(FString("User.Trigger"), true);
 
 		FVector tempPos = pHitResult.bBlockingHit ? pHitResult.ImpactPoint : pHitResult.TraceEnd;
@@ -76,6 +80,33 @@ void AWeapon::Attack()
 
 		tempTracer->SetNiagaraVariablePosition(FString("User.MuzzlePostion"), weaponMeshComp->GetSocketLocation("Muzzle"));
 			
+	}
+
+	UNiagaraComponent* tempDecal = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactDecal, pHitResult.ImpactPoint, FRotator(0, 0, 0));
+
+	if (tempDecal)
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("tempDecal"));
+		tempDecal->SetNiagaraVariableBool(TEXT("User.Trigger"), true);
+		tempDecal->SetNiagaraVariableInt(TEXT("User.SurfaceType"), 2);
+
+		TArray<FVector> ImpactPosArr;
+		ImpactPosArr.Add(pHitResult.ImpactPoint);
+		UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayPosition(tempDecal, TEXT("User.ImpactPositions"), ImpactPosArr);
+
+		TArray<FVector> ImpactNormalArr;
+		ImpactNormalArr.Add(pHitResult.ImpactNormal);
+
+		UNiagaraDataInterfaceArrayFunctionLibrary::
+			SetNiagaraArrayVector(tempDecal, TEXT("User.ImpactNormals"), ImpactNormalArr);
+
+		TArray<int32> tempInt32Array;
+		tempInt32Array.Add(2);
+
+		UNiagaraDataInterfaceArrayFunctionLibrary::
+			SetNiagaraArrayInt32(tempDecal, TEXT("User.ImpactSurfaces"), tempInt32Array);
+
+		tempDecal->SetNiagaraVariableInt(TEXT("User.NumberOfHits"), 1);
 	}
 
 	if (currAmmo) currAmmo--;
@@ -171,15 +202,6 @@ AWeapon::AWeapon()
 
 	itemType = ItemType::Weapon;
 	//CreatePickupCollision();
-
-	niagaraParticleComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("NiagaraComp"));
-
-	ConstructorHelpers::FObjectFinder<UNiagaraSystem> tempNiagaraParticle(TEXT("NiagaraSystem'/Game/sA_PickupSet_1/Fx/NiagaraSystems/NS_Pickup_1.NS_Pickup_1'"));
-
-	if (tempNiagaraParticle.Succeeded())
-	{
-		niagaraParticleComp->SetAsset(tempNiagaraParticle.Object);
-	}
 }
 
 // Called when the game starts or when spawned

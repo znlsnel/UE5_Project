@@ -37,4 +37,5 @@ public:
 	UPROPERTY(EditAnywhere)
 		int pickupRange = 300;
 
+
 };

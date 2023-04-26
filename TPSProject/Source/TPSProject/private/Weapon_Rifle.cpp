@@ -23,7 +23,7 @@ AWeapon_Rifle::AWeapon_Rifle()
 	weaponType = WeaponType::Rifle;
 	ammoType = AmmoType::RifleAmmo;
 	weaponSlotType = WeaponSlotType::PrimarySlot;
-	fireDelay = 0.4;
+	fireDelay = 0.1;
 	FireBulletCount = 1;
 	FireSpread = 2.0f;
 	attachCharacterSocketName = FName("weapon_r_pistol");

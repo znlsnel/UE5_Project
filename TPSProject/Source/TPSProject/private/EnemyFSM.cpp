@@ -200,10 +200,6 @@ void UEnemyFSM::DieState()
 		me->SetActorLocation(P);
 	}
 	
-	if (anim->isDead == false)
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Die false"), true, true, FLinearColor::Green, 2.0f);
-	else
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Die true"), true, true, FLinearColor::Green, 2.0f);
 
 	if (me->GetActorLocation().Z < -200.0f)
 	{

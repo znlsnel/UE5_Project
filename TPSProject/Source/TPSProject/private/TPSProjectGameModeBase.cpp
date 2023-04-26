@@ -2,4 +2,9 @@
 
 
 #include "TPSProjectGameModeBase.h"
+#include "EnemyManager.h"
 
+ATPSProjectGameModeBase::ATPSProjectGameModeBase()
+{
+	EnemyManager = CreateDefaultSubobject<AEnemyManager>(TEXT("EnemyManager"));
+}

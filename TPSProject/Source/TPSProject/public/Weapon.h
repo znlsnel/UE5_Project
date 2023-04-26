@@ -44,15 +44,15 @@ public:
 	void DiscardWeaponIfAlreadyExists();
 	void Reload();
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void SetSync(bool isSync);
+
 public:
 	UPlayerAnim* anim;
 	bool isSynchronized = false;
 
 	UPROPERTY(VisibleAnywhere, category = weaponMesh)
 		class USkeletalMeshComponent* weaponMeshComp;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = WeaponVars)
-		class UNiagaraComponent* niagaraParticleComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
 		 WeaponType weaponType = WeaponType::Pistol;
@@ -124,7 +124,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		USoundBase* weaponDryClick;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UNiagaraSystem* ImpactDecal;
 
 
 };

@@ -23,38 +23,33 @@ void UPickupManager::SetupInputBinding(UInputComponent* PlayerInputComponent)
 
 	_progressBarUI = Cast<UPickUpPB>(CreateWidget(GetWorld(), progressBarUI));
 	_progressBarUI->pickupManager = this;
+	_progressBarUI->AddToViewport();
 }
 
 void UPickupManager::PickupObject(bool isPressed)
 {
-	if (_progressBarUI == nullptr)
-	{
-		_progressBarUI = Cast<UPickUpPB>(CreateWidget(GetWorld(), progressBarUI));
-		_progressBarUI->pickupManager = this;
-	}
-
 	if (isPressed)
-	{
+	{ 
 		FHitResult hitResult = LineTrace();
 
 		float length = FVector::Dist(me->GetActorLocation(), hitResult.ImpactPoint);
 
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Length : %f"), length));
-
 		if (length > pickupRange) return;
-
 		
 		pickupItem = Cast<AItem>(hitResult.GetActor());
 		if (pickupItem && pickupItem->ActorHasTag(TEXT("Item")))
 		{
-			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("PickUpObject"));
-			if (_progressBarUI) _progressBarUI->AddToViewport();
+			_progressBarUI->PlayProgressBar();
 		}
 	}
+
 	else
 	{
-		if (_progressBarUI && _progressBarUI->IsInViewport())
-			_progressBarUI->RemoveFromParent();
+		if (_progressBarUI->IsInViewport())
+		{
+			_progressBarUI->StopProgressBar();
+			//_progressBarUI->RemoveFromViewport();
+		}
 	}
 }
 

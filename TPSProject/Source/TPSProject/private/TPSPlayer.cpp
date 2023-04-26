@@ -53,11 +53,6 @@ ATPSPlayer::ATPSPlayer()
 
 	}
 
-	// Bind Collision Event
-	{
-		GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ATPSPlayer::BeginOverlap);
-		GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ATPSPlayer::EndOverlap);
-	}
 	//OnComponentBeginOverlap.AddDynamic(this, &AGun::BeginOverlap);
 
 // Spring Arm Comp
@@ -66,7 +61,7 @@ ATPSPlayer::ATPSPlayer()
 
 		// RootComponent ´Â °èÃþ±¸Á¶»ó Ä¸½¶ ÄÝ¸®Àü ÄÄÆ÷³ÍÆ®¸¦ ÀÇ¹ÌÇÔ
 		springArmComp->SetupAttachment(RootComponent);
-		springArmComp->SetRelativeLocation(FVector(0, 70, 70));
+		springArmComp->SetRelativeLocation(FVector(0, 30, 70));
 		springArmComp->TargetArmLength = 250;
 		springArmComp->bUsePawnControlRotation = true;
 	}
@@ -105,6 +100,7 @@ void ATPSPlayer::BeginPlay()
 
 
 	hp = initialHp;
+	playerUI->screenUI->UpdateScreenUI();
 }
 
 // Called every frame
@@ -136,11 +132,10 @@ UInventory* ATPSPlayer::GetInventory()
 
 void ATPSPlayer::OnHitEvent()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damaged!!!"));
 	hp -= 5;
+	playerUI->screenUI->UpdateScreenUI();
 	if (hp <= 0)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Player is Dead!"));
 		OnGameOver();
 	}
 }
@@ -148,6 +143,8 @@ void ATPSPlayer::OnHitEvent()
 void ATPSPlayer::OnGameOver_Implementation()
 {
 	UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+
 }
 
 

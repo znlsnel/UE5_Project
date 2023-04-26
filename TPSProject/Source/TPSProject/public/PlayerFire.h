@@ -23,10 +23,17 @@ class TPSPROJECT_API UPlayerFire : public UPlayerBaseComponent
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
 
 public:
-	void InputFire();		
+	template<bool b>
+	void InputFire() { InputFire(b); }
+	void InputFire(bool b);
+
+	void LoopFire();
+
 	void EquipSecondaryWeapon();					// 보조무기 장착
 	void EquipPrimaryWeapon();					// 주무기 장착
-	void SniperAim();					// 스코프 모드
+	template<bool b>
+	void SniperAim() { SniperAim(b); }					// 스코프 모드
+	void SniperAim(bool isPressed);					// 스코프 모드
 	void InitializeWeapon();
 	void LoadBullet();
 	class AWeapon* GetWeapon();
@@ -36,6 +43,8 @@ public:
 	bool bSniperAim = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bUsingPistol = true;
+	bool isFire = false;
+	FTimerHandle fireTimerHandle;
 
 public:
 	// 무기
@@ -58,19 +67,6 @@ public:
 	// 카메라 쉐이크
 	UPROPERTY(EditDefaultsOnly, Category = CameraMotion)
 		TSubclassOf<class UCameraShakeBase> cameraShake;
-
-
-
-	// 스코프 조준 UI Widget
-	UPROPERTY(EditDefaultsOnly, Category = SniperUI)
-		TSubclassOf<class UUserWidget> sniperUIFactory;
-	class UUserWidget* _sniperUI;
-
-	// 일반 조준 크로스헤어 UI 위젯
-	UPROPERTY(EditDeFaultsOnly, Category = CrosshairUIFactory)
-		TSubclassOf<class UUserWidget> crosshairUIFactory;
-	class UUserWidget* _crosshairUI;
-
 
 
 	// 총알 Factory
