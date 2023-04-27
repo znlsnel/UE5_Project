@@ -43,6 +43,7 @@ public:
 	void UncoverWeapon();
 	void DiscardWeaponIfAlreadyExists();
 	void Reload();
+	void createNiagara(FHitResult pHitResult);
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetSync(bool isSync);
@@ -79,6 +80,10 @@ public:
 	// 매 사격시 정확도가 낮아지는 정도
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		float FireSpread = 0.f;
+
+	// 총 데미지
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
+		float weapDamage = 10.f;
 
 	// 총을 장착할 캐릭터의 소켓 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)

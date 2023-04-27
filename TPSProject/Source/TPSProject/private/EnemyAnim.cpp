@@ -2,6 +2,7 @@
 
 
 #include "EnemyAnim.h"
+#include "Enemy.h"
 
 void UEnemyAnim::OnEndAttackAnimation()
 {

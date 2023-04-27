@@ -114,7 +114,7 @@ void UPlayerFire::EquipPrimaryWeapon()
 void UPlayerFire::SniperAim(bool isPressed)
 {
 	if (isPressed)
-		me->tpsCamComp->SetFieldOfView(30.0f);
+		me->tpsCamComp->SetFieldOfView(45.0f);
 	else
 		me->tpsCamComp->SetFieldOfView(90.0f);
 }

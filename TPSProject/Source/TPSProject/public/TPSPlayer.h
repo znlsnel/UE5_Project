@@ -69,7 +69,7 @@ public:
 
 	// 초기 hp값
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Health)
-		int32 initialHp = 10;
+		int32 initialHp = 100;
 
 	// 피격 달했을 때 처리
 	UFUNCTION(BlueprintCallable, Category = Health)
@@ -88,6 +88,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = Fire)
 		FHitResult FireHitResult;
 
+	float AdditionalAttackPower = 1.f;
+
 // Collision 관련 ================================================================
 
 // 무기========================================================================
@@ -96,7 +98,7 @@ public:
 
 // U I ========================================================================
 
-
+	
 
 // 함수========================================================================
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Health)
@@ -108,5 +110,6 @@ public:
 	//UFUNCTION(BlueprintImplementableEvent, Category = Effect)
 	//	void FireEffect();
 	class UInventory* GetInventory();
+	void GetMoney(int money);
 	//
 };

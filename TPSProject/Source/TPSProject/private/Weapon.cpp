@@ -2,6 +2,8 @@
 
 #include "Weapon.h"
 #include "Inventory.h"
+#include "Enemy.h"
+#include "EnemyFSM.h"
 
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/GameplayStatics.h>
@@ -59,55 +61,31 @@ void AWeapon::Attack()
 		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("No FireCamShakeClass")));
 	}
 
-	FHitResult pHitResult = LineTrace(); 
+	FHitResult pHitResult = LineTrace();
+	createNiagara(pHitResult);
 
-	
-
-	UNiagaraComponent* tempTracer =  UNiagaraFunctionLibrary::SpawnSystemAttached(TracerNS, weaponMeshComp, TEXT(""), weaponMeshComp->GetSocketLocation(TEXT("Muzzle")), FRotator(0, 0, 0), EAttachLocation::KeepWorldPosition, true);
-
-
-
-	if (tempTracer)
+	if (IsValid(pHitResult.GetActor()) && pHitResult.GetActor()->ActorHasTag(TEXT("Enemy")))
 	{
-		tempTracer->SetNiagaraVariableBool(FString("User.Trigger"), true);
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Monster Fire!"));
+		AEnemy* enemy = Cast<AEnemy>(pHitResult.GetActor());
+		
+		int damage = weapDamage * myPlayer->AdditionalAttackPower;
 
-		FVector tempPos = pHitResult.bBlockingHit ? pHitResult.ImpactPoint : pHitResult.TraceEnd;
-		TArray<FVector> TraceImpactPosArr;
-		TraceImpactPosArr.Add(tempPos);
+		FName tempName = pHitResult.BoneName;
+		if (tempName == FName("head"))
+			damage *= 2;
 
-		UNiagaraDataInterfaceArrayFunctionLibrary::
-			SetNiagaraArrayVector(tempTracer, TEXT("User.ImpactPositions"), TraceImpactPosArr);
+		else if (tempName == FName("spine_03"))
+			damage *= 1;
+		
+		else
+			damage = damage - (damage / 4);
+		
 
-		tempTracer->SetNiagaraVariablePosition(FString("User.MuzzlePostion"), weaponMeshComp->GetSocketLocation("Muzzle"));
-			
+		enemy->fsm->OnDamageProcess(damage);
+		
 	}
 
-	UNiagaraComponent* tempDecal = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactDecal, pHitResult.ImpactPoint, FRotator(0, 0, 0));
-
-	if (tempDecal)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("tempDecal"));
-		tempDecal->SetNiagaraVariableBool(TEXT("User.Trigger"), true);
-		tempDecal->SetNiagaraVariableInt(TEXT("User.SurfaceType"), 2);
-
-		TArray<FVector> ImpactPosArr;
-		ImpactPosArr.Add(pHitResult.ImpactPoint);
-		UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayPosition(tempDecal, TEXT("User.ImpactPositions"), ImpactPosArr);
-
-		TArray<FVector> ImpactNormalArr;
-		ImpactNormalArr.Add(pHitResult.ImpactNormal);
-
-		UNiagaraDataInterfaceArrayFunctionLibrary::
-			SetNiagaraArrayVector(tempDecal, TEXT("User.ImpactNormals"), ImpactNormalArr);
-
-		TArray<int32> tempInt32Array;
-		tempInt32Array.Add(2);
-
-		UNiagaraDataInterfaceArrayFunctionLibrary::
-			SetNiagaraArrayInt32(tempDecal, TEXT("User.ImpactSurfaces"), tempInt32Array);
-
-		tempDecal->SetNiagaraVariableInt(TEXT("User.NumberOfHits"), 1);
-	}
 
 	if (currAmmo) currAmmo--;
 }
@@ -191,6 +169,55 @@ void AWeapon::Reload()
 		anim->PlayPlayerMontage(CharacterReloadAM);
 	weaponMeshComp->PlayAnimation(WeaponReloadAnim, false);
 
+}
+
+void AWeapon::createNiagara(FHitResult pHitResult)
+{
+
+	UNiagaraComponent* tempTracer = UNiagaraFunctionLibrary::SpawnSystemAttached(TracerNS, weaponMeshComp, TEXT(""), weaponMeshComp->GetSocketLocation(TEXT("Muzzle")), FRotator(0), EAttachLocation::KeepWorldPosition, true);
+
+
+
+	if (tempTracer)
+	{
+		tempTracer->SetNiagaraVariableBool(FString("User.Trigger"), true);
+
+		FVector tempPos = pHitResult.bBlockingHit ? pHitResult.ImpactPoint : pHitResult.TraceEnd;
+		TArray<FVector> TraceImpactPosArr;
+		TraceImpactPosArr.Add(tempPos);
+
+		UNiagaraDataInterfaceArrayFunctionLibrary::
+			SetNiagaraArrayVector(tempTracer, TEXT("User.ImpactPositions"), TraceImpactPosArr);
+
+		tempTracer->SetNiagaraVariablePosition(FString("User.MuzzlePostion"), weaponMeshComp->GetSocketLocation("Muzzle"));
+
+	}
+
+	UNiagaraComponent* tempDecal = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactDecal, pHitResult.ImpactPoint, FRotator(0));
+
+	if (tempDecal)
+	{
+		tempDecal->SetNiagaraVariableBool(TEXT("User.Trigger"), true);
+		tempDecal->SetNiagaraVariableInt(TEXT("User.SurfaceType"), 2);
+
+		TArray<FVector> ImpactPosArr;
+		ImpactPosArr.Add(pHitResult.ImpactPoint);
+		UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayPosition(tempDecal, TEXT("User.ImpactPositions"), ImpactPosArr);
+
+		TArray<FVector> ImpactNormalArr;
+		ImpactNormalArr.Add(pHitResult.ImpactNormal);
+
+		UNiagaraDataInterfaceArrayFunctionLibrary::
+			SetNiagaraArrayVector(tempDecal, TEXT("User.ImpactNormals"), ImpactNormalArr);
+
+		TArray<int32> tempInt32Array;
+		tempInt32Array.Add(2);
+
+		UNiagaraDataInterfaceArrayFunctionLibrary::
+			SetNiagaraArrayInt32(tempDecal, TEXT("User.ImpactSurfaces"), tempInt32Array);
+
+		tempDecal->SetNiagaraVariableInt(TEXT("User.NumberOfHits"), 1);
+	}
 }
 
 // Sets default values

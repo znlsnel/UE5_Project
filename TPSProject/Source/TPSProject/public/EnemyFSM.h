@@ -32,7 +32,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	void InitializeEnemy(FVector spawnPoint);
 public:
 	// 대기 상태
 	void IdleState();
@@ -45,16 +45,18 @@ public:
 	// 죽음 상태
 	void DieState();
 	// 피격 알림 이벤트 함수
-	void OnDamageProcess();
+	void OnDamageProcess(int damage);
 
 	// 랜덤 위치 가져오기
 	bool GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
 
 	// 길 찾기 수행시 랜덤 위치
 	FVector randomPos;
-
+	
 
 public:
+	bool isActive = false;
+	
 	// EnemyState
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSM)
 		EEnemyState mState = EEnemyState::Idle;  
@@ -83,7 +85,11 @@ public:
 
 	// 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
-		int32 hp = 3;
+		int32 hp = 10;
+
+	// 체력
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+		int32 maxHp = 10;
 
 	UPROPERTY(EditAnywhere, Category = FSM)
 		float damageDelayTime = 2.0f;
@@ -99,5 +105,5 @@ public:
 	UPROPERTY()
 		class AAIController* ai;
 
-
+	
 };

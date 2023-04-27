@@ -22,16 +22,20 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void CreateEnemy();
+	void FindSpawnPoints();
 
 
 public:
+	// 스폰을 위한 알람 타이머
+	FTimerHandle spawnTimerHandle;
 	// 랜덤 시간 간격 최솟값
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		float minTime = 1;
+		float minTime = 2;
 
 	// 랜덤 시간 간격 최댓값
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		float maxTime = 5;
+		float maxTime = 7;
 
 	// 스폰할 위치 정보 배열
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
@@ -40,13 +44,8 @@ public:
 	// AEnemy 타입의 블루프린트 할당받을 변수
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
 		TSubclassOf<class AEnemy> enemyFactory;
+	TArray<class AEnemy*> enemyPool;
 
-	// 스폰을 위한 알람 타이머
-	FTimerHandle spawnTimerHandle;
+	int32 monsterSpawnLimit = 10;
 
-	// 적 생성 함수
-	void CreateEnemy();
-
-	// 스폰할 위치 동적 찾아 할당하기
-	void FindSpawnPoints();
 };

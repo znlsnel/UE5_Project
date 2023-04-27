@@ -6,8 +6,11 @@
 #include "InventorySlotPopup.h"
 #include "Inventory.h"
 #include "Crosshair.h"
+#include "StoreActor.h"
+#include "StoreUI.h"
 
 #include <Blueprint/UserWidget.h>
+#include <Components/WidgetComponent.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Blueprint/WidgetLayoutLibrary.h>
 #include <Blueprint/WidgetBlueprintLibrary.h>
@@ -24,13 +27,18 @@ void UPlayerUI::InitializeComponent()
 	screenUI->Initialization(me);
 
 	crosshair = Cast<UCrosshair>(CreateWidget(GetWorld(), crosshairFactory));
-	crosshair->Initialization(me);
+	if (crosshair->IsValidLowLevel()) crosshair->Initialization(me);
+
+	storeActor = GetWorld()->SpawnActor<AStoreActor>();
+	storeUI = CreateWidget<UStoreUI>(GetWorld(), storeUIFactory);
+	storeUI->myPlayer = me;
+	storeActor->storeUI = storeUI;
 }
 
 void UPlayerUI::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 }
 
 void UPlayerUI::SetupInputBinding(UInputComponent* PlayerInputComponent)

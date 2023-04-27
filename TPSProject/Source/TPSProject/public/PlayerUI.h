@@ -32,5 +32,13 @@ public:
 	UPROPERTY(blueprintReadWrite, category = UI)
 		class UCrosshair* crosshair;
 
+	UPROPERTY(EditAnywhere, Category = Store)
+		class AStoreActor* storeActor;
+
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UStoreUI> storeUIFactory;
+	UPROPERTY(blueprintReadWrite, category = UI)
+		class UStoreUI* storeUI;
+
 	void ToggleInventory();
 };

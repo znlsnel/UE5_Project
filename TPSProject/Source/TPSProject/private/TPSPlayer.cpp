@@ -11,6 +11,8 @@
 #include "PlayerFire.h"
 #include "PickupManager.h"
 #include "PlayerUI.h"
+#include "StoreUI.h"
+#include "StoreActor.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -123,6 +125,11 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 UInventory* ATPSPlayer::GetInventory()
 {
 	return playerUI->screenUI->inventory;
+}
+
+void ATPSPlayer::GetMoney(int money)
+{
+	playerUI->storeActor->storeUI->Money += money;
 }
 
 

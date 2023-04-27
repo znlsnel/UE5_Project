@@ -21,6 +21,7 @@ void UScreenUI::UpdateScreenUI()
 
 void UScreenUI::Initialization(ATPSPlayer* player)
 {
+	if (IsValid(this) == false) return;
 	myPlayer = player;
 
 	inventory = CreateWidget<UInventory>(GetWorld());
@@ -28,7 +29,6 @@ void UScreenUI::Initialization(ATPSPlayer* player)
 
 	AddToViewport();
 	WeaponSwap();
-
 }
 
 void UScreenUI::SetupInputBinding(UInputComponent* PlayerInputComponent)

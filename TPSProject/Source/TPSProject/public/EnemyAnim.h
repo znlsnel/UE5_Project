@@ -23,6 +23,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = FSM)
 		bool bAttackPlay = false;
 
+	UPROPERTY(BlueprintReadOnly)
+		class AEnemy* me;
+
 	// 공격 애니메이션 끝나는 이벤트 함수
 	UFUNCTION(BlueprintCallable, Category = FSMEvent)
 		void OnEndAttackAnimation();
@@ -30,6 +33,9 @@ public:
 	// 피격 애니메이션 재생 함수
 	UFUNCTION(BlueprintImplementableEvent, Category = FSMEvent)
 		void PlayDamageAnim(FName sectionName);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = FSMEvent)
+		void InitializeEnemy();
 
 	UPROPERTY(EditAnywhere, blueprintReadWrite, category = FSM)
 		bool isDead = false;

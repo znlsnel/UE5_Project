@@ -26,9 +26,17 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void AddWorldDamageUI(FRotator genRot, int Damage);
+
 public:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = FSMComponent)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)
 		class UEnemyFSM* fsm;
 
+	UPROPERTY(EditAnywhere, Category = UI)
+		TSubclassOf<class ADamageUIActor> damageActorFactory;
+
+	TArray<class ADamageUIActor*> damageActorArr;
+	int32 DActorCount = 5;
+	int32 DActorindex = 0;
 };

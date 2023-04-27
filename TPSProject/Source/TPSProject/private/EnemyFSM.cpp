@@ -10,7 +10,11 @@
 #include <AIController.h>
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/KismetMathLibrary.h>
 #include <Components/CapsuleComponent.h>
+#include <GameFramework/PawnMovementComponent.h>
+#include <GameFramework/Pawn.h>
+
 #include <NavigationSystem.h>
 
 // Sets default values for this component's properties
@@ -28,7 +32,7 @@ UEnemyFSM::UEnemyFSM()
 void UEnemyFSM::BeginPlay()
 {
 	Super::BeginPlay();
-
+	isActive = true;
 	// 월드에서 ATPSPlayer 타깃 찾아오기
 	auto actor = UGameplayStatics::GetActorOfClass(GetWorld(), ATPSPlayer::StaticClass());
 	target = Cast<ATPSPlayer>(actor);
@@ -36,8 +40,9 @@ void UEnemyFSM::BeginPlay()
 	me = Cast<AEnemy>(GetOwner());
 
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
-
+	anim->me = me;
 	ai = Cast<AAIController>(me->GetController());
+	
 }
 
 
@@ -74,6 +79,21 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	 
 
 	// ...
+}
+
+void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
+{
+	spawnPoint.Z += 100;
+	anim->isDead = false;
+	isActive = true;
+	hp = maxHp;
+	me->SetActorHiddenInGame(false);
+	me->SetActorLocation(spawnPoint);
+	me->SetActorRotation(FRotator(0, 0, 0));
+	mState = EEnemyState::Idle;
+	anim->animState = mState;
+	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	anim->InitializeEnemy();
 }
 
 void UEnemyFSM::IdleState()
@@ -203,14 +223,28 @@ void UEnemyFSM::DieState()
 
 	if (me->GetActorLocation().Z < -200.0f)
 	{
-		me->Destroy();
+		if (isActive == false) return;
+		isActive = false;
+		me->SetActorHiddenInGame(true);
+
+		int money = 10;
+		target->GetMoney(money);
 	}
 	anim->animState = mState;
 }
 
-void UEnemyFSM::OnDamageProcess()
+void UEnemyFSM::OnDamageProcess(int damage)
 {
-	hp--;
+	if (mState == EEnemyState::Die) return;
+	int randDamage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));
+	FRotator tempRot = target->GetActorRotation();
+	tempRot.Yaw *= -1;
+	tempRot.Pitch = 0;
+
+	me->AddWorldDamageUI(tempRot, randDamage);
+	hp -= randDamage;
+	hp = FMath::Max(hp, 0);
+
 	if (hp > 0)
 	{
 		mState = EEnemyState::Damage;
@@ -225,12 +259,11 @@ void UEnemyFSM::OnDamageProcess()
 	{
 		mState = EEnemyState::Die;
 		anim->PlayDamageAnim(TEXT("Die"));
-
 		currentTime = 0;
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
-	ai->StopMovement();
+	
 }
 
 bool UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest)
