@@ -27,6 +27,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void AddWorldDamageUI(FRotator genRot, int Damage);
+	void DieEvent();
 
 public:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = FSMComponent)
@@ -39,4 +40,6 @@ public:
 	TArray<class ADamageUIActor*> damageActorArr;
 	int32 DActorCount = 5;
 	int32 DActorindex = 0;
+
+	class AEnemyManager* enemyManager;
 };

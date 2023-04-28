@@ -49,7 +49,7 @@ public:
 		class UPlayerBaseComponent* playerMove;
 
 	// PlayerFire
-	UPROPERTY(VisibleAnywhere, Category = Component)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component)
 		class UPlayerFire* playerFire;
 
 	UPROPERTY(VisibleAnywhere, blueprintReadOnly, Category = IkFoot)
@@ -73,7 +73,7 @@ public:
 
 	// 피격 달했을 때 처리
 	UFUNCTION(BlueprintCallable, Category = Health)
-		void OnHitEvent();
+		void OnHitEvent(int damage);
 
 // ===========================================================================
 // 
@@ -88,7 +88,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = Fire)
 		FHitResult FireHitResult;
 
-	float AdditionalAttackPower = 1.f;
+	float AdditionalAttackPower = 0.f;
 
 // Collision 관련 ================================================================
 

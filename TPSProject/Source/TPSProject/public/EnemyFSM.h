@@ -46,6 +46,7 @@ public:
 	void DieState();
 	// 피격 알림 이벤트 함수
 	void OnDamageProcess(int damage);
+	void RoundInitEnemy(float bonusAtt, float bonusHp);
 
 	// 랜덤 위치 가져오기
 	bool GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
@@ -89,7 +90,7 @@ public:
 
 	// 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
-		int32 maxHp = 10;
+		int32 initHp = 10;
 
 	UPROPERTY(EditAnywhere, Category = FSM)
 		float damageDelayTime = 2.0f;

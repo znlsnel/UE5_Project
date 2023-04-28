@@ -38,7 +38,8 @@ public:
 	void LoadBullet();
 	class AWeapon* GetWeapon();
 	void EquipWeapon(WeaponSlotType slotType);
-
+	UFUNCTION(BlueprintCallable)
+		void ChangeWeapon();
 
 	bool bSniperAim = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -47,6 +48,7 @@ public:
 	FTimerHandle fireTimerHandle;
 
 public:
+	class UPlayerAnim* anim;
 	// ¹«±â
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
 		WeaponType currWeapon = WeaponType::Pistol;

@@ -48,6 +48,11 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetSync(bool isSync);
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void ClickWorldWidget(bool isPress);
+	FVector MyNormalize(const FVector& Invec);
+
+	void CreateDecal(UNiagaraComponent* tempDecal, FHitResult& pHitResult);
 public:
 	UPlayerAnim* anim;
 	bool isSynchronized = false;
@@ -131,6 +136,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UNiagaraSystem* ImpactDecal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UNiagaraSystem* ImpactEffect;
 
 
 };

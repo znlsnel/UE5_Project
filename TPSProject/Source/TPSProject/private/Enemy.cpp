@@ -3,8 +3,10 @@
 
 #include "Enemy.h"
 #include "EnemyFSM.h"
+#include "EnemyManager.h"
 #include "DamageUI.h"
 #include "DamageUIActor.h"
+#include "RoundUI.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -70,6 +72,11 @@ void AEnemy::AddWorldDamageUI(FRotator genRot, int Damage)
 	damageActorArr[DActorindex]->InitializeDamageActor(genPos, genRot, Damage);
 
 	DActorindex++;
+}
+
+void AEnemy::DieEvent()
+{
+	enemyManager->roundUI->UpdateKillCount();
 }
 
 

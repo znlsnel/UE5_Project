@@ -2,7 +2,6 @@
 
 
 #include "Weapon_Rifle.h"
-
 AWeapon_Rifle::AWeapon_Rifle()
 {
 	weaponMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("skeletalMeshComp"));

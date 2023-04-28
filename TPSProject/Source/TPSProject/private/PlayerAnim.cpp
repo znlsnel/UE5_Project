@@ -82,7 +82,7 @@ void UPlayerAnim::UpdateTurn()
 void UPlayerAnim::UpdateTurnAnimation()
 {
 
-	if (GetCurveValue(TEXT("isTurning")))
+	if (GetCurveValue(TEXT("Turning")))
 	{
 		prevRotationCurve = rotationCurve; 
 		rotationCurve = GetCurveValue(TEXT("Rotation"));

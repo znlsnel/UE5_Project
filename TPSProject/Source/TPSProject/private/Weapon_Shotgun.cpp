@@ -21,6 +21,8 @@ AWeapon_Shotgun::AWeapon_Shotgun()
 	RootComponent = pickupCollision;
 	weaponMeshComp->SetupAttachment(RootComponent);
 
+
+
 	weaponType = WeaponType::Shotgun;
 	ammoType = AmmoType::ShotgunAmmo;
 	weaponSlotType = WeaponSlotType::PrimarySlot;

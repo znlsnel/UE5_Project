@@ -42,6 +42,7 @@ void AWeapon::UnSynchronizeWhitPlayer()
 
 void AWeapon::Attack()
 {
+
 	if (isSynchronized == false) return;
 	if (currAmmo == 0)
 	{
@@ -69,7 +70,7 @@ void AWeapon::Attack()
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Monster Fire!"));
 		AEnemy* enemy = Cast<AEnemy>(pHitResult.GetActor());
 		
-		int damage = weapDamage * myPlayer->AdditionalAttackPower;
+		int damage = weapDamage * (myPlayer->AdditionalAttackPower + 1);
 
 		FName tempName = pHitResult.BoneName;
 		if (tempName == FName("head"))
@@ -97,7 +98,7 @@ FHitResult AWeapon::LineTrace()
 	FRotator TraceStartRotation;
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT TraceStartPoint, OUT TraceStartRotation);
 
-	float traceLength = 5000.f;
+	float traceLength = 10000.f;
 	FVector LineTraceEnd = TraceStartPoint + TraceStartRotation.Vector() * traceLength;
 
 	FHitResult pHitResult;
@@ -106,14 +107,16 @@ FHitResult AWeapon::LineTrace()
 
 	bool isHit = UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStartPoint, LineTraceEnd, UEngineTypes::ConvertToTraceType(ECC_Visibility), true, pIgnore, EDrawDebugTrace::None, pHitResult, true);
 
-	if (isHit)
-		LineTraceEnd = pHitResult.ImpactPoint;
-
 	TraceStartPoint = weaponMeshComp->GetSocketLocation("Muzzle");
 
-	isHit = UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStartPoint, LineTraceEnd, UEngineTypes::ConvertToTraceType(ECC_Visibility), true, pIgnore, EDrawDebugTrace::None, pHitResult, true);
+	if (isHit)
+	{
+		LineTraceEnd = TraceStartPoint + (MyNormalize(pHitResult.ImpactPoint - TraceStartPoint) * traceLength);
 
-	
+	}
+
+	isHit = UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStartPoint, LineTraceEnd, UEngineTypes::ConvertToTraceType(ECC_Visibility), true, pIgnore, EDrawDebugTrace::None, pHitResult, true);
+	 
 	return pHitResult;
 }
 
@@ -126,10 +129,6 @@ void AWeapon::HideWeapon()
 void AWeapon::UncoverWeapon()
 {
 	weaponMeshComp->SetVisibility(true);
-	if (anim)
-	{
-		anim->PlayPlayerMontage(CharacterEquipAM);
-	}
 }
 
 void AWeapon::DiscardWeaponIfAlreadyExists()
@@ -193,12 +192,35 @@ void AWeapon::createNiagara(FHitResult pHitResult)
 
 	}
 
-	UNiagaraComponent* tempDecal = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactDecal, pHitResult.ImpactPoint, FRotator(0));
+	UNiagaraComponent* tempDecal = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactDecal, pHitResult.ImpactPoint, pHitResult.ImpactNormal.Rotation());
 
+	CreateDecal(tempDecal, pHitResult);
+
+	UNiagaraComponent* tempImpact = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffect, pHitResult.ImpactPoint, pHitResult.ImpactNormal.Rotation());
+	
+	CreateDecal(tempImpact, pHitResult);
+}
+
+FVector AWeapon::MyNormalize(const FVector& Invec)
+{
+	double Length = Invec.Size();
+
+	if (Length > 0.f)
+		return Invec / Length;
+	return FVector::ZeroVector;
+}
+
+void AWeapon::CreateDecal(UNiagaraComponent* tempDecal, FHitResult& pHitResult)
+{
 	if (tempDecal)
 	{
+
 		tempDecal->SetNiagaraVariableBool(TEXT("User.Trigger"), true);
-		tempDecal->SetNiagaraVariableInt(TEXT("User.SurfaceType"), 2);
+
+		int32 surfacetype = 2;
+		if (pHitResult.GetActor() && pHitResult.GetActor()->ActorHasTag(TEXT("Enemy"))) surfacetype = 1;
+
+		tempDecal->SetNiagaraVariableInt(TEXT("User.SurfaceType"), surfacetype);
 
 		TArray<FVector> ImpactPosArr;
 		ImpactPosArr.Add(pHitResult.ImpactPoint);
@@ -220,6 +242,7 @@ void AWeapon::createNiagara(FHitResult pHitResult)
 	}
 }
 
+
 // Sets default values
 AWeapon::AWeapon()
 {
@@ -229,12 +252,14 @@ AWeapon::AWeapon()
 
 	itemType = ItemType::Weapon;
 	//CreatePickupCollision();
+
 }
 
 // Called when the game starts or when spawned
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
 }
 
 // Called every frame

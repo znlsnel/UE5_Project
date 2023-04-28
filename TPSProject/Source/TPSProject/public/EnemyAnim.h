@@ -39,4 +39,8 @@ public:
 
 	UPROPERTY(EditAnywhere, blueprintReadWrite, category = FSM)
 		bool isDead = false;
+
+	UPROPERTY(BlueprintReadOnly)
+		int AttackDamage = 5;
+	int initAttackDamage = 5;
 };

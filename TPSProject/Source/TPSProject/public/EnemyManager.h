@@ -24,18 +24,21 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void CreateEnemy();
 	void FindSpawnPoints();
-
+	void StartRound();
 
 public:
 	// 스폰을 위한 알람 타이머
 	FTimerHandle spawnTimerHandle;
+	FTimerHandle roundTimerHandle;
+	bool isbreakTime = true;
+
 	// 랜덤 시간 간격 최솟값
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		float minTime = 2;
+		float minTime = 1.f;
 
 	// 랜덤 시간 간격 최댓값
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		float maxTime = 7;
+		float maxTime = 1.5f;
 
 	// 스폰할 위치 정보 배열
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
@@ -46,6 +49,12 @@ public:
 		TSubclassOf<class AEnemy> enemyFactory;
 	TArray<class AEnemy*> enemyPool;
 
-	int32 monsterSpawnLimit = 10;
+	UPROPERTY(EditAnywhere, Category = RoundUI)
+		TSubclassOf<class URoundUI> roundUIFactory;
+	class URoundUI* roundUI;
 
+	int32 monsterSpawnLimit = 15;
+
+	float enemyBonusAttackPower = 0.f;
+	float enemyBonusHp = 1.f;
 };

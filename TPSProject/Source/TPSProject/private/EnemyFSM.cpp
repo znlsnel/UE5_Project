@@ -86,7 +86,7 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 	spawnPoint.Z += 100;
 	anim->isDead = false;
 	isActive = true;
-	hp = maxHp;
+	hp = initHp;
 	me->SetActorHiddenInGame(false);
 	me->SetActorLocation(spawnPoint);
 	me->SetActorRotation(FRotator(0, 0, 0));
@@ -226,9 +226,6 @@ void UEnemyFSM::DieState()
 		if (isActive == false) return;
 		isActive = false;
 		me->SetActorHiddenInGame(true);
-
-		int money = 10;
-		target->GetMoney(money);
 	}
 	anim->animState = mState;
 }
@@ -236,7 +233,9 @@ void UEnemyFSM::DieState()
 void UEnemyFSM::OnDamageProcess(int damage)
 {
 	if (mState == EEnemyState::Die) return;
+
 	int randDamage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));
+
 	FRotator tempRot = target->GetActorRotation();
 	tempRot.Yaw *= -1;
 	tempRot.Pitch = 0;
@@ -261,9 +260,19 @@ void UEnemyFSM::OnDamageProcess(int damage)
 		anim->PlayDamageAnim(TEXT("Die"));
 		currentTime = 0;
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		int money = 10;
+		target->GetMoney(money);
+		me->DieEvent();
 	}
 
 	
+}
+
+void UEnemyFSM::RoundInitEnemy(float bonusAtt, float bonusHp)
+{
+	hp = initHp * bonusHp;
+	anim->AttackDamage = anim->initAttackDamage + bonusAtt;
 }
 
 bool UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest)

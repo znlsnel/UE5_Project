@@ -12,7 +12,7 @@ void UStoreUI::UpgradePlayerAttack()
 	Money -= (AdditionalPower * 100) + 10;
 
 	AdditionalPower += 0.1f;
-	myPlayer->AdditionalAttackPower += AdditionalPower;
+	myPlayer->AdditionalAttackPower = AdditionalPower;
 }
 
 void UStoreUI::UpgradePlayerHP()
@@ -21,6 +21,7 @@ void UStoreUI::UpgradePlayerHP()
 	Money -= (AdditionalHp * 100) + 10;
 
 	AdditionalHp += 0.1f;
-	myPlayer->hp += myPlayer->hp * AdditionalHp;
+	myPlayer->hp += 10;
+	myPlayer->initialHp += 10;
 	myPlayer->playerUI->screenUI->UpdateScreenUI();
 }

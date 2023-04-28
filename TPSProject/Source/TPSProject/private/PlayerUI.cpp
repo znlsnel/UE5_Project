@@ -31,7 +31,7 @@ void UPlayerUI::InitializeComponent()
 
 	storeActor = GetWorld()->SpawnActor<AStoreActor>();
 	storeUI = CreateWidget<UStoreUI>(GetWorld(), storeUIFactory);
-	storeUI->myPlayer = me;
+	if (IsValid(storeUI)) storeUI->myPlayer = me;
 	storeActor->storeUI = storeUI;
 }
 

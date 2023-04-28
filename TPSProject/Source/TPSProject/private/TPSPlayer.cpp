@@ -137,9 +137,9 @@ void ATPSPlayer::GetMoney(int money)
 
 
 
-void ATPSPlayer::OnHitEvent()
+void ATPSPlayer::OnHitEvent(int damage)
 {
-	hp -= 5;
+	hp -= damage;
 	playerUI->screenUI->UpdateScreenUI();
 	if (hp <= 0)
 	{

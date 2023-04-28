@@ -29,7 +29,6 @@ UPlayerFire::UPlayerFire()
 			bulletSound = tempSound.Object;
 		}
 	}
-	PrimaryComponentTick.bCanEverTick = true;
 }
 
 void UPlayerFire::SetupInputBinding(UInputComponent* PlayerInputComponent)
@@ -68,6 +67,10 @@ void UPlayerFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 void UPlayerFire::InputFire(bool isPressed)
 {
 	isFire = isPressed;
+
+	FKey MouseButton = EKeys::LeftMouseButton;
+	GetWeapon()->ClickWorldWidget(isFire);
+
 	LoopFire();
 }
 
@@ -127,6 +130,8 @@ void UPlayerFire::InitializeWeapon()
 	//primaryWeapon = GetWorld()->SpawnActor<AWeapon_Rifle>(rifle);
 	//primaryWeapon->SynchronizeWhitPlayer(me);
 
+	anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
+
 	currWeapon = WeaponType::Pistol;
 	currSlot = WeaponSlotType::SecondarySlot;
 	EquipWeapon(currSlot);
@@ -148,19 +153,41 @@ AWeapon* UPlayerFire::GetWeapon()
 
 void UPlayerFire::EquipWeapon(WeaponSlotType slotType)
 {
+	if (IsValid(anim) == false)
+		anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
 	switch (slotType)
 	{
 	case WeaponSlotType::PrimarySlot:
-		if (primaryWeapon) primaryWeapon->UncoverWeapon();
-		if (secondaryWeapon) secondaryWeapon->HideWeapon();
+		if (primaryWeapon) anim->PlayPlayerMontage(primaryWeapon->CharacterEquipAM);
 		break;
 	case WeaponSlotType::SecondarySlot:
-		if (secondaryWeapon) secondaryWeapon->UncoverWeapon();
-		if (primaryWeapon) primaryWeapon->HideWeapon();
+		if (secondaryWeapon) anim->PlayPlayerMontage(secondaryWeapon->CharacterEquipAM);
 		break;
 	}
+
+}
+
+void UPlayerFire::ChangeWeapon()
+{
+	switch (currSlot)
+	{
+	case WeaponSlotType::PrimarySlot:
+	{
+		if (primaryWeapon) primaryWeapon->UncoverWeapon();
+		if (secondaryWeapon) secondaryWeapon->HideWeapon();
+	}
+		break;
+	case WeaponSlotType::SecondarySlot:
+	{
+		if (secondaryWeapon) secondaryWeapon->UncoverWeapon();
+		if (primaryWeapon) primaryWeapon->HideWeapon();
+	}
+		break;
+	}
+
 	if (me->playerUI->screenUI) me->playerUI->screenUI->WeaponSwap();
-	UPlayerAnim* anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
+
+
 
 	anim->weaponType = currWeapon;
 	anim->weaponSlotType = currSlot;
