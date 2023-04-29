@@ -106,5 +106,5 @@ public:
 	UPROPERTY()
 		class AAIController* ai;
 
-	
+	FVector deadLocation = FVector(0, 0, 0);
 };

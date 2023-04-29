@@ -19,6 +19,12 @@ void UScreenUI::UpdateScreenUI()
 	hpInfo = FString::Printf(TEXT("%d / %d"), myPlayer->hp, myPlayer->initialHp);
 }
 
+void UScreenUI::StartGame()
+{
+	AddToViewport();
+	WeaponSwap();
+}
+
 void UScreenUI::Initialization(ATPSPlayer* player)
 {
 	if (IsValid(this) == false) return;
@@ -27,8 +33,7 @@ void UScreenUI::Initialization(ATPSPlayer* player)
 	inventory = CreateWidget<UInventory>(GetWorld());
 	inventory->Initialization(myPlayer);
 
-	AddToViewport();
-	WeaponSwap();
+	GetWorld()->GetTimerManager().SetTimer(startTimerHandle, this, &UScreenUI::StartGame, 5.5f);
 }
 
 void UScreenUI::SetupInputBinding(UInputComponent* PlayerInputComponent)

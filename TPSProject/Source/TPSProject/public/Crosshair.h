@@ -22,7 +22,7 @@ public:
 		void ChangeCrosshair(WeaponType weaponType);
 
 	UFUNCTION(BlueprintImplementableEvent)
-		void AttackCrosshair();
+		void AttackCrosshair(bool isPressed);
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void MoveCrosshair();

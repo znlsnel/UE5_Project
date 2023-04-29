@@ -221,11 +221,12 @@ void UEnemyFSM::DieState()
 	}
 	
 
-	if (me->GetActorLocation().Z < -200.0f)
+	if (me->GetActorLocation().Z < deadLocation.Z -200.0f)
 	{
 		if (isActive == false) return;
 		isActive = false;
 		me->SetActorHiddenInGame(true);
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("DEAD!!"));
 	}
 	anim->animState = mState;
 }
@@ -264,6 +265,7 @@ void UEnemyFSM::OnDamageProcess(int damage)
 		int money = 10;
 		target->GetMoney(money);
 		me->DieEvent();
+		deadLocation = me->GetActorLocation();
 	}
 
 	

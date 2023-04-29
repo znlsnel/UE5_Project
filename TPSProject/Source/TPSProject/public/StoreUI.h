@@ -18,7 +18,7 @@ public:
 	class ATPSPlayer* myPlayer;
 
 	UPROPERTY(BlueprintReadOnly)
-		int Money = 100;
+		int Money = 0;
 
 	UPROPERTY(BlueprintReadOnly)
 		float AdditionalPower = 0.f;

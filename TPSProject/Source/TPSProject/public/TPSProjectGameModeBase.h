@@ -18,5 +18,11 @@ protected:
 	ATPSProjectGameModeBase();
 
 public:
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class AEnemyManager> enemyManagerFactory;
 	class AEnemyManager* EnemyManager;
+	class ATPSPlayer* myPlayer;
+
+	UFUNCTION(BlueprintCallable)
+		void StartGame();
 };

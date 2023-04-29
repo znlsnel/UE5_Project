@@ -18,8 +18,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 public:	
+	void StartGame();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void CreateEnemy();
@@ -30,15 +30,16 @@ public:
 	// 스폰을 위한 알람 타이머
 	FTimerHandle spawnTimerHandle;
 	FTimerHandle roundTimerHandle;
+	FTimerHandle startTimerHandle;
 	bool isbreakTime = true;
 
 	// 랜덤 시간 간격 최솟값
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		float minTime = 1.f;
+		float minTime = 3.f;
 
 	// 랜덤 시간 간격 최댓값
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		float maxTime = 1.5f;
+		float maxTime = 5.5f;
 
 	// 스폰할 위치 정보 배열
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)

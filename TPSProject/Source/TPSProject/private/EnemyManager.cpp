@@ -24,10 +24,15 @@ void AEnemyManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	roundUI = CreateWidget<URoundUI>(GetWorld(), roundUIFactory);
-	if (IsValid(roundUI)) roundUI->AddToViewport();
 
+	GetWorld()->GetTimerManager().SetTimer(startTimerHandle, this, &AEnemyManager::StartGame, 5.5f);
+}
+
+void AEnemyManager::StartGame()
+{
+	roundUI = CreateWidget<URoundUI>(GetWorld(), roundUIFactory);
 	// 1. 랜덤한 생성 시간 구하기
+	if (IsValid(roundUI)) roundUI->AddToViewport();
 
 	roundUI->roundTime = 10;
 
@@ -70,11 +75,25 @@ void AEnemyManager::CreateEnemy()
 		AEnemy* enemy;
 		for (int i = 0; i < 10; i++)
 		{
-			enemy = Cast<AEnemy>(GetWorld()->SpawnActor<AEnemy>(enemyFactory, spawnPoints[index]->GetActorLocation(), FRotator(0)));
+			FVector tempPos = spawnPoints[index]->GetActorLocation();
+			tempPos.Z += 150;
+
+			enemy = Cast<AEnemy>(GetWorld()->SpawnActor<AActor>(enemyFactory, tempPos, FRotator(0, 0, 0)));
 
 
 
-			if (IsValid(enemy)) break;
+
+			if (IsValid(enemy))
+			{
+				UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Yeeeeeeeeeeeeeeeeeeee"));
+				break;
+			}
+			else
+			{
+				UKismetSystemLibrary::PrintString(GetWorld(), TEXT("faild CreateEnemy"));
+				UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Location : %f, %f, %f"), spawnPoints[index]->GetActorLocation().X, spawnPoints[index]->GetActorLocation().Y, spawnPoints[index]->GetActorLocation().Z));
+
+			}
 		}
 
 

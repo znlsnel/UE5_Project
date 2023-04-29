@@ -71,12 +71,29 @@ void UPlayerFire::InputFire(bool isPressed)
 	FKey MouseButton = EKeys::LeftMouseButton;
 	GetWeapon()->ClickWorldWidget(isFire);
 
+	if (!isFire)
+	{
+		me->playerUI->crosshair->AttackCrosshair(isFire);
+	}
+
 	LoopFire();
+	
 }
 
 void UPlayerFire::LoopFire()
 {
 	if (isFire == false) return;
+	
+	if (lastShotTime == 0.f)
+		lastShotTime = GetWorld()->GetTimeSeconds();
+
+	else if (GetWorld()->GetTimeSeconds() - lastShotTime < GetWeapon()->fireDelay - 0.1f)
+	{
+		return;
+	}
+	else
+		lastShotTime = GetWorld()->GetTimeSeconds();
+
 
 	if (me->playerUI->isInventoryOpen())
 	{
@@ -85,7 +102,7 @@ void UPlayerFire::LoopFire()
 	}
 	AWeapon* tempWeapon = GetWeapon();
 	if (tempWeapon) tempWeapon->Attack();
-	me->playerUI->crosshair->AttackCrosshair();
+	me->playerUI->crosshair->AttackCrosshair(isFire);
 
 	GetWorld()->GetTimerManager().SetTimer(fireTimerHandle, this, &UPlayerFire::LoopFire, GetWeapon()->fireDelay);
 }

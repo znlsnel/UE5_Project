@@ -38,7 +38,7 @@ public:
 	virtual void SynchronizeWhitPlayer(ATPSPlayer* player);
 	void UnSynchronizeWhitPlayer();
 	virtual void Attack();
-	FHitResult LineTrace();
+	TArray<FHitResult> LineTrace();
 	void HideWeapon();
 	void UncoverWeapon();
 	void DiscardWeaponIfAlreadyExists();
@@ -80,11 +80,15 @@ public:
 
 	// 한번에 발사되는 총알의 갯수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
-		int FireBulletCount = 0;
+		int FireBulletCount = 1;
 
 	// 매 사격시 정확도가 낮아지는 정도
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		float FireSpread = 0.f;
+	
+	float currFireSpread = 0.f;
+	float lastFiredTime = 0.f;
+
 
 	// 총 데미지
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)

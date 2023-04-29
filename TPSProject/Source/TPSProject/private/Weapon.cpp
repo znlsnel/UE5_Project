@@ -6,6 +6,7 @@
 #include "EnemyFSM.h"
 
 #include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/KismetMathLibrary.h>
 #include <Kismet/GameplayStatics.h>
 
 void AWeapon::SynchronizeWhitPlayer(ATPSPlayer* player)
@@ -62,37 +63,57 @@ void AWeapon::Attack()
 		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("No FireCamShakeClass")));
 	}
 
-	FHitResult pHitResult = LineTrace();
-	createNiagara(pHitResult);
-
-	if (IsValid(pHitResult.GetActor()) && pHitResult.GetActor()->ActorHasTag(TEXT("Enemy")))
+	if (lastFiredTime == 0.f)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Monster Fire!"));
-		AEnemy* enemy = Cast<AEnemy>(pHitResult.GetActor());
-		
-		int damage = weapDamage * (myPlayer->AdditionalAttackPower + 1);
-
-		FName tempName = pHitResult.BoneName;
-		if (tempName == FName("head"))
-			damage *= 2;
-
-		else if (tempName == FName("spine_03"))
-			damage *= 1;
-		
-		else
-			damage = damage - (damage / 4);
-		
-
-		enemy->fsm->OnDamageProcess(damage);
-		
+		lastFiredTime = GetWorld()->GetRealTimeSeconds();
 	}
+	else if (GetWorld()->GetRealTimeSeconds() - lastFiredTime < 1.2)
+	{
+		currFireSpread = FMath::Min(currFireSpread* 1.1f, FireSpread * 1.5f );
+		lastFiredTime = GetWorld()->GetRealTimeSeconds();
+	}
+	else
+	{
+		currFireSpread = FireSpread;
+		lastFiredTime = 0.f;
+	}
+
+
+	TArray<FHitResult> pHitResultArr = LineTrace();
+
+	for (auto HitResult : pHitResultArr)
+	{
+		createNiagara(HitResult);
+
+		if (IsValid(HitResult.GetActor()) && HitResult.GetActor()->ActorHasTag(TEXT("Enemy")))
+		{
+			AEnemy* enemy = Cast<AEnemy>(HitResult.GetActor());
+		
+			int damage = weapDamage * (myPlayer->AdditionalAttackPower + 1);
+
+			FName tempName = HitResult.BoneName;
+			if (tempName == FName("head"))
+				damage *= 2;
+
+			else if (tempName == FName("spine_03"))
+				damage *= 1;
+		
+			else
+				damage = damage - (damage / 4);
+		
+
+			enemy->fsm->OnDamageProcess(damage);
+		
+		}
+	}
+
 
 
 	if (currAmmo) currAmmo--;
 }
 
 // Trace From Camera
-FHitResult AWeapon::LineTrace()
+TArray<FHitResult> AWeapon::LineTrace()
 {
 	FVector TraceStartPoint;
 	FRotator TraceStartRotation;
@@ -109,15 +130,21 @@ FHitResult AWeapon::LineTrace()
 
 	TraceStartPoint = weaponMeshComp->GetSocketLocation("Muzzle");
 
-	if (isHit)
+
+	TArray<FHitResult> hitArr;
+
+	
+
+	for (int i = 0; i < FireBulletCount; i++)
 	{
-		LineTraceEnd = TraceStartPoint + (MyNormalize(pHitResult.ImpactPoint - TraceStartPoint) * traceLength);
+		LineTraceEnd =  TraceStartPoint + (UKismetMathLibrary::RandomUnitVectorInConeInDegrees(MyNormalize(pHitResult.ImpactPoint - TraceStartPoint), currFireSpread) * traceLength);
 
+		isHit = UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStartPoint, LineTraceEnd, UEngineTypes::ConvertToTraceType(ECC_Visibility), true, pIgnore, EDrawDebugTrace::None, pHitResult, true);
+
+		hitArr.Add(pHitResult);
+		
 	}
-
-	isHit = UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStartPoint, LineTraceEnd, UEngineTypes::ConvertToTraceType(ECC_Visibility), true, pIgnore, EDrawDebugTrace::None, pHitResult, true);
-	 
-	return pHitResult;
+	return hitArr;
 }
 
 void AWeapon::HideWeapon()
@@ -159,6 +186,7 @@ void AWeapon::DiscardWeaponIfAlreadyExists()
 void AWeapon::Reload()
 {
 	if (Ammo == 0) return;
+	if (currAmmo == MagazineSize) return;
 	int capacity = FMath::Min(FMath::Min(MagazineSize - currAmmo, Ammo), MagazineSize);
 
 	currAmmo += capacity;
@@ -259,7 +287,7 @@ AWeapon::AWeapon()
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-
+	currFireSpread = FireSpread;
 }
 
 // Called every frame

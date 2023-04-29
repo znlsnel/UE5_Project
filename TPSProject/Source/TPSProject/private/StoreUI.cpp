@@ -9,7 +9,7 @@
 void UStoreUI::UpgradePlayerAttack()
 {
 	if (Money < (AdditionalPower * 100) + 10) return;
-	Money -= (AdditionalPower * 100) + 10;
+	Money -= ((AdditionalPower / 0.1f ) * 10) + 10;
 
 	AdditionalPower += 0.1f;
 	myPlayer->AdditionalAttackPower = AdditionalPower;

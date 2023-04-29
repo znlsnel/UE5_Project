@@ -41,14 +41,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ChangeWeapon();
 
-	bool bSniperAim = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool bUsingPistol = true;
-	bool isFire = false;
-	FTimerHandle fireTimerHandle;
 
 public:
+	bool bSniperAim = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bUsingPistol = true;
+
+	bool isFire = false;
+
+	FTimerHandle fireTimerHandle;
+
 	class UPlayerAnim* anim;
+
+	float lastShotTime = 0.f;
 	// ¹«±â
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
 		WeaponType currWeapon = WeaponType::Pistol;

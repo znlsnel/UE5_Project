@@ -20,11 +20,14 @@ class TPSPROJECT_API UScreenUI : public UUserWidget
 public:
 
 	void UpdateScreenUI();
+	void StartGame();
 	void Initialization(class ATPSPlayer* player);
 	void SetupInputBinding(class UInputComponent* PlayerInputComponent);
 	void ToggleInventory();
 public:
 	class ATPSPlayer* myPlayer;
+
+	FTimerHandle startTimerHandle;
 
 	UPROPERTY(EditAnywhere, blueprintReadWrite, Category = Inventory)
 		class UInventory* inventory;
