@@ -13,6 +13,7 @@
 #include "PlayerUI.h"
 #include "StoreUI.h"
 #include "StoreActor.h"
+#include "TPSPlayerController.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -24,15 +25,17 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/SkeletalMeshComponent.h>
 #include <Blueprint/UserWidget.h>
-
+#include <Net/UnrealNetwork.h>
 
 
 
 // Sets default values
 ATPSPlayer::ATPSPlayer()
 {
+
 	//SubObjects
 	{
+		
 		playerMove = CreateDefaultSubobject<UPlayerMove>(TEXT("PlayerMove"));
 		playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
 		IKFootComp = CreateDefaultSubobject<UFootIkActorComponent>(TEXT("IKFootComp"));
@@ -41,7 +44,7 @@ ATPSPlayer::ATPSPlayer()
 
 		playerUI = CreateDefaultSubobject<UPlayerUI>(TEXT("UI"));
 	}
-
+	
 
 
 	PrimaryActorTick.bCanEverTick = true;
@@ -100,9 +103,12 @@ void ATPSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 	hp = initialHp;
-	playerUI->screenUI->UpdateScreenUI();
+
+	if(playerUI->screenUI)
+		playerUI->screenUI->UpdateScreenUI();
+
+
 }
 
 // Called every frame
@@ -110,6 +116,7 @@ void ATPSPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	tickUpdateFunctions.Broadcast();
+	
 }
 
 // Called to bind functionality to input
@@ -120,6 +127,45 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	onInputBindingDelegate.Broadcast(PlayerInputComponent);
 
 }
+
+void ATPSPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	
+}
+
+void ATPSPlayer::PlayMontageInServer_Implementation(UAnimMontage* AM)
+{
+	MulticastAnimMontage(AM);
+}
+
+void ATPSPlayer::MulticastAnimMontage_Implementation(UAnimMontage* AM)
+{
+	GetMesh()->GetAnimInstance()->Montage_Play(AM);
+}
+
+void ATPSPlayer::createNiagara_Implementation(FHitResult pHitResult)
+{
+	MulticastNiaga(pHitResult);
+}
+
+void ATPSPlayer::MulticastNiaga_Implementation(FHitResult pHitResult)
+{
+	playerFire->GetWeapon()-> createNiagara(pHitResult);
+}
+
+void ATPSPlayer::DoubleClickInServer_Implementation(DashType dashType)
+{
+	DoubleClickMulticast(dashType);
+}
+
+void ATPSPlayer::DoubleClickMulticast_Implementation(DashType dashType)
+{
+	Cast<UPlayerMove>(playerMove)->Dash(dashType);
+}
+
+
 
 
 UInventory* ATPSPlayer::GetInventory()
@@ -137,10 +183,12 @@ void ATPSPlayer::GetMoney(int money)
 
 
 
+
 void ATPSPlayer::OnHitEvent(int damage)
 {
 	hp -= damage;
-	playerUI->screenUI->UpdateScreenUI();
+	if (playerUI->screenUI)
+		playerUI->screenUI->UpdateScreenUI();
 	if (hp <= 0)
 	{
 		OnGameOver();

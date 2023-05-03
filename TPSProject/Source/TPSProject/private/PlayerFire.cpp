@@ -18,6 +18,7 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include <Camera/CameraComponent.h>
 #include <Math/UnrealMathVectorCommon.h>
+#include <GameFramework/PlayerState.h>
 
 UPlayerFire::UPlayerFire()
 {
@@ -50,6 +51,7 @@ void UPlayerFire::BeginPlay()
 	Super::BeginPlay();
 
 	controller = GetWorld()->GetFirstPlayerController();
+	//controller = me->GetPlayerState()->GetPlayerController();
 
 	me->OnInitialization();
 
@@ -68,7 +70,6 @@ void UPlayerFire::InputFire(bool isPressed)
 {
 	isFire = isPressed;
 
-	FKey MouseButton = EKeys::LeftMouseButton;
 	GetWeapon()->ClickWorldWidget(isFire);
 
 	if (!isFire)
@@ -83,7 +84,6 @@ void UPlayerFire::InputFire(bool isPressed)
 void UPlayerFire::LoopFire()
 {
 	if (isFire == false) return;
-	
 	if (lastShotTime == 0.f)
 		lastShotTime = GetWorld()->GetTimeSeconds();
 
@@ -175,10 +175,10 @@ void UPlayerFire::EquipWeapon(WeaponSlotType slotType)
 	switch (slotType)
 	{
 	case WeaponSlotType::PrimarySlot:
-		if (primaryWeapon) anim->PlayPlayerMontage(primaryWeapon->CharacterEquipAM);
+		if (primaryWeapon) me->PlayMontageInServer(primaryWeapon->CharacterEquipAM);
 		break;
 	case WeaponSlotType::SecondarySlot:
-		if (secondaryWeapon) anim->PlayPlayerMontage(secondaryWeapon->CharacterEquipAM);
+		if (secondaryWeapon) me->PlayMontageInServer(secondaryWeapon->CharacterEquipAM);
 		break;
 	}
 

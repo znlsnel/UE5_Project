@@ -15,6 +15,7 @@
 #include <GameFramework/PawnMovementComponent.h>
 #include <GameFramework/Pawn.h>
 
+
 #include <NavigationSystem.h>
 
 // Sets default values for this component's properties
@@ -109,8 +110,10 @@ void UEnemyFSM::IdleState()
 		currentTime = 0;
 
 		anim->animState = mState;
-
+		
 		GetRandomPositionInNavMesh(me->GetActorLocation(), 500, randomPos);
+
+
 	}
 } 
 
@@ -288,3 +291,12 @@ bool UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius,
 	return result;
 }
 
+//void UEnemyFSM::GetLifeTimeReplicatedProps(TArray< FLifetimeProperty>& OutLifetimeProps) const
+//{
+//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//
+//	DOREPLIFETIME(UEnemyFSM, randomPos);
+//
+//	DOREPLIFETIME_CONDITION(UEnemyFSM, randomPos, COND_SkipOwner);
+//}
+//

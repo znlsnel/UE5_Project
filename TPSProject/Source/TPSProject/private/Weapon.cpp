@@ -52,8 +52,12 @@ void AWeapon::Attack()
 	}
 
 	weaponMeshComp->PlayAnimation(WeaponFireAnim, false);
-	if (anim) 
-		anim->PlayPlayerMontage(CharacterFireAM);
+	//if (anim)
+	//{
+	//	anim->currMontage = CharacterFireAM;
+	//	anim->PlayMontage(CharacterFireAM);
+	//}
+	myPlayer->PlayMontageInServer(CharacterFireAM);
 
 
 	GetWorld()->GetFirstPlayerController()-> PlayerCameraManager->StartCameraShake(FireCamShakeClass);
@@ -78,38 +82,8 @@ void AWeapon::Attack()
 		lastFiredTime = 0.f;
 	}
 
+	FireWeapon();
 
-	TArray<FHitResult> pHitResultArr = LineTrace();
-
-	for (auto HitResult : pHitResultArr)
-	{
-		createNiagara(HitResult);
-
-		if (IsValid(HitResult.GetActor()) && HitResult.GetActor()->ActorHasTag(TEXT("Enemy")))
-		{
-			AEnemy* enemy = Cast<AEnemy>(HitResult.GetActor());
-		
-			int damage = weapDamage * (myPlayer->AdditionalAttackPower + 1);
-
-			FName tempName = HitResult.BoneName;
-			if (tempName == FName("head"))
-				damage *= 2;
-
-			else if (tempName == FName("spine_03"))
-				damage *= 1;
-		
-			else
-				damage = damage - (damage / 4);
-		
-
-			enemy->fsm->OnDamageProcess(damage);
-		
-		}
-	}
-
-
-
-	if (currAmmo) currAmmo--;
 }
 
 // Trace From Camera
@@ -192,15 +166,57 @@ void AWeapon::Reload()
 	currAmmo += capacity;
 	Ammo -= capacity;
 
-	if (anim)
-		anim->PlayPlayerMontage(CharacterReloadAM);
+	//if (anim)
+	//	anim->PlayMontage(CharacterReloadAM);
+	myPlayer->PlayMontageInServer(CharacterReloadAM);
+
 	weaponMeshComp->PlayAnimation(WeaponReloadAnim, false);
 
 }
 
+
+void AWeapon::FireWeapon()
+{
+	TArray<FHitResult> pHitResultArr = LineTrace();
+
+	for (auto HitResult : pHitResultArr)
+	{
+		myPlayer->createNiagara(HitResult);
+
+		if (IsValid(HitResult.GetActor()) && HitResult.GetActor()->ActorHasTag(TEXT("Enemy")))
+		{
+			AEnemy* enemy = Cast<AEnemy>(HitResult.GetActor());
+
+			int damage = weapDamage * (myPlayer->AdditionalAttackPower + 1);
+
+			FName tempName = HitResult.BoneName;
+			if (tempName == FName("head"))
+				damage *= 2;
+
+			else if (tempName == FName("spine_03"))
+				damage *= 1;
+
+			else
+				damage = damage - (damage / 4);
+
+
+			enemy->fsm->OnDamageProcess(damage);
+
+		}
+	}
+
+
+
+	if (currAmmo) currAmmo--;
+}
+
+//void AWeapon::createNiagara_Implementation(FHitResult pHitResult)
+//{
+//	MulticastNiaga(pHitResult);
+//}
+
 void AWeapon::createNiagara(FHitResult pHitResult)
 {
-
 	UNiagaraComponent* tempTracer = UNiagaraFunctionLibrary::SpawnSystemAttached(TracerNS, weaponMeshComp, TEXT(""), weaponMeshComp->GetSocketLocation(TEXT("Muzzle")), FRotator(0), EAttachLocation::KeepWorldPosition, true);
 
 
@@ -225,7 +241,7 @@ void AWeapon::createNiagara(FHitResult pHitResult)
 	CreateDecal(tempDecal, pHitResult);
 
 	UNiagaraComponent* tempImpact = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffect, pHitResult.ImpactPoint, pHitResult.ImpactNormal.Rotation());
-	
+
 	CreateDecal(tempImpact, pHitResult);
 }
 

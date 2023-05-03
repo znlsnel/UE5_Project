@@ -8,6 +8,8 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/Image.h>
 
+#include <GameFramework/PlayerState.h>
+
 
 
 
@@ -19,9 +21,11 @@ void UScreenUI::UpdateScreenUI()
 	hpInfo = FString::Printf(TEXT("%d / %d"), myPlayer->hp, myPlayer->initialHp);
 }
 
-void UScreenUI::StartGame()
+void UScreenUI::ATVWidget()
 {
-	AddToViewport();
+	if (myPlayer->GetNetMode() == NM_Client && myPlayer->GetLocalRole() == ROLE_AutonomousProxy)
+		AddToScreen(GetOwningLocalPlayer(), 0);
+
 	WeaponSwap();
 }
 
@@ -32,8 +36,6 @@ void UScreenUI::Initialization(ATPSPlayer* player)
 
 	inventory = CreateWidget<UInventory>(GetWorld());
 	inventory->Initialization(myPlayer);
-
-	GetWorld()->GetTimerManager().SetTimer(startTimerHandle, this, &UScreenUI::StartGame, 5.5f);
 }
 
 void UScreenUI::SetupInputBinding(UInputComponent* PlayerInputComponent)

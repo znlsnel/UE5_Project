@@ -10,6 +10,10 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/GameplayStatics.h>
 #include <Blueprint/UserWidget.h>
+#include <UObject/CoreNet.h>
+#include "Containers/ContainerAllocationPolicies.h"
+#include <GameFramework/Actor.h>
+
 
 // Sets default values
 AEnemyManager::AEnemyManager()
@@ -28,7 +32,7 @@ void AEnemyManager::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(startTimerHandle, this, &AEnemyManager::StartGame, 5.5f);
 }
 
-void AEnemyManager::StartGame()
+void AEnemyManager::StartGame_Implementation()
 {
 	roundUI = CreateWidget<URoundUI>(GetWorld(), roundUIFactory);
 	// 1. 랜덤한 생성 시간 구하기
@@ -51,7 +55,7 @@ void AEnemyManager::Tick(float DeltaTime)
 
 
 
-void AEnemyManager::CreateEnemy()
+void AEnemyManager::CreateEnemy_Implementation()
 {
 	// 랜덤 위치 구하기
 	int index = FMath::RandRange(0, spawnPoints.Num() - 1);
@@ -162,6 +166,12 @@ void AEnemyManager::StartRound()
 	}
 
 	GetWorld()->GetTimerManager().SetTimer(roundTimerHandle, this, &AEnemyManager::StartRound, 1.0f);
+}
+
+void AEnemyManager::GetLifeTimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AEnemyManager, enemyPool);
 }
 
 

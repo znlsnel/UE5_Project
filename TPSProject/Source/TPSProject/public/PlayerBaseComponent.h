@@ -34,8 +34,7 @@ public:
 
 
 public:
-	UPROPERTY()
-		ATPSPlayer* me;
+	ATPSPlayer* me;
 
 	UPROPERTY()
 		UCharacterMovementComponent* moveComp;

@@ -18,6 +18,11 @@ class TPSPROJECT_API UCrosshair : public UUserWidget
 public:
 	void Initialization(class ATPSPlayer* player);
 
+	//UFUNCTION(Client, Reliable)
+	void ATVWidget();
+
+	//void ATVCrosshair_Implementation();
+
 	UFUNCTION(BlueprintImplementableEvent)
 		void ChangeCrosshair(WeaponType weaponType);
 
@@ -30,4 +35,6 @@ public:
 public:
 	UPROPERTY(BlueprintReadWrite)
 		class ATPSPlayer* myPlayer;
+
+	FTimerHandle ATVTimer;
 };

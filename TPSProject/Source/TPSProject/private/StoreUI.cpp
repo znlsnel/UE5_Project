@@ -23,5 +23,6 @@ void UStoreUI::UpgradePlayerHP()
 	AdditionalHp += 0.1f;
 	myPlayer->hp += 10;
 	myPlayer->initialHp += 10;
-	myPlayer->playerUI->screenUI->UpdateScreenUI();
+	if (myPlayer->playerUI->screenUI)
+		myPlayer->playerUI->screenUI->UpdateScreenUI();
 }

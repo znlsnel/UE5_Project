@@ -74,7 +74,9 @@ void UPlayerMove::Move()
 	// FTransform으로 Transform 인스턴트를 생성
 	// TrasnformVector 는 특정한 vector를 local vector로 변환시켜줌
 	direction = FTransform(me->GetControlRotation()).TransformVector(direction);
+
 	me->AddMovementInput(direction);
+
 	direction = FVector(0, 0, 0);
 }
 void UPlayerMove::InputHorizontal(float value)
@@ -113,8 +115,17 @@ void UPlayerMove::InputRun()
 
 void UPlayerMove::DoubleClick(DashType dashDirection)
 {
-	playerAnim->Dash(dashDirection);
+	me->DoubleClickInServer(dashDirection);
 
+
+}
+
+void UPlayerMove::Dash(DashType dashDirection)
+{
+	UAnimMontage* dashMontage = playerAnim->Dash(dashDirection);
+
+	//playerAnim->PlayMontage(dashMontage);
+	me->PlayMontageInServer(dashMontage);
 	FVector ImpulseDirection;
 	switch (dashDirection)
 	{
@@ -134,9 +145,13 @@ void UPlayerMove::DoubleClick(DashType dashDirection)
 
 	float ImpulseMagnitude = 70000.0f;
 	FVector Impulse = ImpulseMagnitude * ImpulseDirection;
+
+
+
 	FVector Point = me->GetActorLocation();
-	
+
 	me->Jump();
 	me->GetCharacterMovement()->AddImpulse(Impulse);
+
 	//return;
 }

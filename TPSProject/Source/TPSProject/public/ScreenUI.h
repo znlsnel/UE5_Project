@@ -20,7 +20,9 @@ class TPSPROJECT_API UScreenUI : public UUserWidget
 public:
 
 	void UpdateScreenUI();
-	void StartGame();
+
+	void ATVWidget();
+
 	void Initialization(class ATPSPlayer* player);
 	void SetupInputBinding(class UInputComponent* PlayerInputComponent);
 	void ToggleInventory();

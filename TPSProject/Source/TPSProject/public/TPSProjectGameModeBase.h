@@ -16,13 +16,21 @@ class TPSPROJECT_API ATPSProjectGameModeBase : public AGameModeBase
 	
 protected:
 	ATPSProjectGameModeBase();
+	virtual void InitGame(const FString& mapName, const FString& Options, FString& ErrorMessage)override;
 
+	virtual void BeginPlay()override;
+	UFUNCTION(BlueprintCallable)
+		void StartGame();
 public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class AEnemyManager> enemyManagerFactory;
 	class AEnemyManager* EnemyManager;
-	class ATPSPlayer* myPlayer;
 
-	UFUNCTION(BlueprintCallable)
-		void StartGame();
+	UPROPERTY(EditAnywhere, category = testWidget)
+		TSubclassOf<UUserWidget> widgetFactory;
+	class UUserWidget* testWidget;
+
+	TArray<ULocalPlayer*, FDefaultAllocator> players;
+
+
 };

@@ -37,13 +37,24 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SynchronizeWhitPlayer(ATPSPlayer* player);
 	void UnSynchronizeWhitPlayer();
+
+
 	virtual void Attack();
 	TArray<FHitResult> LineTrace();
 	void HideWeapon();
 	void UncoverWeapon();
 	void DiscardWeaponIfAlreadyExists();
 	void Reload();
-	void createNiagara(FHitResult pHitResult);
+	
+	void FireWeapon();
+
+	//UFUNCTION(Server, Reliable)
+	void createNiagara( FHitResult pHitResult);
+	//void createNiagara_Implementation( FHitResult pHitResult);
+
+	//UFUNCTION(NetMulticast, Reliable)
+	//	void MulticastNiaga( FHitResult pHitResult);
+	//	void MulticastNiaga_Implementation( FHitResult pHitResult);
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetSync(bool isSync);

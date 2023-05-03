@@ -18,8 +18,19 @@ public:
 	virtual void InitializeComponent()override;
 	virtual void BeginPlay()override;
 	virtual void SetupInputBinding(class UInputComponent* PlayerInputComponent)override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const;
 	bool isInventoryOpen();
 	void GetMouseInput();
+	void ATVWidgets();
+
+	void InitializeWidgets();
+	UFUNCTION(Client, Reliable)
+		void InitializeWidgets_Client();
+		void InitializeWidgets_Client_Implementation();
+
+	UFUNCTION(Server, Reliable)
+		void InitializeWidgets_Server();
+		void InitializeWidgets_Server_Implementation();
 
 public:
 	UPROPERTY(EditDefaultsOnly)

@@ -24,17 +24,42 @@ protected:
 	// Called when the game starts or when spawned
 	ATPSPlayer();
 	virtual void BeginPlay() override;
-	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const;
 
+	// MULTICAST
+	UFUNCTION(Server, Reliable)
+		void PlayMontageInServer(class UAnimMontage* AM);
+		void PlayMontageInServer_Implementation(class UAnimMontage* AM);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void MulticastAnimMontage(class UAnimMontage* AM);
+		void MulticastAnimMontage_Implementation(class UAnimMontage* AM);
+
+	UFUNCTION(Server, Reliable)
+			void createNiagara(FHitResult pHitResult);
+		void createNiagara_Implementation(FHitResult pHitResult);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void MulticastNiaga(FHitResult pHitResult);
+	void MulticastNiaga_Implementation(FHitResult pHitResult);
+
+	UFUNCTION(Server, Reliable)
+		void DoubleClickInServer(DashType dashType);
+	void DoubleClickInServer_Implementation(DashType dashType);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void DoubleClickMulticast(DashType dashType);
+	void DoubleClickMulticast_Implementation(DashType dashType);
 
 public:
-
+	class APlayerController* myController;
+	FTimerHandle TickIdTimerHandle;
 // COMP=====================================================================
 	// 스프링암 Comp
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -58,8 +83,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UPickupManager* pickupManager;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere )
 		class UPlayerUI* playerUI;
+
 //======================================================================
 
 // Detail =====================================================================
@@ -90,6 +116,8 @@ public:
 
 	float AdditionalAttackPower = 0.f;
 
+
+
 // Collision 관련 ================================================================
 
 // 무기========================================================================
@@ -111,5 +139,6 @@ public:
 	//	void FireEffect();
 	class UInventory* GetInventory();
 	void GetMoney(int money);
+	void tickId();
 	//
 };

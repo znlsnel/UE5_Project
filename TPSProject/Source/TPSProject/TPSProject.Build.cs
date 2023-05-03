@@ -11,7 +11,7 @@ public class TPSProject : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] 
 		{ 
 			"Core", 
-			"CoreUObject", 
+			"CoreUObject",
 			"Engine", 
 			"InputCore" ,
 			"UMG", 
@@ -19,7 +19,10 @@ public class TPSProject : ModuleRules
 			"AIModule",
 			"Niagara",
 			"PhysicsCore",
-			"SlateCore"
+			"SlateCore",
+			"OnlineSubsystem",
+			"OnlineSubsystemUtils",
+			"Networking"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

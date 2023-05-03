@@ -18,16 +18,25 @@ class TPSPROJECT_API UPlayerAnim : public UAnimInstance
 public:
 	UPlayerAnim();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-	void PlayPlayerMontage(class UAnimMontage* animMontage);
+	
+	void PlayMontage(class UAnimMontage* animMontage);
+
+	void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const;
 	
 	void UpdateTurn();
 	void UpdateTurnAnimation();
 
-	UFUNCTION(BlueprintImplementableEvent)
-		void Dash(DashType dashDirection);
+	//UFUNCTION(BlueprintImplementableEvent)
+
+	UAnimMontage* Dash(DashType dashDirection);
+
+
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
+	UPROPERTY(Replicated)
+		class UAnimMontage* currMontage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Replicated,Category = PlayerAnim)
 		float speed = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
@@ -48,9 +57,20 @@ public:
 	UPROPERTY(blueprintReadOnly, Category = weaponType)
 		WeaponSlotType weaponSlotType = WeaponSlotType::None;
 
+
+	UPROPERTY(EditAnywhere, Category = DashMonstage)
+		class UAnimMontage* FowardDashMontage;
+	UPROPERTY(EditAnywhere, Category = DashMonstage)
+		class UAnimMontage* BackwardDashMontage;
+	UPROPERTY(EditAnywhere, Category = DashMonstage)
+		class UAnimMontage* LeftDashMontage;
+	UPROPERTY(EditAnywhere, Category = DashMonstage)
+		class UAnimMontage* RightDashMontage;
+
 	// ROOT BONE ROTATION
-	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
+	UPROPERTY(blueprintReadOnly, Replicated, category = RootBoneRotate)
 		float pitch = 0.f;
+
 	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
 		float rootYawOffset = 0.f;
 	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)

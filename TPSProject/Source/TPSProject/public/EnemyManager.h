@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <Net/UnrealNetwork.h>
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "EnemyManager.generated.h"
@@ -19,12 +21,20 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 public:	
-	void StartGame();
+	virtual void GetLifeTimeReplicatedProps(TArray< class FLifetimeProperty>& OutLifetimeProps) const;
+
+	UFUNCTION(NetMulticast, Reliable)
+		void StartGame();
 	// Called every frame
+
 	virtual void Tick(float DeltaTime) override;
-	void CreateEnemy();
-	void FindSpawnPoints();
-	void StartRound();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void CreateEnemy();
+
+		void FindSpawnPoints();
+
+		void StartRound();
 
 public:
 	// 스폰을 위한 알람 타이머
@@ -48,13 +58,15 @@ public:
 	// AEnemy 타입의 블루프린트 할당받을 변수
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
 		TSubclassOf<class AEnemy> enemyFactory;
-	TArray<class AEnemy*> enemyPool;
+
+		TArray<class AEnemy*> enemyPool;
 
 	UPROPERTY(EditAnywhere, Category = RoundUI)
 		TSubclassOf<class URoundUI> roundUIFactory;
 	class URoundUI* roundUI;
 
-	int32 monsterSpawnLimit = 15;
+
+		int32 monsterSpawnLimit = 15;
 
 	float enemyBonusAttackPower = 0.f;
 	float enemyBonusHp = 1.f;

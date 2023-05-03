@@ -120,6 +120,9 @@
     <ClCompile Include="..\..\Source\TPSProject\private\TPSPlayer.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\TPSPlayerController.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\TPSProject.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -220,6 +223,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\TPSPlayer.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\TPSPlayerController.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\TPSProject.h">

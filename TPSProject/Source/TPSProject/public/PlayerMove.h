@@ -37,12 +37,16 @@ public:
 
 	template<DashType type>
 	void DoubleClick() { DoubleClick(type); }
+
+
 	void DoubleClick(DashType dashType);
+
+	void Dash(DashType dashType);
+
 
 	bool isDash = false;
 	// 이동 방향
 	FVector direction = FVector(0, 0, 0);
-	DashType dashType = DashType::None;
 
 	double gameTime = 0;
 	double DoubleClickStartTime = 0;
