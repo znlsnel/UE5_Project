@@ -21,6 +21,9 @@ class TPSPROJECT_API UPlayerFire : public UPlayerBaseComponent
 	virtual void SetupInputBinding(class UInputComponent* PlayerInputComponent) override;
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
+	virtual void GetLifetimeReplicatedProps
+	(TArray<FLifetimeProperty>& OutLifetimeProps)const;
+
 
 public:
 	template<bool b>
@@ -29,8 +32,23 @@ public:
 
 	void LoopFire();
 
-	void EquipSecondaryWeapon();					// 보조무기 장착
-	void EquipPrimaryWeapon();					// 주무기 장착
+	
+	UFUNCTION(Server, Reliable)
+	void EquipSecondaryWeapon();			
+	void EquipSecondaryWeapon_Implementation();			
+
+	UFUNCTION(NetMulticast, Reliable)
+		void EquipSWeaponMulticast();
+		void EquipSWeaponMulticast_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void EquipPrimaryWeapon();
+	void EquipPrimaryWeapon_Implementation();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void EquipPWeapon();
+		void EquipPWeapon_Implementation();
+
 	template<bool b>
 	void SniperAim() { SniperAim(b); }					// 스코프 모드
 	void SniperAim(bool isPressed);					// 스코프 모드
@@ -68,6 +86,7 @@ public:
 		TSubclassOf<class AWeapon> rifle;
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<class AWeapon> shotgun;
+
 
 	class AWeapon* primaryWeapon;
 	class AWeapon* secondaryWeapon;

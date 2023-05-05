@@ -37,8 +37,5 @@ void ATPSPlayerController::BeginPlay()
 
 		myPlayer->playerUI->ATVWidgets();
 	}
-	else
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("wowoowdjoqdnoqwdnoqwdoqwidj"));
-	}
+
 }

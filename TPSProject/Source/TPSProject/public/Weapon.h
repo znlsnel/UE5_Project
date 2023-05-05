@@ -35,7 +35,11 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+
 	virtual void SynchronizeWhitPlayer(ATPSPlayer* player);
+
+
 	void UnSynchronizeWhitPlayer();
 
 

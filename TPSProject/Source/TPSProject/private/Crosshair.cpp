@@ -11,18 +11,6 @@ void UCrosshair::Initialization(ATPSPlayer* player)
 	
 	myPlayer = player;
 
-	if (myPlayer->GetLocalRole() == ROLE_Authority)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Im Server"));
-		return;
-	}
-	
-
-
-	if (GetWorld()->GetFirstPlayerController())
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Im Client"));
-	}
 }
 
 void UCrosshair::ATVWidget()

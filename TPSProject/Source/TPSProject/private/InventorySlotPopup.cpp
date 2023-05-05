@@ -6,12 +6,14 @@
 #include "Inventory.h"
 #include "Weapon.h"
 #include "AmmoBox.h"
+#include "TPSPlayer.h"
 
 #include <Blueprint/WidgetLayoutLibrary.h>
 
 
 void UInventorySlotPopup::InitializePopup(UInventorySlot* InventorySlot)
 {
+	
 	if (IsInViewport()) return;
 
 	myInventorySlot = InventorySlot;
@@ -39,7 +41,9 @@ void UInventorySlotPopup::EquipOrUseItem()
 	{
 		AWeapon* weapon = Cast<AWeapon>(myInventorySlot->Items.Last());
 		myInventorySlot->RemoveItemFromInventory();
-		weapon->SynchronizeWhitPlayer(myInventorySlot->Inventory->myPlayer);
+
+		//weapon->SynchronizeWhitPlayer(myInventorySlot->Inventory->myPlayer);
+		GetPlayer()->SyncWeaponInServer(weapon);
 	}
 		break;
 	case ItemType::Ammo:
@@ -55,8 +59,16 @@ void UInventorySlotPopup::EquipOrUseItem()
 
 void UInventorySlotPopup::ThrowingItem()
 {
-	myInventorySlot->Items.Last()->DropItemOnGround();
+	AItem* item = myInventorySlot->Items.Last();
+
+	myInventorySlot->Inventory->myPlayer->DropItemInServer(item);
+
 	myInventorySlot->RemoveItemFromInventory();
 	RemoveFromParent();
 
+}
+
+ATPSPlayer* UInventorySlotPopup::GetPlayer()
+{
+	return myInventorySlot->Inventory->myPlayer; 
 }

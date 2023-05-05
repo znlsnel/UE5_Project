@@ -10,6 +10,7 @@
 
 AAmmoBox::AAmmoBox()
 {
+	SetReplicates(true);
 	itemType = ItemType::Ammo;
 
 	pickupCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));

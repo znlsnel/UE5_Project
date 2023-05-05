@@ -17,7 +17,7 @@ void AWeapon::SynchronizeWhitPlayer(ATPSPlayer* player)
 	RemovePickupCollision();
 
 	SetActorLocation(myPlayer->GetMesh()->GetSocketLocation("hand_rSocket"));
-	
+
 	AttachToComponent(myPlayer->GetMesh(), FAttachmentTransformRules::KeepWorldTransform, TEXT("hand_rSocket"));
 
 	SetActorRelativeRotation(FRotator(0, 90, 0));
@@ -30,15 +30,17 @@ void AWeapon::SynchronizeWhitPlayer(ATPSPlayer* player)
 
 void AWeapon::UnSynchronizeWhitPlayer()
 {
-	//DetachRootComponentFromParent();
+
 	UInventory* inventory = myPlayer->GetInventory();
 
-	bool bItemAdded = inventory->AddItemToInventory(this);
-	
-	if (bItemAdded == false)
-		DropItemOnGround();
-	SetSync(false);
+	bool bItemAdded = true;
+	inventory->AddItemToInventory(this);
 
+
+	if (bItemAdded == false)
+		myPlayer->DropItemInServer(this);
+
+	SetSync(false);
 }
 
 void AWeapon::Attack()
@@ -123,13 +125,14 @@ TArray<FHitResult> AWeapon::LineTrace()
 
 void AWeapon::HideWeapon()
 {
-	weaponMeshComp->SetVisibility(false);
-
+	//weaponMeshComp->SetVisibility(false);
+	SetActorHiddenInGame(true);
 }
 
 void AWeapon::UncoverWeapon()
 {
-	weaponMeshComp->SetVisibility(true);
+	//weaponMeshComp->SetVisibility(true);
+	SetActorHiddenInGame(false);
 }
 
 void AWeapon::DiscardWeaponIfAlreadyExists()

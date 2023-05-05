@@ -17,14 +17,14 @@
 
 
 #include <NavigationSystem.h>
-
+#include <Net/UnrealNetwork.h>
 // Sets default values for this component's properties
 UEnemyFSM::UEnemyFSM()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
+	SetIsReplicated(true);
 	// ...
 }
 
@@ -34,10 +34,14 @@ void UEnemyFSM::BeginPlay()
 {
 	Super::BeginPlay();
 	isActive = true;
-	// 월드에서 ATPSPlayer 타깃 찾아오기
-	auto actor = UGameplayStatics::GetActorOfClass(GetWorld(), ATPSPlayer::StaticClass());
-	target = Cast<ATPSPlayer>(actor);
+	// 월드에서 ATPSPlayer 타깃 찾아오기\
 
+	TArray<AActor*, FDefaultAllocator> actors; UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATPSPlayer::StaticClass(), actors);
+
+	for (auto player : actors)
+		players.Add(Cast<ATPSPlayer>(player));
+
+	LoopSecond();
 	me = Cast<AEnemy>(GetOwner());
 
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
@@ -82,7 +86,12 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	// ...
 }
 
-void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
+void UEnemyFSM::InitializeEnemy_Implementation(FVector spawnPoint)
+{
+	InitializeEnemyMulticast(spawnPoint);
+}
+
+void UEnemyFSM::InitializeEnemyMulticast_Implementation(FVector spawnPoint)
 {
 	spawnPoint.Z += 100;
 	anim->isDead = false;
@@ -95,6 +104,14 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 	anim->animState = mState;
 	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	anim->InitializeEnemy();
+
+}
+
+void UEnemyFSM::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UEnemyFSM, randomPos);
 }
 
 void UEnemyFSM::IdleState()
@@ -111,13 +128,22 @@ void UEnemyFSM::IdleState()
 
 		anim->animState = mState;
 		
+
 		GetRandomPositionInNavMesh(me->GetActorLocation(), 500, randomPos);
 
-
+		BroadcastPos(randomPos);
 	}
 } 
 
-void UEnemyFSM::MoveState()
+//void UEnemyFSM::MoveState_Implementation()
+//{
+//	MoveStateMulticast();
+//
+//}
+//
+
+
+void UEnemyFSM::MoveState_Implementation()
 {
 	FVector destination = target->GetActorLocation();
 	FVector dir = destination - me->GetActorLocation();
@@ -127,6 +153,7 @@ void UEnemyFSM::MoveState()
 	// NavigationSystem 객체 얻어오기
 	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 
+	if (ns == nullptr) return;
 	// 목적지 길 찾기 경로 데이터 검색
 	// FindPathSync()함수는 FPathFindingQuery 구조체 정보가 필요합니다. 
 	// 이 쿼리(질의문)을 내비게이션 시스템에 전달해 길 찾기 정보를 찾아내려고 합니다. 이를 위해 FPathFindingQuery 타입의 변수를 query를 선언
@@ -153,10 +180,11 @@ void UEnemyFSM::MoveState()
 	{
 		// 랜덤한 위치로 이동
 		auto result = ai->MoveToLocation(randomPos);
-		
+
 		// 목적지에 도착하면
 		if (result == EPathFollowingRequestResult::AlreadyAtGoal)
 		{
+
 			// 새로운 랜덤 위치 가져오기
 			GetRandomPositionInNavMesh(me->GetActorLocation(), 500, randomPos);
 		}
@@ -229,12 +257,17 @@ void UEnemyFSM::DieState()
 		if (isActive == false) return;
 		isActive = false;
 		me->SetActorHiddenInGame(true);
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("DEAD!!"));
+
 	}
 	anim->animState = mState;
 }
 
-void UEnemyFSM::OnDamageProcess(int damage)
+void UEnemyFSM::OnDamageProcess_Implementation(int damage)
+{
+	OnDamageProcessMulticast(damage);
+}
+
+void UEnemyFSM::OnDamageProcessMulticast_Implementation(int damage)
 {
 	if (mState == EEnemyState::Die) return;
 
@@ -271,7 +304,7 @@ void UEnemyFSM::OnDamageProcess(int damage)
 		deadLocation = me->GetActorLocation();
 	}
 
-	
+
 }
 
 void UEnemyFSM::RoundInitEnemy(float bonusAtt, float bonusHp)
@@ -280,16 +313,58 @@ void UEnemyFSM::RoundInitEnemy(float bonusAtt, float bonusHp)
 	anim->AttackDamage = anim->initAttackDamage + bonusAtt;
 }
 
-bool UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest)
+void UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest)
 {
+	if (GetNetMode() != NM_DedicatedServer)return;
 	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 	FNavLocation loc;
 
 	bool result = ns->GetRandomReachablePointInRadius(centerLocation, radius, loc);
+
 	dest = loc.Location;
 
-	return result;
+
+	return;
 }
+
+void UEnemyFSM::BroadcastPos_Implementation(FVector Pos)
+{
+	this->randomPos = Pos;
+}
+
+void UEnemyFSM::LoopSecond()
+{
+	if (IsValid(me))
+		LoopFindPlayer(players, me->GetActorLocation());
+
+	GetWorld()->GetTimerManager().SetTimer(findPlayerTimer, this, &UEnemyFSM::LoopSecond, 1.0f);
+}
+
+void UEnemyFSM::LoopFindPlayer_Implementation(const TArray<class ATPSPlayer*> &playerArr, FVector enemyPos)
+{
+	ATPSPlayer* closePlayer = nullptr;
+	double minLength = 1123123123;
+
+	for (auto player : players)
+	{
+		double length = (enemyPos - player->GetActorLocation()).Length();
+
+		if (length < minLength)
+		{
+			minLength = length;
+			closePlayer = player;
+		}
+	}
+
+	FindNearestPlayer(closePlayer);
+}
+
+
+void UEnemyFSM::FindNearestPlayer_Implementation(class ATPSPlayer* player)
+{
+	target = player;
+}
+
 
 //void UEnemyFSM::GetLifeTimeReplicatedProps(TArray< FLifetimeProperty>& OutLifetimeProps) const
 //{

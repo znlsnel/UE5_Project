@@ -27,4 +27,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void ThrowingItem();
+
+	class ATPSPlayer* GetPlayer(); 
 };

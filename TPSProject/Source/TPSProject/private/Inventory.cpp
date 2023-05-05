@@ -13,6 +13,7 @@
 #include <Engine/Texture2D.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/Image.h>
+#include <Net/UnrealNetwork.h>
 
 UInventory::UInventory(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -21,6 +22,7 @@ UInventory::UInventory(const FObjectInitializer& ObjectInitializer) : Super(Obje
 
 void UInventory::SyncInventorySlot(TArray< UWidget*> arry)
 {
+	
 	for (auto i : arry)
 	{
 		UInventorySlot* tempSlot = Cast<UInventorySlot>(i);
@@ -48,6 +50,7 @@ void UInventory::Initialization(ATPSPlayer* player)
 
 bool UInventory::AddItemToInventory(AItem* Item)
 {
+
 	bool isEquipable = false;
 	if (Item->itemType == ItemType::Weapon)
 	{
@@ -70,7 +73,6 @@ bool UInventory::AddItemToInventory(AItem* Item)
 
 	}
 
-
 	if (isEquipable)
 	{
 		AWeapon* weapon = Cast<AWeapon>(Item);
@@ -78,7 +80,9 @@ bool UInventory::AddItemToInventory(AItem* Item)
 	}
 	else
 	{
+
 		UInventorySlot* tempSlot = FindFirstEmptySlot(Item);
+		Item->SetActorHiddenInGame(true);
 		if (tempSlot == nullptr) return false;
 		tempSlot->Items.Push(Item);
 		tempSlot->itemType = Item->itemType;
@@ -86,10 +90,16 @@ bool UInventory::AddItemToInventory(AItem* Item)
 		tempSlot->isInUse = true;
 		tempSlot->itemCount++;
 		tempSlot->UpdateInventory();
-		Item->SetActorHiddenInGame(true);
+
 	}
 	return true;
 
+}
+
+void UInventory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UInventory, InventorySlotArray);
 }
 
 void UInventory::DisablePopup()

@@ -19,7 +19,7 @@ UPlayerAnim::UPlayerAnim()
 void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
-	//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("RootYawOffset : %f"), rootYawOffset));
+
 
 	if (!player)
 	{
@@ -58,43 +58,7 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 void UPlayerAnim::PlayMontage(UAnimMontage* animMontage)
 {
 	if (player->GetNetMode() != NM_DedicatedServer) return;
-	switch (player->GetNetMode())
-	{
-	case NM_Client:
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("NM_Client"), true, true, FLinearColor::Green, 60.f);
-		break;
-	case NM_DedicatedServer:
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("NM_DedicatedServer"), true, true, FLinearColor::Green, 60.f);
-		break;
-	case NM_ListenServer:
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("NM_ListenServer"), true, true, FLinearColor::Green, 60.f);
-		break;
-	case NM_MAX:
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("NM_MAX"), true, true, FLinearColor::Green, 60.f);
-		break;
-	case NM_Standalone:
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("NM_Standalone"), true, true, FLinearColor::Green, 60.f);
-		break;
-	}
 
-	switch (player->GetLocalRole())
-	{
-	case ROLE_Authority:
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ROLE_Authority"), true, true, FLinearColor::Green, 60.f);
-		break;
-	case ROLE_AutonomousProxy:
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ROLE_AutonomousProxy"), true, true, FLinearColor::Green, 60.f);
-		break;
-	case ROLE_MAX:
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ROLE_MAX"), true, true, FLinearColor::Green, 60.f);
-		break;
-	case ROLE_None:
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ROLE_None"), true, true, FLinearColor::Green, 60.f);
-		break;
-	case ROLE_SimulatedProxy:
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ROLE_SimulatedProxy"), true, true, FLinearColor::Green, 60.f);
-		break;
-	}
 
 
 	Montage_Play(animMontage);
@@ -151,8 +115,8 @@ UAnimMontage* UPlayerAnim::Dash(DashType dashDirection)
 	switch (dashDirection)
 	{
 	case DashType::W:
-		break;
 		currMontage = FowardDashMontage;
+		break;
 	case DashType::A:
 		currMontage = LeftDashMontage ;
 		break;
@@ -163,7 +127,7 @@ UAnimMontage* UPlayerAnim::Dash(DashType dashDirection)
 		currMontage = (RightDashMontage);
 		break;
 	default:
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("sssss"));
+
 		break;
 	}
 	

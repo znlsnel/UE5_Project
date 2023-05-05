@@ -57,6 +57,32 @@ public:
 		void DoubleClickMulticast(DashType dashType);
 	void DoubleClickMulticast_Implementation(DashType dashType);
 
+	UFUNCTION(Server, Reliable)
+		void AddItemInServer(class AItem* item);
+	void AddItemInServer_Implementation(class  AItem* item);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void AddItemMulticast(class  AItem* item);
+	void AddItemMulticast_Implementation(class  AItem* item);
+
+
+	UFUNCTION(Server, Reliable)
+		void DropItemInServer(class AItem* item);
+	void DropItemInServer_Implementation(class AItem* item);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void DropItemMulticast(class AItem* item);
+	void DropItemMulticast_Implementation(class AItem* item);
+
+	UFUNCTION(Server, Reliable)
+		void SyncWeaponInServer(class AWeapon* weapon);
+		void SyncWeaponInServer_Implementation(class AWeapon* weapon);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void SyncWeaponMulticast(class AWeapon* weapon);
+		void SyncWeaponMulticast_Implementation(class AWeapon* weapon);
+
+
 public:
 	class APlayerController* myController;
 	FTimerHandle TickIdTimerHandle;

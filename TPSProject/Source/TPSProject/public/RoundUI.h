@@ -15,6 +15,7 @@ class TPSPROJECT_API URoundUI : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	URoundUI(const FObjectInitializer& ObjectInitializer);;
 	UPROPERTY(BlueprintReadOnly)
 		int Round = 0;
 	
@@ -22,7 +23,7 @@ public:
 		int KillCount = 0;
 	
 	UPROPERTY(BlueprintReadOnly)
-		int roundTime = 0;
+		int roundTime = 10;
 
 	UPROPERTY(BlueprintReadOnly)
 		bool isEndBreakTime;

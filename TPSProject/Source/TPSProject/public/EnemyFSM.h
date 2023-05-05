@@ -32,12 +32,32 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	UFUNCTION(Server, Reliable)
 	void InitializeEnemy(FVector spawnPoint);
+	void InitializeEnemy_Implementation(FVector spawnPoint);
+	UFUNCTION(NetMulticast, Reliable)
+		void InitializeEnemyMulticast(FVector spawnPoint);
+	void InitializeEnemyMulticast_Implementation(FVector spawnPoint);
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& arr)const override;
+
+
 public:
 	// 대기 상태
 	void IdleState();
 	// 이동 상태
+
+#pragma region MoveState
+
+	UFUNCTION(Client, Reliable)
 	void MoveState();
+	void MoveState_Implementation();
+
+	//UFUNCTION(NetMulticast, Reliable)
+	//void MoveStateMulticast();
+	//void MoveStateMulticast_Implementation();
+#pragma endregion
+
+
 	// 공격 상태
 	void AttackState();
 	// 피격 상태
@@ -45,19 +65,48 @@ public:
 	// 죽음 상태
 	void DieState();
 	// 피격 알림 이벤트 함수
+
+#pragma region OnDamageProcess
+
+	UFUNCTION(Server, Reliable)
 	void OnDamageProcess(int damage);
+	void OnDamageProcess_Implementation(int damage);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void OnDamageProcessMulticast(int damage);
+	void OnDamageProcessMulticast_Implementation(int damage);
+
+#pragma endregion
+
+
 	void RoundInitEnemy(float bonusAtt, float bonusHp);
 
 	// 랜덤 위치 가져오기
-	bool GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
+	void GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void BroadcastPos(FVector Pos);
+	void BroadcastPos_Implementation(FVector Pos);
+
+	void LoopSecond();
+	UFUNCTION(Server, Reliable)
+	void LoopFindPlayer(const TArray<class ATPSPlayer*> &playerArr, FVector enemyPos);
+	void LoopFindPlayer_Implementation(const TArray<class ATPSPlayer*> &playerArr, FVector enemyPos);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void FindNearestPlayer(class ATPSPlayer* player);
+	void FindNearestPlayer_Implementation(class ATPSPlayer* player);
+
 
 	// 길 찾기 수행시 랜덤 위치
+	UPROPERTY(Replicated)
 	FVector randomPos;
 	
 
 public:
 	bool isActive = false;
-	
+	FTimerHandle findPlayerTimer;
+
 	// EnemyState
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSM)
 		EEnemyState mState = EEnemyState::Idle;  
@@ -105,6 +154,7 @@ public:
 	// Enumey를 소유하고 있는  AIController
 	UPROPERTY()
 		class AAIController* ai;
-
+	
+	TArray<class ATPSPlayer*> players;
 	FVector deadLocation = FVector(0, 0, 0);
 };

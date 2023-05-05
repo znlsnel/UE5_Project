@@ -27,6 +27,16 @@ public:
 	void CreatePickupCollision();
 	void RemovePickupCollision();
 
+	UFUNCTION(Server, Reliable)
+		void DropItemInServer();
+		void DropItemInServer_Implementation();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void DropItemMulticast();
+		void DropItemMulticast_Implementation();
+
+
+
 public:
 	class ATPSPlayer* myPlayer;
 	ItemType itemType;

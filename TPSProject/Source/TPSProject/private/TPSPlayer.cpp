@@ -14,6 +14,7 @@
 #include "StoreUI.h"
 #include "StoreActor.h"
 #include "TPSPlayerController.h"
+#include "Inventory.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -25,7 +26,6 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/SkeletalMeshComponent.h>
 #include <Blueprint/UserWidget.h>
-#include <Net/UnrealNetwork.h>
 
 
 
@@ -163,6 +163,38 @@ void ATPSPlayer::DoubleClickInServer_Implementation(DashType dashType)
 void ATPSPlayer::DoubleClickMulticast_Implementation(DashType dashType)
 {
 	Cast<UPlayerMove>(playerMove)->Dash(dashType);
+}
+
+void ATPSPlayer::AddItemInServer_Implementation(AItem* item)
+{
+	AddItemMulticast(item);
+}
+
+void ATPSPlayer::AddItemMulticast_Implementation(AItem* item)
+{
+	item->myPlayer = this;
+	GetInventory()->AddItemToInventory(item);
+	//item->SetActorHiddenInGame(true);
+}
+
+void ATPSPlayer::DropItemInServer_Implementation(class AItem* item)
+{
+	DropItemMulticast(item);
+}
+
+void ATPSPlayer::DropItemMulticast_Implementation(class AItem* item)
+{
+	item->DropItemOnGround();
+}
+
+void ATPSPlayer::SyncWeaponInServer_Implementation(AWeapon* weapon)
+{
+	SyncWeaponMulticast(weapon);
+}
+
+void ATPSPlayer::SyncWeaponMulticast_Implementation(AWeapon* weapon)
+{
+	weapon->SynchronizeWhitPlayer(this);
 }
 
 

@@ -20,8 +20,10 @@
 #include <Math/UnrealMathVectorCommon.h>
 #include <GameFramework/PlayerState.h>
 
+
 UPlayerFire::UPlayerFire()
 {
+	SetIsReplicated(true);
 	// ÃÑ¾Ë »ç¿îµå
 	{
 		ConstructorHelpers::FObjectFinder<USoundBase> tempSound(TEXT("SoundWave'/Game/Assets/Sounds/Rifle.Rifle'"));
@@ -57,6 +59,11 @@ void UPlayerFire::BeginPlay()
 
 	InitializeWeapon();
 	EquipSecondaryWeapon();
+}
+
+void UPlayerFire::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
 void UPlayerFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -113,7 +120,12 @@ void UPlayerFire::LoadBullet()
 	if (tempWeapon) tempWeapon->Reload();
 }
 
-void UPlayerFire::EquipSecondaryWeapon()
+void UPlayerFire::EquipSecondaryWeapon_Implementation()
+{
+	EquipSWeaponMulticast();
+}
+
+void UPlayerFire::EquipSWeaponMulticast_Implementation()
 {
 	if (secondaryWeapon == nullptr) return;
 	
@@ -122,7 +134,12 @@ void UPlayerFire::EquipSecondaryWeapon()
 	EquipWeapon(currSlot);
 }
 
-void UPlayerFire::EquipPrimaryWeapon()
+void UPlayerFire::EquipPrimaryWeapon_Implementation()
+{
+	EquipPWeapon();
+}
+
+void UPlayerFire::EquipPWeapon_Implementation()
 {
 	if (primaryWeapon == nullptr) return;
 
@@ -191,7 +208,10 @@ void UPlayerFire::ChangeWeapon()
 	case WeaponSlotType::PrimarySlot:
 	{
 		if (primaryWeapon) primaryWeapon->UncoverWeapon();
-		if (secondaryWeapon) secondaryWeapon->HideWeapon();
+		if (secondaryWeapon)
+		{
+			secondaryWeapon->HideWeapon();
+		}
 	}
 		break;
 	case WeaponSlotType::SecondarySlot:

@@ -3,3 +3,7 @@
 
 #include "RoundUI.h"
 
+URoundUI::URoundUI(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
+{
+	roundTime = 10;
+}

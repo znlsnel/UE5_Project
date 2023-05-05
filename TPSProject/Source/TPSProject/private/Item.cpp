@@ -6,6 +6,8 @@
 
 #include <Components/BoxComponent.h>
 #include <Kismet/KismetSystemLibrary.h>
+#include "Inventory.h"
+#include <Net/UnrealNetwork.h>
 // Sets default values
 AItem::AItem()
 {
@@ -58,4 +60,17 @@ void AItem::RemovePickupCollision()
 
 	//pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 }
+
+void AItem::DropItemInServer_Implementation()
+{
+	DropItemMulticast();
+}
+
+void AItem::DropItemMulticast_Implementation()
+{
+
+
+	DropItemOnGround();
+}
+
 

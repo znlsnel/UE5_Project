@@ -18,19 +18,22 @@ protected:
 	ATPSProjectGameModeBase();
 	virtual void InitGame(const FString& mapName, const FString& Options, FString& ErrorMessage)override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const;
+
 	virtual void BeginPlay()override;
-	UFUNCTION(BlueprintCallable)
-		void StartGame();
+
+	UFUNCTION(Server, Reliable)
+		void StartGameInServer();
+		void StartGameInServer_Implementation();
+		UFUNCTION(NetMulticast, Reliable)
+			void StartGame();
+			void StartGame_Implementation();
+
 public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class AEnemyManager> enemyManagerFactory;
+
+	UPROPERTY(Replicated)
 	class AEnemyManager* EnemyManager;
-
-	UPROPERTY(EditAnywhere, category = testWidget)
-		TSubclassOf<UUserWidget> widgetFactory;
-	class UUserWidget* testWidget;
-
-	TArray<ULocalPlayer*, FDefaultAllocator> players;
-
 
 };

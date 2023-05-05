@@ -11,13 +11,12 @@
 #include<Blueprint/UserWidget.h>
 #include <Kismet/KismetSystemLibrary.h>
 
+#include <Net/UnrealNetwork.h>
+
 ATPSProjectGameModeBase::ATPSProjectGameModeBase()
 {
-
+	SetReplicates(true);
 	
-
-
-
 }
 
 void ATPSProjectGameModeBase::InitGame(const FString& mapName, const FString& Options, FString& ErrorMessage)
@@ -28,29 +27,28 @@ void ATPSProjectGameModeBase::InitGame(const FString& mapName, const FString& Op
 
 }
 
+void ATPSProjectGameModeBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ATPSProjectGameModeBase, EnemyManager);
+}
+
 void ATPSProjectGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Hello Im GameModeBase"));
-	UGameInstance* tempGameInstance = GetGameInstance();
-
-	players = tempGameInstance->GetLocalPlayers();
-	int32 playerNum = tempGameInstance->GetNumLocalPlayers();
-
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("playerNum :  %d"),playerNum));
-
-	for (ULocalPlayer* player : players)
-	{
-		testWidget = CreateWidget(player->GetPlayerController(GetWorld()), widgetFactory);
-		testWidget->AddToViewport();
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("AddToViewPort"));
-	}
-
-
+	StartGameInServer();
 }
 
 
-void ATPSProjectGameModeBase::StartGame()
+void ATPSProjectGameModeBase::StartGameInServer_Implementation()
 {
-
+	StartGame();
 }
+
+void ATPSProjectGameModeBase::StartGame_Implementation()
+{
+	EnemyManager = Cast<AEnemyManager>(GetWorld()->SpawnActor(enemyManagerFactory));
+}
+
+

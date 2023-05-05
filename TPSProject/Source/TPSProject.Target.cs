@@ -9,6 +9,7 @@ public class TPSProjectTarget : TargetRules
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.AddRange( new string[] { "TPSProject" } );
+		ExtraModuleNames.AddRange( new string[] { 
+			"TPSProject" } );
 	}
 }
