@@ -23,6 +23,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	ATPSPlayer();
+	~ATPSPlayer();
 	virtual void BeginPlay() override;
 public:	
 	// Called every frame
@@ -32,7 +33,23 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const;
 
+#pragma region ServerFunctions
+
+
 	// MULTICAST
+		// 피격 달했을 때 처리
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category = Health)
+		void OnHitEvent(int damage);
+	void OnHitEvent_Implementation(int damage);
+
+	UFUNCTION(Server, Reliable)
+		void OnDamage(int damage);
+	void OnDamage_Implementation(int damage);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void OnDamageMulti(int damage);
+	void OnDamageMulti_Implementation(int damage);
+
 	UFUNCTION(Server, Reliable)
 		void PlayMontageInServer(class UAnimMontage* AM);
 		void PlayMontageInServer_Implementation(class UAnimMontage* AM);
@@ -82,10 +99,28 @@ public:
 		void SyncWeaponMulticast(class AWeapon* weapon);
 		void SyncWeaponMulticast_Implementation(class AWeapon* weapon);
 
+	UFUNCTION(Server, Reliable)
+		void ClickWidget(bool isFire);
+		void ClickWidget_Implementation(bool isFire);
+	UFUNCTION(NetMulticast, Reliable)
+		void ClickWidgetMulti(bool isFire);
+		void ClickWidgetMulti_Implementation(bool isFire);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+		void ClickBPWidget(bool isPressed);
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void InitWidgetInteraction();
+	class UStoreUI* GetStore();
+#pragma endregion
+
+	static int playerId;
+	UFUNCTION(BlueprintPure)
+		const int GetPlayerId();
 public:
-	class APlayerController* myController;
+	class ATPSPlayerController* myController;
 	FTimerHandle TickIdTimerHandle;
+
 // COMP=====================================================================
 	// 스프링암 Comp
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -111,6 +146,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere )
 		class UPlayerUI* playerUI;
+	class UPlayerAnim* playerAnim;
 
 //======================================================================
 
@@ -122,15 +158,13 @@ public:
 	// 초기 hp값
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Health)
 		int32 initialHp = 100;
+	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
+		class UAnimMontage* DieAnimMontage;
 
-	// 피격 달했을 때 처리
-	UFUNCTION(BlueprintCallable, Category = Health)
-		void OnHitEvent(int damage);
 
 // ===========================================================================
 // 
 // 변수 ========================================================================
-
 	UPROPERTY(BlueprintReadWrite, Category = weaponOpen)
 		bool bRipleOpen = false;
 
@@ -141,30 +175,20 @@ public:
 		FHitResult FireHitResult;
 
 	float AdditionalAttackPower = 0.f;
-
-
-
-// Collision 관련 ================================================================
-
-// 무기========================================================================
-
-
-
-// U I ========================================================================
-
-	
+	UPROPERTY(BlueprintReadOnly)
+		bool isDie = false;
 
 // 함수========================================================================
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Health)
 		void OnGameOver();
-	//UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Health)
-	//	void OnUsingPistol(bool isGrenade);
+		void OnGameOver_Implementation();
+
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Initialization)
 		void OnInitialization();
-	//UFUNCTION(BlueprintImplementableEvent, Category = Effect)
-	//	void FireEffect();
+
 	class UInventory* GetInventory();
 	void GetMoney(int money);
-	void tickId();
+
 	//
 };

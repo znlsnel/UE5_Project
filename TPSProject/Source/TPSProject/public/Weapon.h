@@ -63,6 +63,13 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void SetSync(bool isSync);
 
+	//UFUNCTION(NetMulticast, Reliable)
+	//	void ClickWidget(bool isFire);
+	//	void ClickWidget_Implementation(bool isFire);
+	//	UFUNCTION(NetMulticast, Reliable)
+	//		void ClickWidgetMulti(bool isFire);
+	//	void ClickWidgetMulti_Implementation(bool isFire);
+
 	UFUNCTION(BlueprintImplementableEvent)
 		void ClickWorldWidget(bool isPress);
 	FVector MyNormalize(const FVector& Invec);

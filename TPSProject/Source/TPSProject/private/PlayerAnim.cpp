@@ -108,6 +108,11 @@ void UPlayerAnim::UpdateTurnAnimation()
 
 }
 
+void UPlayerAnim::DieEvent()
+{
+	PlayMontage(DieAnimMontage);
+}
+
 UAnimMontage* UPlayerAnim::Dash(DashType dashDirection)
 {
 	

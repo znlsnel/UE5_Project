@@ -27,7 +27,7 @@ public:
 	//UFUNCTION(client, Reliable)
 		void StartGame();
 	//	void StartGame_Implementation();
-
+		void ATVUI();
 	// Called every frame
 
 	virtual void Tick(float DeltaTime) override;
@@ -38,7 +38,7 @@ public:
 		void SpawnEnemy();
 		void SpawnEnemy_Implementation();
 
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(client, Reliable)
 		void CreateEnemy(FVector location);
 		void CreateEnemy_Implementation(FVector location);
 
@@ -57,6 +57,10 @@ public:
 		UFUNCTION(NetMulticast, Reliable)
 			void SyncTime(int currTime);
 			void SyncTime_Implementation(int currTime);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void IncreaseKillCount();
+		void IncreaseKillCount_Implementation();
 
 	
 		//void LoopCount();

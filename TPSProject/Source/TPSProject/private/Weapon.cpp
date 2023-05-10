@@ -186,26 +186,7 @@ void AWeapon::FireWeapon()
 	{
 		myPlayer->createNiagara(HitResult);
 
-		if (IsValid(HitResult.GetActor()) && HitResult.GetActor()->ActorHasTag(TEXT("Enemy")))
-		{
-			AEnemy* enemy = Cast<AEnemy>(HitResult.GetActor());
 
-			int damage = weapDamage * (myPlayer->AdditionalAttackPower + 1);
-
-			FName tempName = HitResult.BoneName;
-			if (tempName == FName("head"))
-				damage *= 2;
-
-			else if (tempName == FName("spine_03"))
-				damage *= 1;
-
-			else
-				damage = damage - (damage / 4);
-
-
-			enemy->fsm->OnDamageProcess(damage);
-
-		}
 	}
 
 
@@ -246,7 +227,42 @@ void AWeapon::createNiagara(FHitResult pHitResult)
 	UNiagaraComponent* tempImpact = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffect, pHitResult.ImpactPoint, pHitResult.ImpactNormal.Rotation());
 
 	CreateDecal(tempImpact, pHitResult);
+
+
+	if (IsValid(pHitResult.GetActor()) && pHitResult.GetActor()->ActorHasTag(TEXT("Enemy")))
+	{
+		AEnemy* enemy = Cast<AEnemy>(pHitResult.GetActor());
+
+		int damage = weapDamage * (myPlayer->AdditionalAttackPower + 1);
+
+		FName tempName = pHitResult.BoneName;
+		if (tempName == FName("head"))
+			damage *= 2;
+
+		else if (tempName == FName("spine_03"))
+			damage *= 1;
+
+		else
+			damage = damage - (damage / 4);
+
+
+		enemy->fsm->OnDamageProcess(damage, myPlayer);
+
+	}
 }
+
+//void AWeapon::ClickWidget_Implementation(bool isFire)
+//{
+//	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ClickWidget! in Server"));
+//	ClickWorldWidget(isFire);
+//	//ClickWidgetMulti(isFire);
+//}
+//
+//void AWeapon::ClickWidgetMulti_Implementation(bool isFire)
+//{
+//	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ClickWidget! in Multi"));
+//	ClickWorldWidget(isFire);
+//}
 
 FVector AWeapon::MyNormalize(const FVector& Invec)
 {

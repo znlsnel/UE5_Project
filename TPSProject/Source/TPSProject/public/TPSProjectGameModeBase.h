@@ -35,5 +35,5 @@ public:
 
 	UPROPERTY(Replicated)
 	class AEnemyManager* EnemyManager;
-
+	FTimerHandle StartTimer;
 };

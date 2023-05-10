@@ -25,7 +25,8 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 		class AEnemy* me;
-
+	UPROPERTY(BlueprintReadOnly)
+		bool isWin = false;
 	// 공격 애니메이션 끝나는 이벤트 함수
 	UFUNCTION(BlueprintCallable, Category = FSMEvent)
 		void OnEndAttackAnimation();
@@ -41,6 +42,7 @@ public:
 		bool isDead = false;
 
 	UPROPERTY(BlueprintReadOnly)
-		int AttackDamage = 5;
-	int initAttackDamage = 5;
+		int AttackDamage = 50;
+	int initAttackDamage = 50;
+	class ATPSPlayer* target;
 };

@@ -37,7 +37,8 @@ void ATPSProjectGameModeBase::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 void ATPSProjectGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-	StartGameInServer();
+
+	GetWorldTimerManager().SetTimer(StartTimer, this, &ATPSProjectGameModeBase::StartGameInServer, 5.5f);
 }
 
 

@@ -12,6 +12,8 @@
 #include "Bullet.h"
 #include "PlayerUI.h"
 #include "Crosshair.h"
+#include "TPSPlayerController.h"
+#include "StoreUI.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Kismet/GameplayStatics.h>
@@ -72,13 +74,11 @@ void UPlayerFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 }
 
 
-
 void UPlayerFire::InputFire(bool isPressed)
 {
 	isFire = isPressed;
-
-	GetWeapon()->ClickWorldWidget(isFire);
-
+	//me->ClickWidget(isFire);
+	me->ClickBPWidget(isFire);
 	if (!isFire)
 	{
 		me->playerUI->crosshair->AttackCrosshair(isFire);
@@ -107,6 +107,7 @@ void UPlayerFire::LoopFire()
 		me->playerUI->GetMouseInput();
 		return;
 	}
+
 	AWeapon* tempWeapon = GetWeapon();
 	if (tempWeapon) tempWeapon->Attack();
 	me->playerUI->crosshair->AttackCrosshair(isFire);

@@ -5,11 +5,14 @@
 #include "TPSPlayer.h"
 #include "PlayerUI.h"
 #include "Crosshair.h"
+#include "StoreActor.h"
+#include "StoreUI.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Engine/LocalPlayer.h>
 #include <Kismet/GameplayStatics.h>
+#include <Components/WidgetComponent.h>
 
 ATPSPlayerController::ATPSPlayerController()
 {
@@ -32,10 +35,21 @@ void ATPSPlayerController::BeginPlay()
 {
 	myPlayer = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-	if (myPlayer)
-	{
+	GetWorldTimerManager().SetTimer(atvTimer, this, &ATPSPlayerController::ATVWidget, 5.5f);
 
+}
+
+void ATPSPlayerController::ATVWidget()
+{
+
+	if (myPlayer)
 		myPlayer->playerUI->ATVWidgets();
-	}
+
+
+
+	storeActor = GetWorld()->SpawnActor<AStoreActor>(storeActorFactory);
+	storeActor->InitializeStore(myPlayer);
+	storeActor->SetActorHiddenInGame(false);
+	//storeActor->WidgetComp->GetWidget()->SetOwningPlayer(this);
 
 }

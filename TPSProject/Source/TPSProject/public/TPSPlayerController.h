@@ -18,6 +18,15 @@ public:
 	ATPSPlayerController();
 	//static int id_counter;
 	virtual void BeginPlay()override;
-
+	void ATVWidget();
 	class ATPSPlayer* myPlayer;
+
+	FTimerHandle atvTimer;
+
+	UPROPERTY(EditAnywhere, Category = Store)
+		TSubclassOf<class AStoreActor> storeActorFactory;
+
+	UPROPERTY(blueprintReadWrite)
+		class AStoreActor* storeActor;
+
 };

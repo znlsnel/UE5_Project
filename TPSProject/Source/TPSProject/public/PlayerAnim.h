@@ -25,6 +25,7 @@ public:
 	
 	void UpdateTurn();
 	void UpdateTurnAnimation();
+	void DieEvent();
 
 	//UFUNCTION(BlueprintImplementableEvent)
 
@@ -47,7 +48,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
 		class UAnimMontage* attackAnimMontage;
-	
+	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
+		class UAnimMontage* DieAnimMontage;
 	UPROPERTY(blueprintReadOnly, Category = player)
 		class ATPSPlayer* player;
 

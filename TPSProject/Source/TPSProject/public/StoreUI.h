@@ -15,10 +15,9 @@ class TPSPROJECT_API UStoreUI : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	class ATPSPlayer* myPlayer;
-
+	class AStoreActor* storeActor;
 	UPROPERTY(BlueprintReadOnly)
-		int Money = 0;
+		int Money = 110;
 
 	UPROPERTY(BlueprintReadOnly)
 		float AdditionalPower = 0.f;
@@ -26,11 +25,17 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		float AdditionalHp = 0.f;
 
+
 public:
 	UFUNCTION(BlueprintCallable)
 		void UpgradePlayerAttack();
+	void UpgradeAttack();
 
 	UFUNCTION(BlueprintCallable)
 		void UpgradePlayerHP();
+	void UpgradeHp();
+
+	class ATPSPlayer* GetPlayer();
+	class UScreenUI* GetScreenUI();
 
 };

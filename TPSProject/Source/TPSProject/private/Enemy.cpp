@@ -7,11 +7,15 @@
 #include "DamageUI.h"
 #include "DamageUIActor.h"
 #include "RoundUI.h"
+#include "TPSPlayer.h"
+
+#include <Kismet/KismetSystemLibrary.h>
+#include <Net/UnrealNetwork.h>
 
 // Sets default values
 AEnemy::AEnemy()
 {
-	bReplicates = true;
+	//bReplicates = true;
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Tags.Add(TEXT("Enemy"));
@@ -75,7 +79,10 @@ void AEnemy::AddWorldDamageUI(FRotator genRot, int Damage)
 	DActorindex++;
 }
 
-void AEnemy::DieEvent()
+void AEnemy::DieEvent(ATPSPlayer* player)
 {
-	enemyManager->roundUI->UpdateKillCount();
+
+	if (enemyManager)
+		enemyManager->IncreaseKillCount();
 }
+

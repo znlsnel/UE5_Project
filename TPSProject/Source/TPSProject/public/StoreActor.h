@@ -18,11 +18,32 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 public:	
+	void InitializeStore(class ATPSPlayer* player);
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	class UWidgetComponent* WidgetComp;
-	class UStoreUI* storeUI;
+	class ATPSPlayer* myPlayer;
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UStoreUI> storeUIFactory;
+	UPROPERTY(blueprintReadWrite, category = UI)
+		class UStoreUI* storeUI;
+
+	UFUNCTION(Server, Reliable)
+		void UpgradeAttackInServer();
+		void UpgradeAttackInServer_Implementation();
+		UFUNCTION(NetMulticast, Reliable)
+			void UpgradeAttackInMulti();
+			void UpgradeAttackInMulti_Implementation();
+
+	UFUNCTION(Server, Reliable)
+		void UpgradeHpInServer();
+		void UpgradeHpInServer_Implementation();
+
+		UFUNCTION(NetMulticast, Reliable)
+			void UpgradeHpInMulti();
+			void UpgradeHpInMulti_Implementation();
+
 };

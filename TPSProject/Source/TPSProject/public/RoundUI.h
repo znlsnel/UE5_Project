@@ -23,7 +23,7 @@ public:
 		int KillCount = 0;
 	
 	UPROPERTY(BlueprintReadOnly)
-		int roundTime = 10;
+		int roundTime = 30;
 
 	UPROPERTY(BlueprintReadOnly)
 		bool isEndBreakTime;

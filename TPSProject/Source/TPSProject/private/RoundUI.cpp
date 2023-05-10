@@ -5,5 +5,5 @@
 
 URoundUI::URoundUI(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {
-	roundTime = 10;
+	roundTime = 30;
 }

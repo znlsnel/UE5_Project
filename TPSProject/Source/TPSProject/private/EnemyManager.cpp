@@ -29,7 +29,7 @@ void AEnemyManager::BeginPlay()
 	Super::BeginPlay();
 
 
-	//GetWorld()->GetTimerManager().SetTimer(startTimerHandle, this, &AEnemyManager::StartGame, 0.5f);
+
 	StartGame();
 }
 
@@ -38,11 +38,16 @@ void AEnemyManager::StartGame()
 
 	roundUI = CreateWidget<URoundUI>(GetWorld(), roundUIFactory);
 	// 1. 랜덤한 생성 시간 구하기
-	if (IsValid(roundUI)) roundUI->AddToViewport();
+	GetWorld()->GetTimerManager().SetTimer(startTimerHandle, this, &AEnemyManager::ATVUI, 2.5f);
 
 
 	FindSpawnPoints();
 	StartRound();
+}
+
+void AEnemyManager::ATVUI()
+{
+	if (IsValid(roundUI)) roundUI->AddToViewport();
 }
 
 
@@ -100,8 +105,8 @@ void AEnemyManager::CreateEnemy_Implementation(FVector location)
 
 	if (IsValid(enemy))
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Yeeeeeeeeeeeeeeeeeeee"));
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Location : %f, %f, %f"), location.X, location.Y, location.Z));
+		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Yeeeeeeeeeeeeeeeeeeee"));
+		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Location : %f, %f, %f"), location.X, location.Y, location.Z));
 
 		enemy->fsm->InitializeEnemy(location);
 		enemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp);
@@ -145,7 +150,6 @@ void AEnemyManager::FindSpawnPoints()
 void AEnemyManager::StartRound_Implementation()
 {
 	if (GetNetMode() != NM_DedicatedServer) return;
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Server Time : %d"), serverTime));
 
 	serverTime--;
 	SyncTime(serverTime);
@@ -179,7 +183,7 @@ void AEnemyManager::SyncTime_Implementation(int currTime)
 {
 	if (GetNetMode() == NM_DedicatedServer)
 		return;
-
+	
 	roundUI->roundTime = currTime ;
 
 	if (currTime == 0)
@@ -198,6 +202,17 @@ void AEnemyManager::SyncTime_Implementation(int currTime)
 		}
 	}
 
+}
+
+void AEnemyManager::IncreaseKillCount_Implementation()
+{
+	
+	if (GetNetMode() == NM_DedicatedServer)
+		return;
+	
+
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("IncreaseKillCount!"));
+	roundUI->UpdateKillCount();
 }
 
 

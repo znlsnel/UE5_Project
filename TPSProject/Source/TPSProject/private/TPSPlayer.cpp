@@ -15,6 +15,7 @@
 #include "StoreActor.h"
 #include "TPSPlayerController.h"
 #include "Inventory.h"
+#include "StoreUI.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -94,6 +95,13 @@ ATPSPlayer::ATPSPlayer()
 		}
 	}
 
+	myController = Cast<ATPSPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+}
+
+ATPSPlayer::~ATPSPlayer()
+{
+	ATPSPlayer::playerId = 0;
 
 }
 
@@ -104,11 +112,10 @@ void ATPSPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	hp = initialHp;
-
 	if(playerUI->screenUI)
 		playerUI->screenUI->UpdateScreenUI();
 
-
+	playerAnim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
 }
 
 // Called every frame
@@ -197,6 +204,33 @@ void ATPSPlayer::SyncWeaponMulticast_Implementation(AWeapon* weapon)
 	weapon->SynchronizeWhitPlayer(this);
 }
 
+void ATPSPlayer::ClickWidget_Implementation(bool isFire)
+{
+	//myController->ClickBPWidget(isFire);
+
+	ClickWidgetMulti(isFire);
+	//playerFire->GetWeapon()->ClickWorldWidget(isFire);
+}
+
+void ATPSPlayer::ClickWidgetMulti_Implementation(bool isFire)
+{
+	//playerFire->GetWeapon()->ClickWorldWidget(isFire);
+	ClickBPWidget(isFire);
+}
+
+UStoreUI* ATPSPlayer::GetStore()
+{
+	
+	return myController->storeActor->storeUI;
+}
+
+int ATPSPlayer::playerId = 0;
+const int ATPSPlayer::GetPlayerId()
+{
+	return playerId++;
+}
+
+
 
 
 
@@ -207,7 +241,7 @@ UInventory* ATPSPlayer::GetInventory()
 
 void ATPSPlayer::GetMoney(int money)
 {
-	playerUI->storeActor->storeUI->Money += money;
+	myController->storeActor->storeUI->Money += money;
 }
 
 
@@ -216,14 +250,32 @@ void ATPSPlayer::GetMoney(int money)
 
 
 
-void ATPSPlayer::OnHitEvent(int damage)
+void ATPSPlayer::OnHitEvent_Implementation(int damage)
 {
+
+	OnDamage(damage);
+}
+
+void ATPSPlayer::OnDamage_Implementation(int damage)
+{
+	OnDamageMulti(damage);
+}
+
+void ATPSPlayer::OnDamageMulti_Implementation(int damage)
+{
+	if (hp <= 0) return;
 	hp -= damage;
 	if (playerUI->screenUI)
 		playerUI->screenUI->UpdateScreenUI();
+
 	if (hp <= 0)
 	{
-		OnGameOver();
+		hp = 0;
+		
+		if (IsLocallyControlled())
+			OnGameOver();
+		isDie = true;
+
 	}
 }
 

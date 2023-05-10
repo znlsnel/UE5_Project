@@ -26,7 +26,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void AddWorldDamageUI(FRotator genRot, int Damage);
-	void DieEvent();
+	void DieEvent(class ATPSPlayer* player);
 
 public:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = FSMComponent)

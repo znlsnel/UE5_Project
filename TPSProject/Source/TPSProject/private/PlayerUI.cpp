@@ -83,9 +83,14 @@ void UPlayerUI::InitializeWidgets()
 
 void UPlayerUI::ATVWidgets()
 {
-	if (screenUI) screenUI->ATVWidget();
-	if (crosshair) crosshair->ATVWidget();
-	if (storeActor) storeActor->SetHidden(false);
+	if (screenUI)	{
+		screenUI->ATVWidget();
+	}
+	if (crosshair) {
+		crosshair->ATVWidget();
+	}
+
+
 }
 
 void UPlayerUI::InitializeWidgets_Client_Implementation()
@@ -109,14 +114,6 @@ void UPlayerUI::InitializeWidgets_Client_Implementation()
 	crosshair = Cast<UCrosshair>(CreateWidget(GetWorld(), crosshairFactory));
 	if (crosshair->IsValidLowLevel()) crosshair->Initialization(me);
 
-	storeActor = GetWorld()->SpawnActor<AStoreActor>();
-
-	storeUI = CreateWidget<UStoreUI>(tempPctrl, storeUIFactory);
-	if (IsValid(storeUI)) storeUI->myPlayer = me;
-
-	storeActor->storeUI = storeUI;
-	storeActor->SetHidden(true);
-
 }
 
 void UPlayerUI::InitializeWidgets_Server_Implementation()
@@ -127,12 +124,6 @@ void UPlayerUI::InitializeWidgets_Server_Implementation()
 
 	crosshair = Cast<UCrosshair>(CreateWidget(GetWorld(), crosshairFactory));
 	if (crosshair->IsValidLowLevel()) crosshair->Initialization(me);
-
-	storeActor = GetWorld()->SpawnActor<AStoreActor>();
-
-	storeUI = CreateWidget<UStoreUI>(GetWorld(), storeUIFactory);
-	if (IsValid(storeUI)) storeUI->myPlayer = me;
-	storeActor->storeUI = storeUI;
 
 }
 
