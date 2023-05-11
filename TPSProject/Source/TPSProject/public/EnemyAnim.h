@@ -42,7 +42,7 @@ public:
 		bool isDead = false;
 
 	UPROPERTY(BlueprintReadOnly)
-		int AttackDamage = 50;
-	int initAttackDamage = 50;
+		int AttackDamage = 5;
+	int initAttackDamage = 5;
 	class ATPSPlayer* target;
 };

@@ -96,9 +96,9 @@ public:
 		TSubclassOf<class UCameraShakeBase> cameraShake;
 
 
-	// ÃÑ¾Ë Factory
-	UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
-		TSubclassOf<class ABullet> bulletFactory; // ÃÑ¾Ë °øÀå
+	//// ÃÑ¾Ë Factory
+	//UPROPERTY(EditDefaultsOnly, Category = BulletFactory)
+	//	TSubclassOf<class ABullet> bulletFactory; // ÃÑ¾Ë °øÀå
 
 	// ÃÑ¾Ë ÀÌÆåÆ® Particle
 	UPROPERTY(EditAnywhere, Category = BulletEffect)

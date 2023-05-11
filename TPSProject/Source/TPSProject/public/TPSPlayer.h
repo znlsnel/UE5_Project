@@ -106,6 +106,14 @@ public:
 		void ClickWidgetMulti(bool isFire);
 		void ClickWidgetMulti_Implementation(bool isFire);
 	
+		UFUNCTION(Server, Reliable)
+			void UpdateAttackAndHp(bool updateAttack, float value);
+			void UpdateAttackAndHp_Implementation(bool updateAttack, float value);
+
+			UFUNCTION(NetMulticast, Reliable)
+				void UpdateAttackAndHpMT(bool updateAttack, float value);
+				void UpdateAttackAndHpMT_Implementation(bool updateAttack, float value);
+
 	UFUNCTION(BlueprintImplementableEvent)
 		void ClickBPWidget(bool isPressed);
 

@@ -146,6 +146,8 @@ void UEnemyFSM::IdleState()
 
 void UEnemyFSM::Bictory()
 {
+	if (ai)
+		ai->StopMovement();
 }
 
 
@@ -470,6 +472,7 @@ void UEnemyFSM::LoopFindPlayer_Implementation(const TArray<class ATPSPlayer*> &p
 
 void UEnemyFSM::FindNearestPlayer_Implementation(class ATPSPlayer* player, bool isBictory)
 {
+	if (player == nullptr) UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Player"));
 	target = player;
 	anim->isWin = isBictory;
 	if (isBictory)

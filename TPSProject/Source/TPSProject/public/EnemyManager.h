@@ -42,7 +42,7 @@ public:
 		void CreateEnemy(FVector location);
 		void CreateEnemy_Implementation(FVector location);
 
-		UFUNCTION(NetMulticast, Reliable)
+		UFUNCTION(client, Reliable)
 			void RecycleEnemy(AEnemy* enemy, FVector location);
 			void RecycleEnemy_Implementation(AEnemy* enemy, FVector location);
 

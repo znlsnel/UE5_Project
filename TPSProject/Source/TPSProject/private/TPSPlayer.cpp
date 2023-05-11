@@ -27,7 +27,7 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/SkeletalMeshComponent.h>
 #include <Blueprint/UserWidget.h>
-
+#include <Net/UnrealNetwork.h>
 
 
 // Sets default values
@@ -138,7 +138,8 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 void ATPSPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	//DOREPLIFETIME(ATPSPlayer, hp);
+	//DOREPLIFETIME(ATPSPlayer, initialHp);
 	
 }
 
@@ -218,6 +219,28 @@ void ATPSPlayer::ClickWidgetMulti_Implementation(bool isFire)
 	ClickBPWidget(isFire);
 }
 
+void ATPSPlayer::UpdateAttackAndHp_Implementation(bool updateAttack, float value)
+{
+	UpdateAttackAndHpMT(updateAttack, value);
+}
+
+void ATPSPlayer::UpdateAttackAndHpMT_Implementation(bool updateAttack, float value)
+{
+
+	if (updateAttack)
+	{
+		AdditionalAttackPower = value;
+	}
+	else
+	{
+		hp += 10;
+		initialHp += 10;
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("HP : %d"), hp));
+
+			playerUI->screenUI->UpdateScreenUI();
+	}
+}
+
 UStoreUI* ATPSPlayer::GetStore()
 {
 	
@@ -264,6 +287,7 @@ void ATPSPlayer::OnDamage_Implementation(int damage)
 void ATPSPlayer::OnDamageMulti_Implementation(int damage)
 {
 	if (hp <= 0) return;
+
 	hp -= damage;
 	if (playerUI->screenUI)
 		playerUI->screenUI->UpdateScreenUI();

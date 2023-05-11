@@ -7,6 +7,7 @@
 
 void UEnemyAnim::OnEndAttackAnimation()
 {
+	if (me->GetNetMode() != NM_DedicatedServer) return;
 	if (target)
 		target->OnHitEvent(AttackDamage);
 	bAttackPlay = false;

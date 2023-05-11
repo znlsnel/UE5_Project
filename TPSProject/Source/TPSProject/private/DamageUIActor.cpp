@@ -29,7 +29,7 @@ void ADamageUIActor::BeginPlay()
 
 void ADamageUIActor::AddWorldDamage(float DeltaTime)
 {
-	AddActorLocalOffset(FVector(0, 0, 20) * DeltaTime);
+	AddActorLocalOffset(FVector(0, 0, 50) * DeltaTime);
 
 	addedZPos += 20.f * DeltaTime;
 
