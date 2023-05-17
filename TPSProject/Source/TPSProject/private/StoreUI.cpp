@@ -16,15 +16,21 @@ void UStoreUI::UpgradePlayerAttack()
 
 void UStoreUI::UpgradeAttack()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Upgrade Attack!"));
-	if (Money < (AdditionalPower * 100) + 10) return;
-	Money -= ((AdditionalPower / 0.1f) * 10) + 10;
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Money : %d"), Money));
+	//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Upgrade Attack!"));
+	if (Money < AttackCost) return;
+	Money -= AttackCost;
+	AttackCost += 10;
+	//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Money : %d"), Money));
 	AdditionalPower += 0.1f;
 
 	if (storeActor == nullptr)
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No StoreActor;;"));
-	else if (GetPlayer() == nullptr) UKismetSystemLibrary::PrintString(GetWorld(), TEXT("NoPlayer;;"));
+	{
+		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No StoreActor;;"));
+	}
+	else if (GetPlayer() == nullptr)
+	{
+		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("NoPlayer;;"));
+	}
 	else
 		GetPlayer()->UpdateAttackAndHp(true, AdditionalPower);
 }
@@ -40,15 +46,21 @@ void UStoreUI::UpgradePlayerHP()
 
 void UStoreUI::UpgradeHp()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Upgrade HP!"));
-	if (Money < (AdditionalHp * 100) + 10) return;
-	Money -= (AdditionalHp * 100) + 10;
+	//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Upgrade HP!"));
+	if (Money < HpCost) return;
+	Money -= HpCost;
+	HpCost += 10.f;
 
 	AdditionalHp += 0.1f;
 
 	if (storeActor == nullptr)
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No StoreActor;;"));
-	else if (GetPlayer() == nullptr) UKismetSystemLibrary::PrintString(GetWorld(), TEXT("NoPlayer;;"));
+	{
+		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No StoreActor;;"));
+	}
+	else if (GetPlayer() == nullptr)
+	{
+		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("NoPlayer;;"));
+	}
 	else
 	{
 		GetPlayer()->UpdateAttackAndHp(false, AdditionalHp);

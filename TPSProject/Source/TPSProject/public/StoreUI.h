@@ -17,13 +17,19 @@ class TPSPROJECT_API UStoreUI : public UUserWidget
 public:
 	class AStoreActor* storeActor;
 	UPROPERTY(BlueprintReadOnly)
-		int Money = 110;
+		int Money = 100;
 
 	UPROPERTY(BlueprintReadOnly)
 		float AdditionalPower = 0.f;
 
 	UPROPERTY(BlueprintReadOnly)
 		float AdditionalHp = 0.f;
+
+	UPROPERTY(BlueprintReadOnly)
+		float AttackCost = 10.f;
+
+	UPROPERTY(BlueprintReadOnly)
+		float HpCost = 10.f;
 
 
 public:

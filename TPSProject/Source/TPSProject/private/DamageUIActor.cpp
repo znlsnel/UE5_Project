@@ -6,6 +6,11 @@
 
 #include <Components/WidgetComponent.h>
 #include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/GameplayStatics.h>
+#include "TPSPlayer.h"
+#include <Camera/PlayerCameraManager.h>
+#include <Net/UnrealNetwork.h>
+#include <Kismet/KismetMathLibrary.h>
 
 // Sets default values
 ADamageUIActor::ADamageUIActor()
@@ -22,7 +27,10 @@ void ADamageUIActor::BeginPlay()
 {
 	Super::BeginPlay();
 	SetActorHiddenInGame(true);
-
+	//if (player == nullptr)
+	//	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Upnunde? ;;"));
+	//	
+	//
 	damageUI = Cast<UDamageUI>(CreateWidget<UDamageUI>(GetWorld(), damageUIFactory));
 	widgetComp->SetWidget(damageUI);
 }
@@ -41,13 +49,38 @@ void ADamageUIActor::AddWorldDamage(float DeltaTime)
 	}
 }
 
-void ADamageUIActor::InitializeDamageActor(FVector startPos, FRotator rotator, int Damage)
+void ADamageUIActor::InitializeDamageActor(FVector startPos, FRotator rotator, int Damage, ATPSPlayer* p)
 {
 	SetActorLocation(startPos);
 	SetActorRotation(rotator);
 	SetActorHiddenInGame(false);
 	Trigger = true;
 	damageUI->BindDamageText(Damage);
+	myPlayer = p;
+}
+
+void ADamageUIActor::SetRot_Implementation()
+{
+	SetRot_M();
+}
+
+void ADamageUIActor::SetRot_M_Implementation()
+{
+	if (GetNetMode() == NM_DedicatedServer) return;
+	if (myPlayer)
+	{
+
+		FRotator lookV = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), myPlayer->GetActorLocation());
+
+		SetActorRelativeRotation(lookV);
+		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Rot : %f, %f, %f"), lookV.Roll, lookV.Yaw, lookV.Pitch));
+		
+	}
+	else
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Player"));
+
+	}
 }
 
 // Called every frame
@@ -55,6 +88,12 @@ void ADamageUIActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (Trigger) AddWorldDamage(DeltaTime);
+	if (Trigger)
+	{
+		AddWorldDamage(DeltaTime);
+		SetRot();
+	
+
+	}
 }
 

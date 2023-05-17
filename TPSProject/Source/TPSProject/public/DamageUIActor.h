@@ -22,7 +22,15 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void AddWorldDamage(float DeltaTime);
-	void InitializeDamageActor(FVector startPos, FRotator rotator, int Damage);
+	void InitializeDamageActor(FVector startPos, FRotator rotator, int Damage, class ATPSPlayer* p);
+
+	UFUNCTION(Server, Reliable)
+		void SetRot();
+		void SetRot_Implementation();
+
+		UFUNCTION(Client, Reliable)
+			void SetRot_M();
+			void SetRot_M_Implementation();
 public:
 	UPROPERTY(VisibleAnywhere, category = DamageUI)
 		class UWidgetComponent* widgetComp;
@@ -33,4 +41,6 @@ public:
 
 	bool Trigger = false;
 	float addedZPos = 0.f;
+	class ATPSPlayer* myPlayer;
+
 };

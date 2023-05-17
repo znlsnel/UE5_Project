@@ -185,7 +185,8 @@ public:
 	float AdditionalAttackPower = 0.f;
 	UPROPERTY(BlueprintReadOnly)
 		bool isDie = false;
-
+	UPROPERTY(BlueprintReadWrite)
+		bool isMyPlayer = false;
 // ÇÔ¼ö========================================================================
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Health)

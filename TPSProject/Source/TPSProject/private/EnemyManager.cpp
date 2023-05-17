@@ -5,6 +5,8 @@
 #include "Enemy.h"
 #include "EnemyFSM.h"
 #include "RoundUI.h"
+#include "TPSPlayer.h"
+
 
 #include <EngineUtils.h>
 #include <Kismet/KismetSystemLibrary.h>
@@ -40,6 +42,16 @@ void AEnemyManager::StartGame()
 	// 1. 랜덤한 생성 시간 구하기
 	GetWorld()->GetTimerManager().SetTimer(startTimerHandle, this, &AEnemyManager::ATVUI, 2.5f);
 
+	TArray<class AActor*, FDefaultAllocator> playerArr;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATPSPlayer::StaticClass(), playerArr);
+
+	for (auto p : playerArr)
+	{
+		if (Cast<ATPSPlayer>(p)->isMyPlayer == true)
+		{
+			locallyPlayer = Cast<ATPSPlayer>(p);
+		}
+	}
 
 	FindSpawnPoints();
 	StartRound();
@@ -65,7 +77,7 @@ void AEnemyManager::SpawnEnemy_Implementation()
 
 
 	int spawnIndex = FMath::RandRange(0, spawnPoints.Num() - 1);
-
+	int spawnCount = 0;
 	if (enemyPool.Num() >= monsterSpawnLimit)
 	{
 		for (auto monster : enemyPool)
@@ -78,6 +90,12 @@ void AEnemyManager::SpawnEnemy_Implementation()
 				genPos.Z += 150;
 
 				RecycleEnemy(monster, genPos);
+				spawnCount++;
+				if (spawnCount >= serverRound)
+				{
+					break;
+					spawnCount = 0;
+				}
 			}
 		}
 	}
@@ -87,10 +105,12 @@ void AEnemyManager::SpawnEnemy_Implementation()
 		FVector tempPos = spawnPoints[spawnIndex]->GetActorLocation();
 		tempPos.Z += 150;
 
-		CreateEnemy(tempPos);
+		for (int i = 0; i < serverRound; i++)
+			CreateEnemy(tempPos);
 
 	}
 
+	spawnCount = 0;
 
 	// 다시 랜덤 시간에 CreateEnemy 함수가 호출되도록 타이머 설정
 	float createTime = FMath::RandRange(minTime, maxTime);
@@ -101,10 +121,15 @@ void AEnemyManager::SpawnEnemy_Implementation()
 
 void AEnemyManager::CreateEnemy_Implementation(FVector location)
 {
-	AEnemy* enemy = Cast<AEnemy>(GetWorld()->SpawnActor<AActor>(enemyFactory, location, FRotator(0, 0, 0)));
 
+		
+	AEnemy* enemy = Cast<AEnemy>(GetWorld()->SpawnActor<AActor>(enemyFactory, location, FRotator(0, 0, 0)));
+	
 	if (IsValid(enemy))
 	{
+		if (locallyPlayer)
+			enemy->locallyPlayer = this->locallyPlayer;
+
 		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Yeeeeeeeeeeeeeeeeeeee"));
 		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Location : %f, %f, %f"), location.X, location.Y, location.Z));
 
@@ -115,8 +140,8 @@ void AEnemyManager::CreateEnemy_Implementation(FVector location)
 	}
 	else
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("faild CreateEnemy"));
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Location : %f, %f, %f"), location.X, location.Y, location.Z));
+		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("faild CreateEnemy"));
+		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Location : %f, %f, %f"), location.X, location.Y, location.Z));
 
 	}
 }
@@ -159,7 +184,7 @@ void AEnemyManager::StartRound_Implementation()
 		{
 			serverRound++;
 			isbreakTime = false;
-			serverTime = 30;
+			serverTime = 90;
 
 			enemyBonusAttackPower = (serverRound - 1) * 5;
 			enemyBonusHp *= 1.5f;
@@ -170,7 +195,7 @@ void AEnemyManager::StartRound_Implementation()
 		else // 쉬는시간 시작
 		{
 			isbreakTime = true;
-			serverTime = 15;
+			serverTime = 30;
 			GetWorld()->GetTimerManager().ClearTimer(spawnTimerHandle);
 		}
 	}
@@ -191,14 +216,14 @@ void AEnemyManager::SyncTime_Implementation(int currTime)
 		roundUI->isEndBreakTime = isbreakTime;
 		if (isbreakTime) // 쉬는시간 종료
 		{
-			roundUI->Round = serverRound;
+			roundUI->Round++;
 			isbreakTime = false;
-			roundUI->roundTime = 30;
+			roundUI->roundTime = 90;
 		}
 		else // 쉬는시간 시작
 		{
 			isbreakTime = true;
-			roundUI->roundTime = 15;
+			roundUI->roundTime = 30;
 		}
 	}
 
@@ -211,7 +236,7 @@ void AEnemyManager::IncreaseKillCount_Implementation()
 		return;
 	
 
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("IncreaseKillCount!"));
+	//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("IncreaseKillCount!"));
 	roundUI->UpdateKillCount();
 }
 

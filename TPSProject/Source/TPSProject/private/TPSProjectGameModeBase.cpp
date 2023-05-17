@@ -16,7 +16,8 @@
 ATPSProjectGameModeBase::ATPSProjectGameModeBase()
 {
 	SetReplicates(true);
-	
+	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
+
 }
 
 void ATPSProjectGameModeBase::InitGame(const FString& mapName, const FString& Options, FString& ErrorMessage)
@@ -36,9 +37,10 @@ void ATPSProjectGameModeBase::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 
 void ATPSProjectGameModeBase::BeginPlay()
 {
+	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
 	Super::BeginPlay();
 
-	GetWorldTimerManager().SetTimer(StartTimer, this, &ATPSProjectGameModeBase::StartGameInServer, 5.5f);
+	//GetWorldTimerManager().SetTimer(StartTimer, this, &ATPSProjectGameModeBase::StartGameInServer, 15.5f);
 }
 
 

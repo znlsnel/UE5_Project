@@ -66,7 +66,7 @@ void AWeapon::Attack()
 
 	if (!FireCamShakeClass)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("No FireCamShakeClass")));
+		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("No FireCamShakeClass")));
 	}
 
 	if (lastFiredTime == 0.f)

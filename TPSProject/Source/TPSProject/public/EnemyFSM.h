@@ -119,7 +119,7 @@ public:
 	void BroadcastPos_Implementation(FVector Pos);
 
 	void LoopSecond();
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Client, Reliable)
 	void LoopFindPlayer(const TArray<class ATPSPlayer*> &playerArr, FVector enemyPos);
 	void LoopFindPlayer_Implementation(const TArray<class ATPSPlayer*> &playerArr, FVector enemyPos);
 

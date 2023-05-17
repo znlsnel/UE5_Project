@@ -21,7 +21,10 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const;
 	bool isInventoryOpen();
 	void GetMouseInput();
+
+	UFUNCTION(NetMulticast, Reliable)
 	void ATVWidgets();
+	void ATVWidgets_Implementation();
 
 	void InitializeWidgets();
 	UFUNCTION(Client, Reliable)

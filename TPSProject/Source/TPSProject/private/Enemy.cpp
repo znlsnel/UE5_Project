@@ -11,6 +11,8 @@
 
 #include <Kismet/KismetSystemLibrary.h>
 #include <Net/UnrealNetwork.h>
+#include <Kismet/GameplayStatics.h>
+#include <GameFramework/Character.h>
 
 // Sets default values
 AEnemy::AEnemy()
@@ -49,7 +51,10 @@ void AEnemy::BeginPlay()
 		ADamageUIActor* tempUIActor = GetWorld()->SpawnActor<ADamageUIActor>(damageActorFactory);
 
 		if (tempUIActor)
+		{
 			damageActorArr.Add(tempUIActor);
+			tempUIActor->myPlayer = locallyPlayer;
+		}
 	}
 }
 
@@ -67,14 +72,31 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AEnemy::AddWorldDamageUI(FRotator genRot, int Damage)
+void AEnemy::AddWorldDamageUI_Implementation(FRotator genRot, int Damage)
+{
+
+	AddWorldDamageUI_M(genRot, Damage);
+}
+
+void AEnemy::AddWorldDamageUI_M_Implementation(FRotator genRot, int Damage)
 {
 	FVector genPos = GetActorLocation();
+	FRotator GenRotate = genRot;
 	genPos.Z += 120.f;
 
 	if (DActorindex >= 5) DActorindex = 0;
 
-	damageActorArr[DActorindex]->InitializeDamageActor(genPos, genRot, Damage);
+	if (locallyPlayer)
+	{
+		FRotator a = locallyPlayer->GetActorRotation();
+		a.Yaw *= -1;
+		a.Pitch = 0;
+		GenRotate = a;
+	}
+
+	ATPSPlayer* tempPlayer = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	damageActorArr[DActorindex]->InitializeDamageActor(genPos, GenRotate, Damage, tempPlayer);
 
 	DActorindex++;
 }

@@ -170,7 +170,7 @@ void UEnemyFSM::MoveState_Implementation()
 	}
 	if (target == nullptr) 
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Target!!"));
+		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Target!!"));
 		return;
 	}
 	FVector destination = target->GetActorLocation();
@@ -441,6 +441,16 @@ void UEnemyFSM::LoopSecond()
 	if (IsValid(me))
 		LoopFindPlayer(players, me->GetActorLocation());
 
+	if (target == nullptr)
+	{
+		anim->isWin = true;
+
+		mState = EEnemyState::Bictory;
+		anim->animState = mState;
+			//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Bictory"));
+		
+	}
+
 	GetWorld()->GetTimerManager().SetTimer(findPlayerTimer, this, &UEnemyFSM::LoopSecond, 1.0f);
 }
 
@@ -472,15 +482,9 @@ void UEnemyFSM::LoopFindPlayer_Implementation(const TArray<class ATPSPlayer*> &p
 
 void UEnemyFSM::FindNearestPlayer_Implementation(class ATPSPlayer* player, bool isBictory)
 {
-	if (player == nullptr) UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Player"));
-	target = player;
-	anim->isWin = isBictory;
-	if (isBictory)
-	{
-		mState = EEnemyState::Bictory;
-		anim->animState = mState;
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Bictory"));
-	}
+
+ 	target = player;
+
 }
 
 

@@ -81,8 +81,9 @@ void UPlayerUI::InitializeWidgets()
 	
 }
 
-void UPlayerUI::ATVWidgets()
+void UPlayerUI::ATVWidgets_Implementation()
 {
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Hi!"));
 	if (screenUI)	{
 		screenUI->ATVWidget();
 	}

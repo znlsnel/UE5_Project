@@ -32,7 +32,7 @@ void AStoreActor::BeginPlay()
 
 void AStoreActor::InitializeStore(ATPSPlayer* player)
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Create Store!!!"));
+	//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Create Store!!!"));
 	myPlayer = player;
 
 	storeUI = CreateWidget<UStoreUI>(GetWorld(), storeUIFactory);

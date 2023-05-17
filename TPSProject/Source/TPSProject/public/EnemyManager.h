@@ -32,8 +32,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-
-
+	class ATPSPlayer* locallyPlayer;
+	
 	UFUNCTION(Server, Reliable)
 		void SpawnEnemy();
 		void SpawnEnemy_Implementation();

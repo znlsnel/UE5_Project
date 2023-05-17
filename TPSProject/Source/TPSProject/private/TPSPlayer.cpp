@@ -25,15 +25,17 @@
 #include <Components/CapsuleComponent.h>
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/KismetMathLibrary.h>
 #include <Components/SkeletalMeshComponent.h>
 #include <Blueprint/UserWidget.h>
 #include <Net/UnrealNetwork.h>
-
+#include <Logging/LogVerbosity.h>
 
 // Sets default values
 ATPSPlayer::ATPSPlayer()
 {
-
+	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
+	UE_SET_LOG_VERBOSITY(LogTemp, NoLogging);
 	//SubObjects
 	{
 		
@@ -77,6 +79,8 @@ ATPSPlayer::ATPSPlayer()
 		tpsCamComp = CreateDefaultSubobject<UCameraComponent>(TEXT("TpsCamComp"));
 		tpsCamComp->SetupAttachment(springArmComp);
 		tpsCamComp->bUsePawnControlRotation = false;
+		tpsCamComp->bConstrainAspectRatio = true;
+		tpsCamComp->SetAspectRatio(1.777f);
 	}
 
 	// Animation Mode
@@ -111,6 +115,7 @@ void ATPSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
 	hp = initialHp;
 	if(playerUI->screenUI)
 		playerUI->screenUI->UpdateScreenUI();
@@ -235,7 +240,7 @@ void ATPSPlayer::UpdateAttackAndHpMT_Implementation(bool updateAttack, float val
 	{
 		hp += 10;
 		initialHp += 10;
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("HP : %d"), hp));
+		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("HP : %d"), hp));
 
 			playerUI->screenUI->UpdateScreenUI();
 	}
@@ -281,20 +286,24 @@ void ATPSPlayer::OnHitEvent_Implementation(int damage)
 
 void ATPSPlayer::OnDamage_Implementation(int damage)
 {
-	OnDamageMulti(damage);
+	int randDamage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));
+
+	OnDamageMulti(randDamage);
 }
 
 void ATPSPlayer::OnDamageMulti_Implementation(int damage)
 {
 	if (hp <= 0) return;
 
-	hp -= damage;
+
+
+	int temphp =  hp - damage;
+	hp = FMath::Max(temphp, 0);
 	if (playerUI->screenUI)
 		playerUI->screenUI->UpdateScreenUI();
 
 	if (hp <= 0)
 	{
-		hp = 0;
 		
 		if (IsLocallyControlled())
 			OnGameOver();
