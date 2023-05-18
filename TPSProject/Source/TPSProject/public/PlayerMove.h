@@ -55,4 +55,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = PlayerSetting) float runSpeed = 600;
 	class UPlayerAnim* playerAnim;
 	DashType tempDashType = DashType::None;
+
+	UPROPERTY(EditAnywhere, Category = Jump)
+		class USoundBase* jumpSound;
 };

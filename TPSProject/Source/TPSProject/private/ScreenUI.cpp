@@ -23,6 +23,7 @@ void UScreenUI::UpdateScreenUI()
 
 void UScreenUI::ATVWidget()
 {
+	if (IsInViewport()) return;
 	if (myPlayer->GetNetMode() == NM_Client && myPlayer->GetLocalRole() == ROLE_AutonomousProxy)
 		AddToScreen(GetOwningLocalPlayer(), 0);
 

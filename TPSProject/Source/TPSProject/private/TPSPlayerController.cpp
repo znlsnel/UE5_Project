@@ -48,9 +48,9 @@ void ATPSPlayerController::ATVWidget()
 
 
 
-	storeActor = GetWorld()->SpawnActor<AStoreActor>(storeActorFactory);
-	storeActor->InitializeStore(myPlayer);
-	storeActor->SetActorHiddenInGame(false);
+	//storeActor = GetWorld()->SpawnActor<AStoreActor>(storeActorFactory);
+	//storeActor->InitializeStore(myPlayer);
+	//storeActor->SetActorHiddenInGame(false);
 	//storeActor->WidgetComp->GetWidget()->SetOwningPlayer(this);
 
 }

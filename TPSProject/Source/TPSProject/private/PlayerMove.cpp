@@ -7,6 +7,7 @@
 
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
+#include <Kismet/GameplayStatics.h>
 UPlayerMove::UPlayerMove()
 {
 	// Tick함수가 호출되도록 처리
@@ -92,7 +93,10 @@ void UPlayerMove::InputVertical(float value)
 void UPlayerMove::InputJump()
 {
 	if (me->GetCharacterMovement()->IsFalling() == false)
+	{
 		me->Jump();
+		UGameplayStatics::PlaySound2D(GetWorld(), jumpSound);
+	}
 }
 
 

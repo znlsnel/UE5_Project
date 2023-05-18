@@ -79,8 +79,8 @@ ATPSPlayer::ATPSPlayer()
 		tpsCamComp = CreateDefaultSubobject<UCameraComponent>(TEXT("TpsCamComp"));
 		tpsCamComp->SetupAttachment(springArmComp);
 		tpsCamComp->bUsePawnControlRotation = false;
-		tpsCamComp->bConstrainAspectRatio = true;
-		tpsCamComp->SetAspectRatio(1.777f);
+		//tpsCamComp->bConstrainAspectRatio = true;
+		//tpsCamComp->SetAspectRatio(1.777f);
 	}
 
 	// Animation Mode

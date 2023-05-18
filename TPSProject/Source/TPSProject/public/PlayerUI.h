@@ -22,7 +22,7 @@ public:
 	bool isInventoryOpen();
 	void GetMouseInput();
 
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(Client, Reliable)
 	void ATVWidgets();
 	void ATVWidgets_Implementation();
 
