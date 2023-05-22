@@ -9,6 +9,7 @@
 #include "StoreActor.h"
 #include "StoreUI.h"
 #include "WeaponUI.h"
+#include "PlayerMove.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Components/WidgetComponent.h>
@@ -117,17 +118,22 @@ void UPlayerUI::ATVWeaponSelectUI(bool addToView)
 {
 	if (IsValid(weaponSelectUI) == false) return;
 
-	ToggleMouse(addToView);
+	//ToggleMouse(addToView);
 	if (addToView)
 	{
 		if (weaponSelectUI->isOpen == false)
 			weaponSelectUI->WidgetOn();
+		Cast<UPlayerMove>(me->playerMove)->turnValue = 0.f;
+		Cast<UPlayerMove>(me->playerMove)->lookUpValue = 0.f;
+		IsMouseActive = true;
 	}
 	else
 	{
 		if (weaponSelectUI->isOpen)
 			weaponSelectUI->WidgetOff();
+		IsMouseActive = false;
 	}
+	
 }
 
 void UPlayerUI::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -156,7 +162,6 @@ void UPlayerUI::InitializeWidgets()
 
 void UPlayerUI::ATVWidgets_Implementation()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Hi!"));
 	if (screenUI)	{
 		screenUI->ATVWidget();
 	}
@@ -165,6 +170,7 @@ void UPlayerUI::ATVWidgets_Implementation()
 	}
 	if (weaponSelectUI) {
 		weaponSelectUI->AddToViewport();
+
 	}
 
 }

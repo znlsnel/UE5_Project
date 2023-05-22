@@ -8,21 +8,21 @@
 #include "PlayerAnim.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class TPSPROJECT_API UPlayerAnim : public UAnimInstance
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPlayerAnim();
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
-	
+
 	void PlayMontage(class UAnimMontage* animMontage);
 
 	void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const;
-	
+
 	void UpdateTurn();
 	void UpdateTurnAnimation();
 	void DieEvent();
@@ -37,7 +37,7 @@ public:
 	UPROPERTY(Replicated)
 		class UAnimMontage* currMontage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Replicated,Category = PlayerAnim)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Replicated, Category = PlayerAnim)
 		float speed = 0;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnim)
@@ -53,12 +53,10 @@ public:
 	UPROPERTY(blueprintReadOnly, Category = player)
 		class ATPSPlayer* player;
 
-	UPROPERTY(blueprintReadOnly, Category = weaponType)
+	UPROPERTY(BlueprintReadOnly = Category = Weapon)
 		WeaponType weaponType = WeaponType::Pistol;
-
-	UPROPERTY(blueprintReadOnly, Category = weaponType)
-		WeaponSlotType weaponSlotType = WeaponSlotType::None;
-
+	UPROPERTY(BlueprintReadOnly = Category = Weapon)
+		BowState bowState = BowState::TravelMode;
 
 	UPROPERTY(EditAnywhere, Category = DashMonstage)
 		class UAnimMontage* FowardDashMontage;
@@ -83,6 +81,6 @@ public:
 		float prevRotationCurve = 0.f;
 	UPROPERTY(blueprintReadOnly, category = RootBoneRotate)
 		float rotationCurve = 0.f;
-	
+
 
 };

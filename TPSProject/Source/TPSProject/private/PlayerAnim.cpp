@@ -25,8 +25,9 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		auto ownerPawn = TryGetPawnOwner();
 		player = Cast<ATPSPlayer>(ownerPawn);
+
 	}
-	
+
 
 	if (player)
 	{
@@ -81,7 +82,7 @@ void UPlayerAnim::UpdateTurn()
 	{
 		characterYaw = player->GetActorRotation().Yaw;
 		prevCharacterYaw = characterYaw;
-		
+
 		rootYawOffset = 0.f;
 	}
 
@@ -98,12 +99,12 @@ void UPlayerAnim::UpdateTurnAnimation()
 
 	if (GetCurveValue(TEXT("Turning")))
 	{
-		prevRotationCurve = rotationCurve; 
+		prevRotationCurve = rotationCurve;
 		rotationCurve = GetCurveValue(TEXT("Rotation"));
 
 		float tempYawOffset = rootYawOffset + (prevRotationCurve - rotationCurve);
 
-		rootYawOffset = UKismetMathLibrary::Clamp(tempYawOffset , -90, 90);
+		rootYawOffset = UKismetMathLibrary::Clamp(tempYawOffset, -90, 90);
 	}
 
 }
@@ -115,7 +116,7 @@ void UPlayerAnim::DieEvent()
 
 UAnimMontage* UPlayerAnim::Dash(DashType dashDirection)
 {
-	
+
 	dashDirection;
 	switch (dashDirection)
 	{
@@ -123,7 +124,7 @@ UAnimMontage* UPlayerAnim::Dash(DashType dashDirection)
 		currMontage = FowardDashMontage;
 		break;
 	case DashType::A:
-		currMontage = LeftDashMontage ;
+		currMontage = LeftDashMontage;
 		break;
 	case DashType::S:
 		currMontage = (BackwardDashMontage);
@@ -135,7 +136,7 @@ UAnimMontage* UPlayerAnim::Dash(DashType dashDirection)
 
 		break;
 	}
-	
+
 	return currMontage;
 
 }

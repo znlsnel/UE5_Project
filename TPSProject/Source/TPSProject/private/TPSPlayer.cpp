@@ -38,7 +38,7 @@ ATPSPlayer::ATPSPlayer()
 	UE_SET_LOG_VERBOSITY(LogTemp, NoLogging);
 	//SubObjects
 	{
-		
+
 		playerMove = CreateDefaultSubobject<UPlayerMove>(TEXT("PlayerMove"));
 		playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
 		IKFootComp = CreateDefaultSubobject<UFootIkActorComponent>(TEXT("IKFootComp"));
@@ -47,7 +47,7 @@ ATPSPlayer::ATPSPlayer()
 
 		playerUI = CreateDefaultSubobject<UPlayerUI>(TEXT("UI"));
 	}
-	
+
 
 
 	PrimaryActorTick.bCanEverTick = true;
@@ -117,7 +117,7 @@ void ATPSPlayer::BeginPlay()
 
 	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
 	hp = initialHp;
-	if(playerUI->screenUI)
+	if (playerUI->screenUI)
 		playerUI->screenUI->UpdateScreenUI();
 
 	playerAnim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
@@ -128,14 +128,14 @@ void ATPSPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	tickUpdateFunctions.Broadcast();
-	
+
 }
 
 // Called to bind functionality to input
 void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	
+
 	onInputBindingDelegate.Broadcast(PlayerInputComponent);
 	PlayerInputComponent->BindAction(TEXT("InteractionObject"), EInputEvent::IE_Pressed, this, &ATPSPlayer::InteractionObject);
 
@@ -146,7 +146,7 @@ void ATPSPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	//DOREPLIFETIME(ATPSPlayer, hp);
 	//DOREPLIFETIME(ATPSPlayer, initialHp);
-	
+
 }
 
 void ATPSPlayer::SetPlayerMouse(bool Active)
@@ -161,7 +161,8 @@ void ATPSPlayer::PlayMontageInServer_Implementation(UAnimMontage* AM)
 
 void ATPSPlayer::MulticastAnimMontage_Implementation(UAnimMontage* AM)
 {
-	GetMesh()->GetAnimInstance()->Montage_Play(AM);
+	if (playerAnim)
+		playerAnim->Montage_Play(AM);
 }
 
 void ATPSPlayer::createNiagara_Implementation(FHitResult pHitResult)
@@ -171,7 +172,7 @@ void ATPSPlayer::createNiagara_Implementation(FHitResult pHitResult)
 
 void ATPSPlayer::MulticastNiaga_Implementation(FHitResult pHitResult)
 {
-	playerFire->GetWeapon()-> createNiagara(pHitResult);
+	playerFire->currWeapon->createNiagara(pHitResult);
 }
 
 void ATPSPlayer::DoubleClickInServer_Implementation(DashType dashType)
@@ -248,13 +249,13 @@ void ATPSPlayer::UpdateAttackAndHpMT_Implementation(bool updateAttack, float val
 		initialHp += 10;
 		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("HP : %d"), hp));
 
-			playerUI->screenUI->UpdateScreenUI();
+		playerUI->screenUI->UpdateScreenUI();
 	}
 }
 
 UStoreUI* ATPSPlayer::GetStore()
 {
-	
+
 	return myController->storeActor->storeUI;
 }
 
@@ -312,14 +313,14 @@ void ATPSPlayer::OnDamageMulti_Implementation(int damage)
 
 
 
-	int temphp =  hp - damage;
+	int temphp = hp - damage;
 	hp = FMath::Max(temphp, 0);
 	if (playerUI->screenUI)
 		playerUI->screenUI->UpdateScreenUI();
 
 	if (hp <= 0)
 	{
-		
+
 		if (IsLocallyControlled())
 			OnGameOver();
 		isDie = true;

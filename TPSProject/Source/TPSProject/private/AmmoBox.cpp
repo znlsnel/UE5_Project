@@ -23,32 +23,13 @@ AAmmoBox::AAmmoBox()
 
 bool AAmmoBox::UseAmmoBox()
 {
-	AWeapon* primary = myPlayer->playerFire->primaryWeapon;
+	AWeapon* weapon = myPlayer->playerFire->currWeapon;
 
-	AWeapon* secondary = myPlayer->playerFire->secondaryWeapon;
-
-	if (ammoType != AmmoType::PistolAmmo && primary == nullptr) return false;
-
-	switch (ammoType)
+	if (ammoType == weapon->ammoType)
 	{
-	case AmmoType::PistolAmmo:
-	{
-		secondary->Ammo += ammo;
-	}
+		weapon->Ammo += ammo;
 		return true;
-	case AmmoType::RifleAmmo:
-	{
-		if (primary->weaponType == WeaponType::Rifle)
-			primary->Ammo += ammo;
 	}
-		return true;
-	case AmmoType::ShotgunAmmo:
-	{
-		if (primary->weaponType == WeaponType::Shotgun)
-			primary->Ammo += ammo;
-	}
-		return true;
 
-	}
 	return false;
 }

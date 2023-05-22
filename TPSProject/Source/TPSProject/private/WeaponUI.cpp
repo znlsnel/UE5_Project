@@ -11,17 +11,8 @@ void UWeaponUI::ChangeWeapon(WeaponType weaponType)
 
 	if (IsValid(player) == false) return;
 	player->SetPlayerMouse(false);
-	
-	switch (weaponType)
-	{
-	case WeaponType::Pistol:
-		player->playerFire->EquipSecondaryWeapon();
-		break;
-	case WeaponType::Rifle:
-		player->playerFire->EquipPrimaryWeapon();
 
-		break;
-	}
+	player->playerFire->EquipWeapon(weaponType);
 
 }
 
@@ -39,12 +30,12 @@ WeaponType UWeaponUI::FindSelectWeaponType()
 		if (horizontal < -5)
 			return WeaponType::Rifle;
 		else if (horizontal > 5)
-			return WeaponType::Shotgun;
+			return WeaponType::Bow;
 	}
 	else if (vertical < -5)
 	{
-		if (horizontal <  -5)
-			return WeaponType::Bow;
+		if (horizontal < -5)
+			return WeaponType::Shotgun;
 		else if (horizontal > 5)
 			return WeaponType::Pistol;
 	}

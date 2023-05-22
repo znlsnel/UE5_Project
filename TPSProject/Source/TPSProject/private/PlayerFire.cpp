@@ -42,8 +42,6 @@ void UPlayerFire::SetupInputBinding(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Released, this, &UPlayerFire::InputFire<false>);
 
 	PlayerInputComponent->BindAction(TEXT("Reload"), IE_Pressed, this, &UPlayerFire::LoadBullet);
-	PlayerInputComponent->BindAction(TEXT("GetPistol"), IE_Pressed, this, &UPlayerFire::EquipSecondaryWeapon);
-	PlayerInputComponent->BindAction(TEXT("GetRiple"), IE_Pressed, this, &UPlayerFire::EquipPrimaryWeapon);
 
 	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Pressed, this, &UPlayerFire::SniperAim<true>);
 	PlayerInputComponent->BindAction(TEXT("ScopeMode"), IE_Released, this, &UPlayerFire::SniperAim<false>);
@@ -57,9 +55,9 @@ void UPlayerFire::BeginPlay()
 	//controller = me->GetPlayerState()->GetPlayerController();
 
 	me->OnInitialization();
+	anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
 
 	InitializeWeapon();
-	EquipSecondaryWeapon();
 }
 
 void UPlayerFire::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -84,7 +82,7 @@ void UPlayerFire::InputFire(bool isPressed)
 	}
 
 	LoopFire();
-	
+
 }
 
 void UPlayerFire::LoopFire()
@@ -93,7 +91,7 @@ void UPlayerFire::LoopFire()
 	if (lastShotTime == 0.f)
 		lastShotTime = GetWorld()->GetTimeSeconds();
 
-	else if (GetWorld()->GetTimeSeconds() - lastShotTime < GetWeapon()->fireDelay - 0.1f)
+	else if (GetWorld()->GetTimeSeconds() - lastShotTime < currWeapon->fireDelay - 0.1f)
 	{
 		return;
 	}
@@ -107,47 +105,16 @@ void UPlayerFire::LoopFire()
 		return;
 	}
 
-	AWeapon* tempWeapon = GetWeapon();
-	if (tempWeapon) tempWeapon->Attack();
+	if (currWeapon) currWeapon->Attack();
 	me->playerUI->crosshair->AttackCrosshair(isFire);
 
-	GetWorld()->GetTimerManager().SetTimer(fireTimerHandle, this, &UPlayerFire::LoopFire, GetWeapon()->fireDelay);
+	GetWorld()->GetTimerManager().SetTimer(fireTimerHandle, this, &UPlayerFire::LoopFire, currWeapon->fireDelay);
 }
 
 void UPlayerFire::LoadBullet()
 {
-	AWeapon* tempWeapon = GetWeapon();
-	if (tempWeapon) tempWeapon->Reload();
+	if (currWeapon) currWeapon->Reload();
 }
-
-void UPlayerFire::EquipSecondaryWeapon_Implementation()
-{
-	EquipSWeaponMulticast();
-}
-
-void UPlayerFire::EquipSWeaponMulticast_Implementation()
-{
-	if (secondaryWeapon == nullptr) return;
-	
-	currSlot = WeaponSlotType::SecondarySlot;
-	currWeaponType = secondaryWeapon->weaponType;
-	EquipWeapon(currSlot);
-}
-
-void UPlayerFire::EquipPrimaryWeapon_Implementation()
-{
-	EquipPWeapon();
-}
-
-void UPlayerFire::EquipPWeapon_Implementation()
-{
-	if (primaryWeapon == nullptr) return;
-
-	currSlot = WeaponSlotType::PrimarySlot;
-	currWeaponType = primaryWeapon->weaponType;
-	EquipWeapon(currSlot);
-}
-
 
 
 void UPlayerFire::SniperAim(bool isPressed)
@@ -160,92 +127,54 @@ void UPlayerFire::SniperAim(bool isPressed)
 
 void UPlayerFire::InitializeWeapon()
 {
-	secondaryWeapon = GetWorld()->SpawnActor<AWeapon_Pistol>(pistol);
-	secondaryWeapon->SynchronizeWhitPlayer(me);
-
-	//primaryWeapon = GetWorld()->SpawnActor<AWeapon_Rifle>(rifle);
-	//primaryWeapon->SynchronizeWhitPlayer(me);
-
-	anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
-
-	currWeaponType = WeaponType::Pistol;
-	currSlot = WeaponSlotType::SecondarySlot;
-	EquipWeapon(currSlot);
+	SetWeapon(GetWorld()->SpawnActor<AWeapon_Pistol>(pistol));
 }
 
 
 
-AWeapon* UPlayerFire::GetWeapon()
+void UPlayerFire::EquipWeapon_Implementation(WeaponType weaponType)
 {
-	switch (currSlot)
-	{
-	case WeaponSlotType::PrimarySlot:
-		return primaryWeapon;
-	case WeaponSlotType::SecondarySlot:
-		return secondaryWeapon;
-	}
-	return nullptr;
+
+	EquipWeaponMulticast(weaponType);
 }
 
-void UPlayerFire::EquipWeapon(WeaponSlotType slotType)
+void UPlayerFire::EquipWeaponMulticast_Implementation(WeaponType weaponType)
 {
-
-	switch (slotType)
-	{
-	case WeaponSlotType::PrimarySlot:
-		if (primaryWeapon) me->PlayMontageInServer(primaryWeapon->CharacterEquipAM);
-		break;
-	case WeaponSlotType::SecondarySlot:
-		if (secondaryWeapon) me->PlayMontageInServer(secondaryWeapon->CharacterEquipAM);
-		break;
-	}
-
-}
-
-void UPlayerFire::EquipWeapon(WeaponType weaponType)
-{
-	if (currWeapon->weaponType == weaponType) return;
-
-	AWeapon* nextWeapon = GetWeapon(weaponType);
-	if (IsValid(nextWeapon)){
+	nextWeapon = GetWeapon(weaponType);
+	if (IsValid(nextWeapon) == false) {
 		// TODO 무기가 없습니다.  UI 표시
 		return;
 	}
-	
-	currWeapon->HideWeapon();
-	currWeapon = nextWeapon;
-	currWeapon->UncoverWeapon();
-	me->PlayMontageInServer(currWeapon->CharacterEquipAM);
+	me->PlayMontageInServer(nextWeapon->CharacterEquipAM);
 }
 
 void UPlayerFire::ChangeWeapon()
 {
-	switch (currSlot)
+	if (currWeapon)
 	{
-	case WeaponSlotType::PrimarySlot:
-	{
-		if (primaryWeapon) primaryWeapon->UncoverWeapon();
-		if (secondaryWeapon)
+		currWeapon->HideWeapon();
+		switch (currWeapon->weaponType)
 		{
-			secondaryWeapon->HideWeapon();
+			case WeaponType::Pistol:
+				UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Pistol"));
+				break;
+			case WeaponType::Rifle:
+				UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Rifle"));
+				break;
+			case WeaponType::Shotgun:
+				UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Shotgun"));
+				break;
 		}
 	}
-		break;
-	case WeaponSlotType::SecondarySlot:
-	{
-		if (secondaryWeapon) secondaryWeapon->UncoverWeapon();
-		if (primaryWeapon) primaryWeapon->HideWeapon();
-	}
-		break;
-	}
+	nextWeapon->UncoverWeapon();
+	currWeapon = nextWeapon;
 
 	if (me->playerUI->screenUI) me->playerUI->screenUI->WeaponSwap();
 
 
 
-	anim->weaponType = currWeaponType;
-	anim->weaponSlotType = currSlot;
-	me->playerUI->crosshair->ChangeCrosshair(currWeaponType);
+	anim->weaponType = currWeapon->weaponType;
+	me->playerUI->crosshair->ChangeCrosshair(currWeapon->weaponType);
 
 }
 
@@ -270,5 +199,43 @@ AWeapon* UPlayerFire::GetWeapon(WeaponType weaponType)
 		break;
 	}
 	return nullptr;
+}
+
+void UPlayerFire::SetWeapon(AWeapon* weapon)
+{
+	switch (weapon->weaponType)
+	{
+	case WeaponType::Pistol:
+		weapon_Pistol = weapon;
+		break;
+	case WeaponType::Rifle:
+		weapon_Rifle = weapon;
+		break;
+	case WeaponType::Shotgun:
+		weapon_Shotgun = weapon;
+		break;
+	case WeaponType::Bow:
+		weapon_Bow = weapon;
+		 break;
+	case WeaponType::Sword:
+		weapon_Sword = weapon;
+		break;
+	}
+
+	switch (weapon->weaponType)
+	{
+	case WeaponType::Pistol:
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Pistol"));
+		break;
+	case WeaponType::Rifle:
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Rifle"));
+		break;
+	case WeaponType::Shotgun:
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Shotgun"));
+		break;
+	}
+	weapon->SynchronizeWhitPlayer(me);
+	weapon->HideWeapon();
+	EquipWeapon(weapon->weaponType);
 }
 

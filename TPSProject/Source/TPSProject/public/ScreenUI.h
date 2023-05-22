@@ -10,7 +10,7 @@
 
 
 /**
- * 
+ *
  */
 UCLASS()
 class TPSPROJECT_API UScreenUI : public UUserWidget
@@ -22,7 +22,7 @@ public:
 	void UpdateScreenUI();
 
 	void ATVWidget();
-	
+
 	UFUNCTION(BlueprintImplementableEvent)
 		void StartWidget();
 
@@ -43,7 +43,7 @@ public:
 		float hpRatio;
 	UPROPERTY(EditAnywhere, blueprintReadWrite, category = Player)
 		FString hpInfo;
-	
+
 	UPROPERTY(EditAnywhere)
 		UTexture2D* PistolUI;
 	UPROPERTY(EditAnywhere)
@@ -51,19 +51,20 @@ public:
 	UPROPERTY(EditAnywhere)
 		UTexture2D* ShotgunUI;
 	UPROPERTY(EditAnywhere)
-		UTexture2D* TransParentUI;
+		UTexture2D* BowUI;
+	UPROPERTY(EditAnywhere)
+		UTexture2D* SwordUI;
 
 	UPROPERTY(BlueprintReadWrite)
-		FWeaponInfo primaryInfo;
+		UTexture2D* currWeaponTexture;
 
-	UPROPERTY(BlueprintReadWrite)
-		FWeaponInfo secondaryInfo;
-	
+
 
 	// ÇÔ¼ö ##############################################
 
 	UFUNCTION(BlueprintNativeEvent)
 		void WeaponSwap();
+	void WeaponSwap_Implementation();
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void BP_ToggleInventory();

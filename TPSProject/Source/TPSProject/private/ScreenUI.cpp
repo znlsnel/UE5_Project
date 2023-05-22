@@ -64,8 +64,10 @@ void UScreenUI::ToggleInventory()
 
 FString UScreenUI::UpdateAmmoCount()
 {
-	AWeapon* weapon = myPlayer->playerFire->GetWeapon();
+	AWeapon* weapon = myPlayer->playerFire->currWeapon;
 	FString ammoString = FString::Printf(TEXT("%d / %d"), weapon->currAmmo, weapon->Ammo);
+
+
 
 	return ammoString;
 }
@@ -74,32 +76,23 @@ FString UScreenUI::UpdateAmmoCount()
 
 void UScreenUI::WeaponSwap_Implementation()
 {
-	FString tempStr;
-	switch (myPlayer->playerFire->currSlot)
-	{
-	case WeaponSlotType::PrimarySlot:
-		tempStr = FString("PrimarySlot");
-		primaryInfo.ZOrder = 2;
-		secondaryInfo.ZOrder = 0;
-		break;
-	case WeaponSlotType::SecondarySlot:
-		tempStr = FString("SecondarySlot");
-		primaryInfo.ZOrder = 0;
-		secondaryInfo.ZOrder = 2;
-		break;
-	}
-	
-	switch (myPlayer->playerFire->currWeapon)
+
+	switch (myPlayer->playerFire->currWeapon->weaponType)
 	{
 	case WeaponType::Rifle:
-		primaryInfo.Textrue = RifleUI;
+		currWeaponTexture = RifleUI;
 		break;
 	case WeaponType::Shotgun:
-		primaryInfo.Textrue = ShotgunUI;
+		currWeaponTexture = ShotgunUI;
+		break;
+	case WeaponType::Pistol:
+		currWeaponTexture = PistolUI;
+		break;
+	case WeaponType::Bow:
+		currWeaponTexture = BowUI;
+		break;
+	case WeaponType::Sword:
+		currWeaponTexture = SwordUI;
 		break;
 	}
-	
-	if (myPlayer->playerFire->primaryWeapon == nullptr)
-		primaryInfo.Textrue = TransParentUI;
-
 }

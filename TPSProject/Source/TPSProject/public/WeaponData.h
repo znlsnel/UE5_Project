@@ -9,7 +9,7 @@
 #include "WeaponData.generated.h"
 
 /**
- * 
+ *
  */
 class TPSPROJECT_API WeaponData
 {
@@ -49,7 +49,7 @@ enum class BowState : uint8
 UENUM(BlueprintType)
 enum class WeaponType : uint8
 {
-	Pistol		UMETA(DisplayName= "Pistol"),
+	Pistol		UMETA(DisplayName = "Pistol"),
 	Rifle			UMETA(DisplayName = "Rifle"),
 	Shotgun		UMETA(DisplayName = "Shotgun"),
 	Bow			UMETA(DisplayName = "Bow"),
@@ -74,17 +74,6 @@ enum class WeaponSlotType : uint8
 	None			UMETA(DisplayName = "None"),
 };
 
-USTRUCT(BlueprintType)
-struct TPSPROJECT_API FWeaponInfo
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UTexture2D* Textrue;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int ZOrder;
-};
 
 USTRUCT(BlueprintType)
 struct TPSPROJECT_API FItemInfoinInventory
@@ -121,7 +110,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USoundBase* ImpactSound;
-	
+
 };
 
 USTRUCT(BlueprintType)

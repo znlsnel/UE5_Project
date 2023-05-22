@@ -62,7 +62,7 @@ void AWeapon::Attack()
 	myPlayer->PlayMontageInServer(CharacterFireAM);
 
 
-	GetWorld()->GetFirstPlayerController()-> PlayerCameraManager->StartCameraShake(FireCamShakeClass);
+	GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(FireCamShakeClass);
 
 	if (!FireCamShakeClass)
 	{
@@ -75,7 +75,7 @@ void AWeapon::Attack()
 	}
 	else if (GetWorld()->GetRealTimeSeconds() - lastFiredTime < 1.2)
 	{
-		currFireSpread = FMath::Min(currFireSpread* 1.1f, FireSpread * 1.5f );
+		currFireSpread = FMath::Min(currFireSpread * 1.1f, FireSpread * 1.5f);
 		lastFiredTime = GetWorld()->GetRealTimeSeconds();
 	}
 	else
@@ -109,16 +109,16 @@ TArray<FHitResult> AWeapon::LineTrace()
 
 	TArray<FHitResult> hitArr;
 
-	
+
 
 	for (int i = 0; i < FireBulletCount; i++)
 	{
-		LineTraceEnd =  TraceStartPoint + (UKismetMathLibrary::RandomUnitVectorInConeInDegrees(MyNormalize(pHitResult.ImpactPoint - TraceStartPoint), currFireSpread) * traceLength);
+		LineTraceEnd = TraceStartPoint + (UKismetMathLibrary::RandomUnitVectorInConeInDegrees(MyNormalize(pHitResult.ImpactPoint - TraceStartPoint), currFireSpread) * traceLength);
 
 		isHit = UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStartPoint, LineTraceEnd, UEngineTypes::ConvertToTraceType(ECC_Visibility), true, pIgnore, EDrawDebugTrace::None, pHitResult, true);
 
 		hitArr.Add(pHitResult);
-		
+
 	}
 	return hitArr;
 }
@@ -137,26 +137,13 @@ void AWeapon::UncoverWeapon()
 
 void AWeapon::DiscardWeaponIfAlreadyExists()
 {
-	AWeapon* tempWeapon = myPlayer->playerFire->primaryWeapon;
+	AWeapon* tempWeapon = myPlayer->playerFire->currWeapon;
 
-	tempWeapon = weaponSlotType == WeaponSlotType::PrimarySlot ? myPlayer->playerFire->primaryWeapon : myPlayer->playerFire->secondaryWeapon;
-	
-	if (tempWeapon != nullptr && tempWeapon != this)
+	if (IsValid(tempWeapon) && tempWeapon->weaponType == weaponType)
 	{
 		tempWeapon->UnSynchronizeWhitPlayer();
 	}
-
-	switch (weaponSlotType)
-	{
-	case WeaponSlotType::PrimarySlot:
-		myPlayer->playerFire->primaryWeapon = this;
-		myPlayer->playerFire->EquipPrimaryWeapon();
-		break;
-	case WeaponSlotType::SecondarySlot:
-		myPlayer->playerFire->secondaryWeapon = this;
-		myPlayer->playerFire->EquipSecondaryWeapon();
-		break;
-	}
+	//myPlayer->playerFire->currWeapon = this;
 }
 
 
@@ -309,7 +296,7 @@ void AWeapon::CreateDecal(UNiagaraComponent* tempDecal, FHitResult& pHitResult)
 // Sets default values
 AWeapon::AWeapon()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	Tags.Add(TEXT("Weapon"));
 

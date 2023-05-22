@@ -10,7 +10,7 @@
 
 
 /**
- * 
+ *
  */
 UCLASS(ClassGroup = (PlayerComponent), meta = (BlueprintSpawnableComponent))
 class TPSPROJECT_API UPlayerFire : public UPlayerBaseComponent
@@ -34,23 +34,12 @@ public:
 
 
 	UFUNCTION(Server, Reliable)
-		void EquipSecondaryWeapon();
-	void EquipSecondaryWeapon_Implementation();
+		void EquipWeapon(WeaponType weaponType);
+	void EquipWeapon_Implementation(WeaponType weaponType);
 
 	UFUNCTION(NetMulticast, Reliable)
-		void EquipSWeaponMulticast();
-	void EquipSWeaponMulticast_Implementation();
-
-	UFUNCTION(Server, Reliable)
-		void EquipPrimaryWeapon();
-	void EquipPrimaryWeapon_Implementation();
-
-	UFUNCTION(NetMulticast, Reliable)
-		void EquipPWeapon();
-	void EquipPWeapon_Implementation();
-
-	void EquipWeapon(WeaponType weaponType);
-
+		void EquipWeaponMulticast(WeaponType weaponType);
+	void EquipWeaponMulticast_Implementation(WeaponType weaponType);
 
 
 	template<bool b>
@@ -58,8 +47,8 @@ public:
 	void SniperAim(bool isPressed);					// 스코프 모드
 	void InitializeWeapon();
 	void LoadBullet();
-	class AWeapon* GetWeapon();
-	void EquipWeapon(WeaponSlotType slotType);
+
+
 	UFUNCTION(BlueprintCallable)
 		void ChangeWeapon();
 
@@ -86,14 +75,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<class AWeapon> pistol;
-	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<class AWeapon> rifle;
-	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<class AWeapon> shotgun;
-
-
-	class AWeapon* primaryWeapon;
-	class AWeapon* secondaryWeapon;
 
 	class AWeapon* weapon_Rifle;
 	class AWeapon* weapon_Shotgun;
@@ -101,8 +82,9 @@ public:
 	class AWeapon* weapon_Bow;
 	class AWeapon* weapon_Sword;
 	class AWeapon* currWeapon;
+	class AWeapon* nextWeapon;
 	class AWeapon* GetWeapon(WeaponType weaponType);
-
+	void SetWeapon(class AWeapon* weapon);
 	// 카메라 쉐이크
 	UPROPERTY(EditDefaultsOnly, Category = CameraMotion)
 		TSubclassOf<class UCameraShakeBase> cameraShake;

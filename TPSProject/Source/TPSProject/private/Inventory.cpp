@@ -22,7 +22,7 @@ UInventory::UInventory(const FObjectInitializer& ObjectInitializer) : Super(Obje
 
 void UInventory::SyncInventorySlot(TArray< UWidget*> arry)
 {
-	
+
 	for (auto i : arry)
 	{
 		UInventorySlot* tempSlot = Cast<UInventorySlot>(i);
@@ -40,7 +40,7 @@ void UInventory::UpdateInventory()
 	{
 		i->UpdateInventory();
 	}
-	
+
 }
 
 void UInventory::Initialization(ATPSPlayer* player)
@@ -56,17 +56,9 @@ bool UInventory::AddItemToInventory(AItem* Item)
 	{
 		AWeapon* weapon = Cast<AWeapon>(Item);
 
-		switch (weapon->weaponSlotType)
-		{
-		case WeaponSlotType::PrimarySlot:
-			if (myPlayer->playerFire->primaryWeapon == nullptr) 
-				isEquipable = true;
-			break;
-		case WeaponSlotType::SecondarySlot:
-			if (myPlayer->playerFire->secondaryWeapon == nullptr)
-				isEquipable = true;
-			break;
-		}
+		if (myPlayer->playerFire->GetWeapon(weapon->weaponType) == nullptr)
+			isEquipable = true;
+
 	}
 	else if (Item->itemType == ItemType::Ammo)
 	{
@@ -76,7 +68,7 @@ bool UInventory::AddItemToInventory(AItem* Item)
 	if (isEquipable)
 	{
 		AWeapon* weapon = Cast<AWeapon>(Item);
-		weapon->SynchronizeWhitPlayer(myPlayer);
+		myPlayer->playerFire->SetWeapon(weapon);
 	}
 	else
 	{
@@ -119,7 +111,7 @@ UInventorySlot* UInventory::FindFirstEmptySlot(AItem* item)
 		{
 			if (item->itemType == ItemType::Weapon && Cast<AWeapon>(slot->Items[0])->weaponType
 				== Cast<AWeapon>(item)->weaponType) isFindedMatch = true;
-			
+
 			else if (item->itemType == ItemType::Ammo && Cast<AAmmoBox>(slot->Items[0])->ammoType
 				== Cast<AAmmoBox>(item)->ammoType) isFindedMatch = true;
 		}

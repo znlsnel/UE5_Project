@@ -59,8 +59,6 @@ void UPlayerMove::Turn(float value)
 	turnValue += value;
 	turnValue = UKismetMathLibrary::FClamp(turnValue, -10, 10);
 
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("TurnValue : %f"), turnValue));
-
 	if (me->playerUI->IsMouseActive) return;
 	me->AddControllerYawInput(value);
 }
@@ -69,8 +67,6 @@ void UPlayerMove::LookUp(float value)
 {
 	lookUpValue += value;
 	lookUpValue = UKismetMathLibrary::FClamp(lookUpValue, -10, 10);
-
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("lookUpValue : %f"), lookUpValue));
 
 	if (me->playerUI->IsMouseActive) return;
 	me->AddControllerPitchInput(value);
