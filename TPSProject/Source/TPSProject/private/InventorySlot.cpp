@@ -20,7 +20,7 @@ void UInventorySlot::RemoveItemFromInventory()
 			ItemIcon = tempT.Object;
 		}
 		else
-		ItemIcon = nullptr;
+			ItemIcon = nullptr;
 		isInUse = false;
 		UpdateInventory();
 	}

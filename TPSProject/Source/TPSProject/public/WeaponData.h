@@ -33,6 +33,16 @@ enum class ItemType : uint8
 {
 	Weapon		UMETA(DisplayName = "Weapon"),
 	Ammo		UMETA(DisplayName = "Ammo"),
+	Grace		UMETA(DisplayName = "Grace"),
+	Mineral		UMETA(DisplayName = "Mineral"),
+	None		UMETA(DisplayName = "None"),
+};
+
+UENUM(BlueprintType)
+enum class BowState : uint8
+{
+	AimMode	UMETA(DisplayName = "AimMode"),
+	TravelMode	UMETA(DisplayName = "TravelMode"),
 	None		UMETA(DisplayName = "None"),
 };
 
@@ -42,6 +52,8 @@ enum class WeaponType : uint8
 	Pistol		UMETA(DisplayName= "Pistol"),
 	Rifle			UMETA(DisplayName = "Rifle"),
 	Shotgun		UMETA(DisplayName = "Shotgun"),
+	Bow			UMETA(DisplayName = "Bow"),
+	Sword		UMETA(DisplayName = "Sword"),
 	None		UMETA(DisplayName = "None"),
 };
 

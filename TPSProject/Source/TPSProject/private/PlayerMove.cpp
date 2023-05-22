@@ -56,15 +56,23 @@ void UPlayerMove::SetupInputBinding(UInputComponent* PlayerInputComponent)
 
 void UPlayerMove::Turn(float value)
 {
-	if (me->playerUI->isInventoryOpen()) return;
+	turnValue += value;
+	turnValue = UKismetMathLibrary::FClamp(turnValue, -10, 10);
 
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("TurnValue : %f"), turnValue));
+
+	if (me->playerUI->IsMouseActive) return;
 	me->AddControllerYawInput(value);
 }
 
 void UPlayerMove::LookUp(float value)
 {
-	if (me->playerUI->isInventoryOpen()) return;
+	lookUpValue += value;
+	lookUpValue = UKismetMathLibrary::FClamp(lookUpValue, -10, 10);
 
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("lookUpValue : %f"), lookUpValue));
+
+	if (me->playerUI->IsMouseActive) return;
 	me->AddControllerPitchInput(value);
 }
 
@@ -126,36 +134,36 @@ void UPlayerMove::DoubleClick(DashType dashDirection)
 
 void UPlayerMove::Dash(DashType dashDirection)
 {
-	UAnimMontage* dashMontage = playerAnim->Dash(dashDirection);
+	//UAnimMontage* dashMontage = playerAnim->Dash(dashDirection);
 
-	//playerAnim->PlayMontage(dashMontage);
-	me->PlayMontageInServer(dashMontage);
-	FVector ImpulseDirection;
-	switch (dashDirection)
-	{
-	case DashType::W:
-		ImpulseDirection = me->GetActorForwardVector();
-		break;
-	case DashType::A:
-		ImpulseDirection = -me->GetActorRightVector();
-		break;
-	case DashType::S:
-		ImpulseDirection = -me->GetActorForwardVector();
-		break;
-	case DashType::D:
-		ImpulseDirection = me->GetActorRightVector();
-		break;
-	}
+	////playerAnim->PlayMontage(dashMontage);
+	//me->PlayMontageInServer(dashMontage);
+	//FVector ImpulseDirection;
+	//switch (dashDirection)
+	//{
+	//case DashType::W:
+	//	ImpulseDirection = me->GetActorForwardVector();
+	//	break;
+	//case DashType::A:
+	//	ImpulseDirection = -me->GetActorRightVector();
+	//	break;
+	//case DashType::S:
+	//	ImpulseDirection = -me->GetActorForwardVector();
+	//	break;
+	//case DashType::D:
+	//	ImpulseDirection = me->GetActorRightVector();
+	//	break;
+	//}
 
-	float ImpulseMagnitude = 70000.0f;
-	FVector Impulse = ImpulseMagnitude * ImpulseDirection;
+	//float ImpulseMagnitude = 70000.0f;
+	//FVector Impulse = ImpulseMagnitude * ImpulseDirection;
 
 
 
-	FVector Point = me->GetActorLocation();
+	//FVector Point = me->GetActorLocation();
 
-	me->Jump();
-	me->GetCharacterMovement()->AddImpulse(Impulse);
+	//me->Jump();
+	//me->GetCharacterMovement()->AddImpulse(Impulse);
 
 	//return;
 }

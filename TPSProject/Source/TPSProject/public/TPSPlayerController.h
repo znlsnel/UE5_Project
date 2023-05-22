@@ -18,7 +18,8 @@ public:
 	ATPSPlayerController();
 	//static int id_counter;
 	virtual void BeginPlay()override;
-	void ATVWidget();
+	UFUNCTION(BlueprintCallable)
+		void ATVWidget();
 	class ATPSPlayer* myPlayer;
 
 	FTimerHandle atvTimer;

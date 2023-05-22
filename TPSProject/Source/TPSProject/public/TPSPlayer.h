@@ -10,6 +10,8 @@
 DECLARE_MULTICAST_DELEGATE_OneParam(FInputBindingDelegate, class UInputComponent*);
 DECLARE_MULTICAST_DELEGATE(FTickUpdateFunctions);
 
+DECLARE_DELEGATE(FInteractionObject);
+
 UCLASS()
 class TPSPROJECT_API ATPSPlayer : public ACharacter
 {
@@ -19,6 +21,7 @@ public:
 	// Sets default values for this character's properties
 	FInputBindingDelegate onInputBindingDelegate;
 	FTickUpdateFunctions tickUpdateFunctions;
+	FInteractionObject InteractionDelegate;
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,6 +35,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const;
+	UFUNCTION(BlueprintCallable)
+		void SetPlayerMouse(bool Active);
 
 #pragma region ServerFunctions
 
@@ -125,6 +130,10 @@ public:
 	static int playerId;
 	UFUNCTION(BlueprintPure)
 		const int GetPlayerId();
+
+
+	void InteractionObject();
+
 public:
 	class ATPSPlayerController* myController;
 	FTimerHandle TickIdTimerHandle;
@@ -187,6 +196,7 @@ public:
 		bool isDie = false;
 	UPROPERTY(BlueprintReadWrite)
 		bool isMyPlayer = false;
+
 // ÇÔ¼ö========================================================================
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Health)

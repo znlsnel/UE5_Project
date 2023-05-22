@@ -26,8 +26,10 @@ public:
 
 // Input System
 	// Camera
-	void Turn(float value);				// 좌우 회전
+	void Turn(float value);		// 좌우 회전
+	float turnValue = 0.f;
 	void LookUp(float value);			// 상하 회전
+	float lookUpValue = 0.f;
 
 	// Moving
 	void InputHorizontal(float value);	// 좌우 이동

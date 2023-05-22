@@ -101,7 +101,7 @@ void UPlayerFire::LoopFire()
 		lastShotTime = GetWorld()->GetTimeSeconds();
 
 
-	if (me->playerUI->isInventoryOpen())
+	if (me->playerUI->IsMouseActive)
 	{
 		me->playerUI->GetMouseInput();
 		return;
@@ -130,7 +130,7 @@ void UPlayerFire::EquipSWeaponMulticast_Implementation()
 	if (secondaryWeapon == nullptr) return;
 	
 	currSlot = WeaponSlotType::SecondarySlot;
-	currWeapon = secondaryWeapon->weaponType;
+	currWeaponType = secondaryWeapon->weaponType;
 	EquipWeapon(currSlot);
 }
 
@@ -144,9 +144,11 @@ void UPlayerFire::EquipPWeapon_Implementation()
 	if (primaryWeapon == nullptr) return;
 
 	currSlot = WeaponSlotType::PrimarySlot;
-	currWeapon = primaryWeapon->weaponType;
+	currWeaponType = primaryWeapon->weaponType;
 	EquipWeapon(currSlot);
 }
+
+
 
 void UPlayerFire::SniperAim(bool isPressed)
 {
@@ -166,7 +168,7 @@ void UPlayerFire::InitializeWeapon()
 
 	anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
 
-	currWeapon = WeaponType::Pistol;
+	currWeaponType = WeaponType::Pistol;
 	currSlot = WeaponSlotType::SecondarySlot;
 	EquipWeapon(currSlot);
 }
@@ -187,8 +189,7 @@ AWeapon* UPlayerFire::GetWeapon()
 
 void UPlayerFire::EquipWeapon(WeaponSlotType slotType)
 {
-	if (IsValid(anim) == false)
-		anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
+
 	switch (slotType)
 	{
 	case WeaponSlotType::PrimarySlot:
@@ -199,6 +200,22 @@ void UPlayerFire::EquipWeapon(WeaponSlotType slotType)
 		break;
 	}
 
+}
+
+void UPlayerFire::EquipWeapon(WeaponType weaponType)
+{
+	if (currWeapon->weaponType == weaponType) return;
+
+	AWeapon* nextWeapon = GetWeapon(weaponType);
+	if (IsValid(nextWeapon)){
+		// TODO 무기가 없습니다.  UI 표시
+		return;
+	}
+	
+	currWeapon->HideWeapon();
+	currWeapon = nextWeapon;
+	currWeapon->UncoverWeapon();
+	me->PlayMontageInServer(currWeapon->CharacterEquipAM);
 }
 
 void UPlayerFire::ChangeWeapon()
@@ -226,9 +243,32 @@ void UPlayerFire::ChangeWeapon()
 
 
 
-	anim->weaponType = currWeapon;
+	anim->weaponType = currWeaponType;
 	anim->weaponSlotType = currSlot;
-	me->playerUI->crosshair->ChangeCrosshair(currWeapon);
+	me->playerUI->crosshair->ChangeCrosshair(currWeaponType);
 
+}
+
+AWeapon* UPlayerFire::GetWeapon(WeaponType weaponType)
+{
+	switch (weaponType)
+	{
+	case WeaponType::Rifle:
+		return weapon_Rifle;
+		break;
+	case WeaponType::Shotgun:
+		return weapon_Shotgun;
+		break;
+	case WeaponType::Pistol:
+		return weapon_Pistol;
+		break;
+	case WeaponType::Bow:
+		return weapon_Bow;
+		break;
+	case WeaponType::Sword:
+		return weapon_Sword;
+		break;
+	}
+	return nullptr;
 }
 

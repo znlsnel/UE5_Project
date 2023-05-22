@@ -8,6 +8,7 @@
 #include "Crosshair.h"
 #include "StoreActor.h"
 #include "StoreUI.h"
+#include "WeaponUI.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Components/WidgetComponent.h>
@@ -18,11 +19,6 @@
 #include <GameFramework/PlayerState.h>
 #include <Kismet/GameplayStatics.h>
 
-bool UPlayerUI::isInventoryOpen()
-{
-	if (screenUI == nullptr) return false;
-	return screenUI->bOpenInventory;
-}
 
 void UPlayerUI::InitializeComponent()
 {
@@ -39,6 +35,11 @@ void UPlayerUI::BeginPlay()
 void UPlayerUI::SetupInputBinding(UInputComponent* PlayerInputComponent)
 {
 	PlayerInputComponent->BindAction(TEXT("Inventory"), IE_Pressed, this, &UPlayerUI::ToggleInventory);
+	PlayerInputComponent->BindAction(TEXT("MouseToggle"), IE_Pressed, this, &UPlayerUI::ToggleMouse);
+
+	PlayerInputComponent->BindAction(TEXT("WeaponSelectUI"), IE_Pressed, this, &UPlayerUI::ATVWeaponSelectUI<true>);
+	PlayerInputComponent->BindAction(TEXT("WeaponSelectUI"), IE_Released, this, &UPlayerUI::ATVWeaponSelectUI<false>);
+
 }
 
 void UPlayerUI::GetMouseInput()
@@ -55,6 +56,78 @@ void UPlayerUI::GetMouseInput()
 			screenUI->inventory->DisablePopup();
 	}
 	
+}
+
+void UPlayerUI::ToggleMouse()
+{
+	APlayerController* pc = GetWorld()->GetFirstPlayerController();
+
+	if (IsMouseActive)
+	{
+		pc->bShowMouseCursor = false;
+		pc->bEnableClickEvents = false;
+		pc->bEnableMouseOverEvents = false;
+		IsMouseActive = false;
+	}
+	else
+	{
+		int32 x;
+		int32 y;
+		pc->GetViewportSize(x, y);
+		pc->SetMouseLocation(x / 2, y / 2);
+		
+		pc->bShowMouseCursor = true;
+		pc->bEnableClickEvents = true;
+		pc->bEnableMouseOverEvents = true;
+		IsMouseActive = true;
+	}
+
+}
+
+void UPlayerUI::ToggleMouse(bool ActiveMouse)
+{
+	APlayerController* pc = GetWorld()->GetFirstPlayerController();
+
+	if (ActiveMouse == false)
+	{
+		pc->SetShowMouseCursor(false);
+
+		pc->bShowMouseCursor = false;
+		pc->bEnableClickEvents = false;
+		pc->bEnableMouseOverEvents = false;
+		IsMouseActive = false;
+	}
+	else
+	{
+		pc->SetShowMouseCursor(true);
+
+		int32 x;
+		int32 y;
+		pc->GetViewportSize(x, y);
+		pc->SetMouseLocation(x/2 , y/2);
+
+		pc->bShowMouseCursor = true;
+		pc->bEnableClickEvents = true;
+		pc->bEnableMouseOverEvents = true;
+		IsMouseActive = true;
+	}
+}
+
+void UPlayerUI::ATVWeaponSelectUI(bool addToView)
+{
+	if (IsValid(weaponSelectUI) == false) return;
+
+	ToggleMouse(addToView);
+	if (addToView)
+	{
+		if (weaponSelectUI->isOpen == false)
+			weaponSelectUI->WidgetOn();
+	}
+	else
+	{
+		if (weaponSelectUI->isOpen)
+			weaponSelectUI->WidgetOff();
+	}
 }
 
 void UPlayerUI::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -90,7 +163,9 @@ void UPlayerUI::ATVWidgets_Implementation()
 	if (crosshair) {
 		crosshair->ATVWidget();
 	}
-
+	if (weaponSelectUI) {
+		weaponSelectUI->AddToViewport();
+	}
 
 }
 
@@ -114,6 +189,8 @@ void UPlayerUI::InitializeWidgets_Client_Implementation()
 
 	crosshair = Cast<UCrosshair>(CreateWidget(GetWorld(), crosshairFactory));
 	if (crosshair->IsValidLowLevel()) crosshair->Initialization(me);
+
+	weaponSelectUI = Cast<UWeaponUI>(CreateWidget(GetWorld(), weaponUIFactory));
 
 }
 

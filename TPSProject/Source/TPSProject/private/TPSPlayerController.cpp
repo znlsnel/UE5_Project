@@ -36,7 +36,7 @@ void ATPSPlayerController::BeginPlay()
 {
 	myPlayer = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-	GetWorldTimerManager().SetTimer(atvTimer, this, &ATPSPlayerController::ATVWidget, 1.5f);
+	//GetWorldTimerManager().SetTimer(atvTimer, this, &ATPSPlayerController::ATVWidget, 1.5f);
 
 }
 

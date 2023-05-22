@@ -25,7 +25,7 @@ void UScreenUI::ATVWidget()
 {
 	if (IsInViewport()) return;
 	if (myPlayer->GetNetMode() == NM_Client && myPlayer->GetLocalRole() == ROLE_AutonomousProxy)
-		AddToScreen(GetOwningLocalPlayer(), 0);
+		StartWidget();
 
 	WeaponSwap();
 }
@@ -50,16 +50,12 @@ void UScreenUI::ToggleInventory()
 
 	if (bOpenInventory)
 	{
-		pc->bShowMouseCursor = false;
-		pc->bEnableClickEvents = false;
-		pc->bEnableMouseOverEvents = false;
+
 		bOpenInventory = false;
 	}
 	else
 	{
-		pc->bShowMouseCursor = true;
-		pc->bEnableClickEvents = true;
-		pc->bEnableMouseOverEvents = true;
+
 		bOpenInventory = true;
 	}
 

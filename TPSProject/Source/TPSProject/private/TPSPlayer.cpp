@@ -137,6 +137,7 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	
 	onInputBindingDelegate.Broadcast(PlayerInputComponent);
+	PlayerInputComponent->BindAction(TEXT("InteractionObject"), EInputEvent::IE_Pressed, this, &ATPSPlayer::InteractionObject);
 
 }
 
@@ -146,6 +147,11 @@ void ATPSPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 	//DOREPLIFETIME(ATPSPlayer, hp);
 	//DOREPLIFETIME(ATPSPlayer, initialHp);
 	
+}
+
+void ATPSPlayer::SetPlayerMouse(bool Active)
+{
+	playerUI->ToggleMouse(Active);
 }
 
 void ATPSPlayer::PlayMontageInServer_Implementation(UAnimMontage* AM)
@@ -256,6 +262,15 @@ int ATPSPlayer::playerId = 0;
 const int ATPSPlayer::GetPlayerId()
 {
 	return playerId++;
+}
+
+void ATPSPlayer::InteractionObject()
+{
+	if (InteractionDelegate.IsBound())
+	{
+
+		InteractionDelegate.Execute();
+	}
 }
 
 

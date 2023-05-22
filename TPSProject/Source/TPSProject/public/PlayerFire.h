@@ -12,7 +12,7 @@
 /**
  * 
  */
-UCLASS(ClassGroup=(PlayerComponent), meta = (BlueprintSpawnableComponent))
+UCLASS(ClassGroup = (PlayerComponent), meta = (BlueprintSpawnableComponent))
 class TPSPROJECT_API UPlayerFire : public UPlayerBaseComponent
 {
 	GENERATED_BODY()
@@ -32,22 +32,26 @@ public:
 
 	void LoopFire();
 
-	
+
 	UFUNCTION(Server, Reliable)
-	void EquipSecondaryWeapon();			
-	void EquipSecondaryWeapon_Implementation();			
+		void EquipSecondaryWeapon();
+	void EquipSecondaryWeapon_Implementation();
 
 	UFUNCTION(NetMulticast, Reliable)
 		void EquipSWeaponMulticast();
-		void EquipSWeaponMulticast_Implementation();
+	void EquipSWeaponMulticast_Implementation();
 
 	UFUNCTION(Server, Reliable)
-	void EquipPrimaryWeapon();
+		void EquipPrimaryWeapon();
 	void EquipPrimaryWeapon_Implementation();
 
 	UFUNCTION(NetMulticast, Reliable)
 		void EquipPWeapon();
-		void EquipPWeapon_Implementation();
+	void EquipPWeapon_Implementation();
+
+	void EquipWeapon(WeaponType weaponType);
+
+
 
 	template<bool b>
 	void SniperAim() { SniperAim(b); }					// 스코프 모드
@@ -75,7 +79,7 @@ public:
 	float lastShotTime = 0.f;
 	// 무기
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
-		WeaponType currWeapon = WeaponType::Pistol;
+		WeaponType currWeaponType = WeaponType::Pistol;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
 		WeaponSlotType currSlot = WeaponSlotType::SecondarySlot;
@@ -90,6 +94,14 @@ public:
 
 	class AWeapon* primaryWeapon;
 	class AWeapon* secondaryWeapon;
+
+	class AWeapon* weapon_Rifle;
+	class AWeapon* weapon_Shotgun;
+	class AWeapon* weapon_Pistol;
+	class AWeapon* weapon_Bow;
+	class AWeapon* weapon_Sword;
+	class AWeapon* currWeapon;
+	class AWeapon* GetWeapon(WeaponType weaponType);
 
 	// 카메라 쉐이크
 	UPROPERTY(EditDefaultsOnly, Category = CameraMotion)

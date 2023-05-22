@@ -45,9 +45,6 @@
     <ClCompile Include="..\..\Source\TPSProject\private\AmmoBox.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\TPSProject\private\Bullet.cpp">
-      <Filter>Source\TPSProject\private</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\Crosshair.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -70,6 +67,9 @@
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\FootIkActorComponent.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\InteractableActor.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\Inventory.cpp">
@@ -135,6 +135,9 @@
     <ClCompile Include="..\..\Source\TPSProject\private\WeaponData.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\WeaponUI.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\Weapon_Pistol.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -148,9 +151,6 @@
       <UniqueIdentifier>{68A94EF8-D612-391B-AA07-FA4C4DBF9FA4}</UniqueIdentifier>
     </Filter>
     <ClInclude Include="..\..\Source\TPSProject\public\AmmoBox.h">
-      <Filter>Source\TPSProject\public</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\TPSProject\public\Bullet.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Crosshair.h">
@@ -175,6 +175,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\FootIkActorComponent.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\InteractableActor.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Inventory.h">
@@ -238,6 +241,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\WeaponData.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\WeaponUI.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Weapon_Pistol.h">

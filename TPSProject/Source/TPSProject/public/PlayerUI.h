@@ -19,8 +19,13 @@ public:
 	virtual void BeginPlay()override;
 	virtual void SetupInputBinding(class UInputComponent* PlayerInputComponent)override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const;
-	bool isInventoryOpen();
 	void GetMouseInput();
+	void ToggleMouse();
+	void ToggleMouse(bool ActiveMouse);
+
+	template <bool b>
+	void ATVWeaponSelectUI() { ATVWeaponSelectUI(b); }
+	void ATVWeaponSelectUI(bool addToView);
 
 	UFUNCTION(Client, Reliable)
 	void ATVWidgets();
@@ -46,7 +51,12 @@ public:
 	UPROPERTY(blueprintReadWrite, category = UI)
 		class UCrosshair* crosshair;
 
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UWeaponUI> weaponUIFactory;
+	UPROPERTY(blueprintReadWrite, category = UI)
+		class UWeaponUI* weaponSelectUI;
 
+	bool IsMouseActive = false;
 
 
 

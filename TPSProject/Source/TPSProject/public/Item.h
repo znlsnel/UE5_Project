@@ -39,7 +39,8 @@ public:
 
 public:
 	class ATPSPlayer* myPlayer;
-	ItemType itemType;
+	UPROPERTY(EditAnywhere)
+		ItemType itemType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = WeaponTypes)
 		UTexture2D* ItemIcon;

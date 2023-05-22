@@ -22,6 +22,9 @@ public:
 	void UpdateScreenUI();
 
 	void ATVWidget();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+		void StartWidget();
 
 	void Initialization(class ATPSPlayer* player);
 	void SetupInputBinding(class UInputComponent* PlayerInputComponent);
