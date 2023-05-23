@@ -16,9 +16,9 @@ void AWeapon::SynchronizeWhitPlayer(ATPSPlayer* player)
 	DiscardWeaponIfAlreadyExists();
 	RemovePickupCollision();
 
-	SetActorLocation(myPlayer->GetMesh()->GetSocketLocation("hand_rSocket"));
+	SetActorLocation(myPlayer->GetMesh()->GetSocketLocation(attachCharacterSocketName));
 
-	AttachToComponent(myPlayer->GetMesh(), FAttachmentTransformRules::KeepWorldTransform, TEXT("hand_rSocket"));
+	AttachToComponent(myPlayer->GetMesh(), FAttachmentTransformRules::KeepWorldTransform,attachCharacterSocketName);
 
 	SetActorRelativeRotation(FRotator(0, 90, 0));
 	anim = Cast<UPlayerAnim>(myPlayer->GetMesh()->GetAnimInstance());
@@ -45,7 +45,7 @@ void AWeapon::UnSynchronizeWhitPlayer()
 
 void AWeapon::Attack()
 {
-
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Attack! in AWeapon!"));
 	if (isSynchronized == false) return;
 	if (currAmmo == 0)
 	{
@@ -84,7 +84,7 @@ void AWeapon::Attack()
 		lastFiredTime = 0.f;
 	}
 
-	FireWeapon();
+
 
 }
 
@@ -127,12 +127,13 @@ void AWeapon::HideWeapon()
 {
 	//weaponMeshComp->SetVisibility(false);
 	SetActorHiddenInGame(true);
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Hidden!"));
 }
 
 void AWeapon::UncoverWeapon()
 {
 	//weaponMeshComp->SetVisibility(true);
-	SetActorHiddenInGame(false);
+		SetActorHiddenInGame(false);
 }
 
 void AWeapon::DiscardWeaponIfAlreadyExists()
@@ -165,91 +166,6 @@ void AWeapon::Reload()
 }
 
 
-void AWeapon::FireWeapon()
-{
-	TArray<FHitResult> pHitResultArr = LineTrace();
-
-	for (auto HitResult : pHitResultArr)
-	{
-		myPlayer->createNiagara(HitResult);
-
-
-	}
-
-
-
-	if (currAmmo) currAmmo--;
-}
-
-//void AWeapon::createNiagara_Implementation(FHitResult pHitResult)
-//{
-//	MulticastNiaga(pHitResult);
-//}
-
-void AWeapon::createNiagara(FHitResult pHitResult)
-{
-	UNiagaraComponent* tempTracer = UNiagaraFunctionLibrary::SpawnSystemAttached(TracerNS, weaponMeshComp, TEXT(""), weaponMeshComp->GetSocketLocation(TEXT("Muzzle")), FRotator(0), EAttachLocation::KeepWorldPosition, true);
-
-
-
-	if (tempTracer)
-	{
-		tempTracer->SetNiagaraVariableBool(FString("User.Trigger"), true);
-
-		FVector tempPos = pHitResult.bBlockingHit ? pHitResult.ImpactPoint : pHitResult.TraceEnd;
-		TArray<FVector> TraceImpactPosArr;
-		TraceImpactPosArr.Add(tempPos);
-
-		UNiagaraDataInterfaceArrayFunctionLibrary::
-			SetNiagaraArrayVector(tempTracer, TEXT("User.ImpactPositions"), TraceImpactPosArr);
-
-		tempTracer->SetNiagaraVariablePosition(FString("User.MuzzlePostion"), weaponMeshComp->GetSocketLocation("Muzzle"));
-
-	}
-
-	UNiagaraComponent* tempDecal = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactDecal, pHitResult.ImpactPoint, pHitResult.ImpactNormal.Rotation());
-
-	CreateDecal(tempDecal, pHitResult);
-
-	UNiagaraComponent* tempImpact = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffect, pHitResult.ImpactPoint, pHitResult.ImpactNormal.Rotation());
-
-	CreateDecal(tempImpact, pHitResult);
-
-
-	if (IsValid(pHitResult.GetActor()) && pHitResult.GetActor()->ActorHasTag(TEXT("Enemy")))
-	{
-		AEnemy* enemy = Cast<AEnemy>(pHitResult.GetActor());
-
-		int damage = weapDamage * (myPlayer->AdditionalAttackPower + 1);
-
-		FName tempName = pHitResult.BoneName;
-		if (tempName == FName("head"))
-			damage *= 2;
-
-		else if (tempName == FName("spine_03"))
-			damage *= 1;
-
-		else
-			damage = damage - (damage / 4);
-
-
-		enemy->fsm->OnDamageProcess(damage, myPlayer);
-
-	}
-}
-
-//void AWeapon::ClickWidget_Implementation(bool isFire)
-//{
-//	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ClickWidget! in Server"));
-//	ClickWorldWidget(isFire);
-//	//ClickWidgetMulti(isFire);
-//}
-//
-//void AWeapon::ClickWidgetMulti_Implementation(bool isFire)
-//{
-//	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ClickWidget! in Multi"));
-//	ClickWorldWidget(isFire);
-//}
 
 FVector AWeapon::MyNormalize(const FVector& Invec)
 {

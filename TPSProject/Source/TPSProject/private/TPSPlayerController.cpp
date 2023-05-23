@@ -42,9 +42,11 @@ void ATPSPlayerController::BeginPlay()
 
 void ATPSPlayerController::ATVWidget()
 {
-
 	if (myPlayer)
+	{
 		myPlayer->playerUI->ATVWidgets();
+		myPlayer->StartGame();
+	}
 
 
 

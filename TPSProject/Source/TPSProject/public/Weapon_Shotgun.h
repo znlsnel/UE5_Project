@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapon.h"
+#include "Weapon_Gun.h"
 #include "Weapon_Shotgun.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class TPSPROJECT_API AWeapon_Shotgun : public AWeapon
+class TPSPROJECT_API AWeapon_Shotgun : public AWeapon_Gun
 {
 	GENERATED_BODY()
 	

@@ -50,10 +50,7 @@ public:
 	void DiscardWeaponIfAlreadyExists();
 	void Reload();
 	
-	void FireWeapon();
 
-	//UFUNCTION(Server, Reliable)
-	void createNiagara( FHitResult pHitResult);
 	//void createNiagara_Implementation( FHitResult pHitResult);
 
 	//UFUNCTION(NetMulticast, Reliable)
@@ -79,7 +76,7 @@ public:
 	UPlayerAnim* anim;
 	bool isSynchronized = false;
 
-	UPROPERTY(VisibleAnywhere, category = weaponMesh)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, category = WeaponMesh)
 		class USkeletalMeshComponent* weaponMeshComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
@@ -118,8 +115,9 @@ public:
 
 	// 총을 장착할 캐릭터의 소켓 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
-		FName attachCharacterSocketName;
+		FName attachCharacterSocketName = FName("RightHandSocket");
 	
+		
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		TSubclassOf<UCameraShakeBase> FireCamShakeClass;
 

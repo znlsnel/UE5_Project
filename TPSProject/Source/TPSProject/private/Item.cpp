@@ -3,6 +3,7 @@
 
 #include "Item.h"
 #include "TPSPlayer.h"
+#include "Weapon.h"
 
 #include <Components/BoxComponent.h>
 #include <Kismet/KismetSystemLibrary.h>
@@ -56,7 +57,35 @@ void AItem::CreatePickupCollision()
 void AItem::RemovePickupCollision()
 {
 	if (pickupCollision)
+	{
 		pickupCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+
+		//FString tempText;
+		//switch (Cast<AWeapon>(this)->weaponType)
+		//{
+		//case WeaponType::Pistol:
+		//	tempText = FString("Pistol");
+		//	break;
+
+		//case WeaponType::Rifle:
+		//	tempText = FString("Rifle");
+		//	break;
+
+		//case WeaponType::Shotgun:
+		//	tempText = FString("Shotgun");
+		//	break;
+
+		//case WeaponType::Bow:
+		//	tempText = FString("Bow");
+		//	break;
+
+		//case WeaponType::Sword:
+		//	tempText = FString("Sword");
+		//	break;
+		//}
+		//UKismetSystemLibrary::PrintString(GetWorld(), tempText, true, true, FLinearColor::Green, 60.f);
+	}
 
 	//pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 }

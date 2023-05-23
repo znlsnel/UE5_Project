@@ -25,18 +25,18 @@ WeaponType UWeaponUI::FindSelectWeaponType()
 	float vertical = pMove->turnValue;
 	float horizontal = pMove->lookUpValue;
 
-	if (vertical > 5)
+	if (vertical > 2)
 	{
-		if (horizontal < -5)
+		if (horizontal < -2)
 			return WeaponType::Rifle;
-		else if (horizontal > 5)
+		else if (horizontal > 2)
 			return WeaponType::Bow;
 	}
-	else if (vertical < -5)
+	else if (vertical < -2)
 	{
-		if (horizontal < -5)
+		if (horizontal < -2)
 			return WeaponType::Shotgun;
-		else if (horizontal > 5)
+		else if (horizontal > 2)
 			return WeaponType::Pistol;
 	}
 

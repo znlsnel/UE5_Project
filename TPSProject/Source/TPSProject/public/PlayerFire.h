@@ -45,7 +45,6 @@ public:
 	template<bool b>
 	void SniperAim() { SniperAim(b); }					// 스코프 모드
 	void SniperAim(bool isPressed);					// 스코프 모드
-	void InitializeWeapon();
 	void LoadBullet();
 
 
@@ -67,14 +66,17 @@ public:
 
 	float lastShotTime = 0.f;
 	// 무기
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
-		WeaponType currWeaponType = WeaponType::Pistol;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = weaponTypes)
-		WeaponSlotType currSlot = WeaponSlotType::SecondarySlot;
 
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<class AWeapon> pistol;
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class AWeapon> Rifle;
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class AWeapon> Shotgun;
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class AWeapon> Bow;
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class AWeapon> Sword;
 
 	class AWeapon* weapon_Rifle;
 	class AWeapon* weapon_Shotgun;
@@ -84,7 +86,11 @@ public:
 	class AWeapon* currWeapon;
 	class AWeapon* nextWeapon;
 	class AWeapon* GetWeapon(WeaponType weaponType);
-	void SetWeapon(class AWeapon* weapon);
+
+	void SetWeapon(class AWeapon* weapon, bool equipWeapon = true);
+
+	void SetWeapon(WeaponType weaponType, bool equipWeapon = true);
+
 	// 카메라 쉐이크
 	UPROPERTY(EditDefaultsOnly, Category = CameraMotion)
 		TSubclassOf<class UCameraShakeBase> cameraShake;

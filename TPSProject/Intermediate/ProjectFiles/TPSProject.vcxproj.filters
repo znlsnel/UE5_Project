@@ -138,6 +138,12 @@
     <ClCompile Include="..\..\Source\TPSProject\private\WeaponUI.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Weapon_Bow.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Weapon_Gun.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\Weapon_Pistol.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -145,6 +151,9 @@
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\Weapon_Shotgun.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Weapon_Sword.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <Filter Include="Source\TPSProject\public">
@@ -246,6 +255,12 @@
     <ClInclude Include="..\..\Source\TPSProject\public\WeaponUI.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Weapon_Bow.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Weapon_Gun.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Weapon_Pistol.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
@@ -253,6 +268,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Weapon_Shotgun.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Weapon_Sword.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
   </ItemGroup>

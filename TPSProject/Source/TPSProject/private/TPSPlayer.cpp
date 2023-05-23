@@ -16,6 +16,7 @@
 #include "TPSPlayerController.h"
 #include "Inventory.h"
 #include "StoreUI.h"
+#include "Weapon_Gun.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -123,6 +124,12 @@ void ATPSPlayer::BeginPlay()
 	playerAnim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
 }
 
+void ATPSPlayer::StartGame()
+{
+	playerFire->EquipWeapon(playerFire->currWeapon->weaponType);
+}
+
+
 // Called every frame
 void ATPSPlayer::Tick(float DeltaTime)
 {
@@ -154,15 +161,25 @@ void ATPSPlayer::SetPlayerMouse(bool Active)
 	playerUI->ToggleMouse(Active);
 }
 
-void ATPSPlayer::PlayMontageInServer_Implementation(UAnimMontage* AM)
+
+void ATPSPlayer::PlayMontageInServer_Implementation(UAnimMontage* AM, FName section)
 {
-	MulticastAnimMontage(AM);
+	MulticastAnimMontage(AM, section);
 }
 
-void ATPSPlayer::MulticastAnimMontage_Implementation(UAnimMontage* AM)
+void ATPSPlayer::MulticastAnimMontage_Implementation(UAnimMontage* AM, FName section)
 {
 	if (playerAnim)
-		playerAnim->Montage_Play(AM);
+	{
+		if (section != "")
+		{
+			playerAnim->Montage_Play(AM);
+			playerAnim->Montage_JumpToSection(section, AM);
+
+		}
+		else
+			playerAnim->Montage_Play(AM);
+	}
 }
 
 void ATPSPlayer::createNiagara_Implementation(FHitResult pHitResult)
@@ -172,7 +189,16 @@ void ATPSPlayer::createNiagara_Implementation(FHitResult pHitResult)
 
 void ATPSPlayer::MulticastNiaga_Implementation(FHitResult pHitResult)
 {
-	playerFire->currWeapon->createNiagara(pHitResult);
+	if (playerFire == nullptr)
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No PlayerFire"));
+	}
+	else if (playerFire->currWeapon == nullptr)
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Weapon;"));
+	}
+	else
+		Cast<AWeapon_Gun>(playerFire->currWeapon)->createNiagara(pHitResult);
 }
 
 void ATPSPlayer::DoubleClickInServer_Implementation(DashType dashType)

@@ -55,7 +55,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly = Category = Weapon)
 		WeaponType weaponType = WeaponType::Pistol;
-	UPROPERTY(BlueprintReadOnly = Category = Weapon)
+	UPROPERTY(BlueprintReadWrite = Category = Weapon)
 		BowState bowState = BowState::TravelMode;
 
 	UPROPERTY(EditAnywhere, Category = DashMonstage)

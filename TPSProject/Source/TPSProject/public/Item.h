@@ -45,7 +45,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = WeaponTypes)
 		UTexture2D* ItemIcon;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnyWhere)
 		class UBoxComponent* pickupCollision;
 
 };

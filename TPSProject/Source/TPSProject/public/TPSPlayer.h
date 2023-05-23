@@ -38,6 +38,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetPlayerMouse(bool Active);
 
+	void StartGame();
+
 #pragma region ServerFunctions
 
 
@@ -56,12 +58,12 @@ public:
 	void OnDamageMulti_Implementation(int damage);
 
 	UFUNCTION(Server, Reliable)
-		void PlayMontageInServer(class UAnimMontage* AM);
-		void PlayMontageInServer_Implementation(class UAnimMontage* AM);
+		void PlayMontageInServer(class UAnimMontage* AM, FName section = "");
+		void PlayMontageInServer_Implementation(class UAnimMontage* AM, FName section = "");
 
 	UFUNCTION(NetMulticast, Reliable)
-		void MulticastAnimMontage(class UAnimMontage* AM);
-		void MulticastAnimMontage_Implementation(class UAnimMontage* AM);
+		void MulticastAnimMontage(class UAnimMontage* AM, FName section = "");
+		void MulticastAnimMontage_Implementation(class UAnimMontage* AM, FName section = "");
 
 	UFUNCTION(Server, Reliable)
 			void createNiagara(FHitResult pHitResult);

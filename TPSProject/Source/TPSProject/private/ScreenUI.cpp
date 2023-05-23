@@ -66,8 +66,10 @@ FString UScreenUI::UpdateAmmoCount()
 {
 	AWeapon* weapon = myPlayer->playerFire->currWeapon;
 	FString ammoString = FString::Printf(TEXT("%d / %d"), weapon->currAmmo, weapon->Ammo);
-
-
+	if (weapon->weaponType == WeaponType::Sword)
+		ammoString = FString::Printf(TEXT(""));
+	else if (weapon->weaponType == WeaponType::Bow)
+		ammoString = FString::Printf(TEXT("%d"), weapon->currAmmo);
 
 	return ammoString;
 }
