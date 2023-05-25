@@ -17,6 +17,7 @@
 #include "Inventory.h"
 #include "StoreUI.h"
 #include "Weapon_Gun.h"
+#include "Weapon_Bow.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -180,6 +181,7 @@ void ATPSPlayer::MulticastAnimMontage_Implementation(UAnimMontage* AM, FName sec
 		else
 			playerAnim->Montage_Play(AM);
 	}
+
 }
 
 void ATPSPlayer::createNiagara_Implementation(FHitResult pHitResult)
@@ -283,6 +285,41 @@ UStoreUI* ATPSPlayer::GetStore()
 {
 
 	return myController->storeActor->storeUI;
+}
+
+void ATPSPlayer::SetArrow_Implementation()
+{
+	SetArrowMulti();
+}
+
+void ATPSPlayer::SetArrowMulti_Implementation()
+{
+	AWeapon_Bow* bow = Cast<AWeapon_Bow>(playerFire->weapon_Bow);
+	if (IsValid(bow))
+		bow->SetArrow();
+
+}
+
+void ATPSPlayer::ShootArrow_Implementation(float power)
+{
+	ShootArrowMulti(power);
+}
+
+void ATPSPlayer::ShootArrowMulti_Implementation(float power)
+{
+	AWeapon_Bow* bow = Cast<AWeapon_Bow>(playerFire->weapon_Bow);
+	if (IsValid(bow))
+		bow->ShootArrow(power);
+}
+
+void ATPSPlayer::PlayBowAnim_Implementation(bool DrawBack)
+{
+	PlayBowAnimMulti(DrawBack);
+}
+
+void ATPSPlayer::PlayBowAnimMulti_Implementation(bool DrawBack)
+{
+	Cast<AWeapon_Bow>(playerFire->weapon_Bow)->PlayBowAnim(DrawBack);
 }
 
 int ATPSPlayer::playerId = 0;

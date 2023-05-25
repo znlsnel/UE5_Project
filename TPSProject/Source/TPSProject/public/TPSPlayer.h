@@ -127,6 +127,32 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void InitWidgetInteraction();
 	class UStoreUI* GetStore();
+
+
+	UFUNCTION(Server, Reliable)
+		void SetArrow();
+		void SetArrow_Implementation();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void SetArrowMulti();
+		void SetArrowMulti_Implementation();
+
+	UFUNCTION(Server, Reliable)
+		void ShootArrow(float power);
+		void ShootArrow_Implementation(float power);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void ShootArrowMulti(float power);
+		void ShootArrowMulti_Implementation(float power);
+
+	UFUNCTION(Server, Reliable)
+		void PlayBowAnim(bool DrawBack);
+		void PlayBowAnim_Implementation(bool DrawBack);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void PlayBowAnimMulti(bool DrawBack);
+		void PlayBowAnimMulti_Implementation(bool DrawBack);
+
 #pragma endregion
 
 	static int playerId;

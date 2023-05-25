@@ -45,6 +45,9 @@
     <ClCompile Include="..\..\Source\TPSProject\private\AmmoBox.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Arrow.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\Crosshair.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -141,6 +144,9 @@
     <ClCompile Include="..\..\Source\TPSProject\private\Weapon_Bow.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Weapon_BowAnim.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\Weapon_Gun.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -160,6 +166,9 @@
       <UniqueIdentifier>{68A94EF8-D612-391B-AA07-FA4C4DBF9FA4}</UniqueIdentifier>
     </Filter>
     <ClInclude Include="..\..\Source\TPSProject\public\AmmoBox.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Arrow.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Crosshair.h">
@@ -256,6 +265,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Weapon_Bow.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Weapon_BowAnim.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Weapon_Gun.h">

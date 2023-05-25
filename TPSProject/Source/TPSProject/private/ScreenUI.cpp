@@ -78,7 +78,7 @@ FString UScreenUI::UpdateAmmoCount()
 
 void UScreenUI::WeaponSwap_Implementation()
 {
-
+	if (IsValid(myPlayer->playerFire->currWeapon) == false) return;
 	switch (myPlayer->playerFire->currWeapon->weaponType)
 	{
 	case WeaponType::Rifle:
