@@ -127,6 +127,7 @@ void ATPSPlayer::BeginPlay()
 
 void ATPSPlayer::StartGame()
 {
+	if (playerFire->currWeapon == nullptr) return;
 	playerFire->EquipWeapon(playerFire->currWeapon->weaponType);
 }
 
@@ -388,6 +389,112 @@ void ATPSPlayer::OnDamageMulti_Implementation(int damage)
 			OnGameOver();
 		isDie = true;
 
+	}
+}
+
+void ATPSPlayer::BuyItem(int32 itemId, int ItemGrace, int ItemMineral)
+{
+	BuyItemServer(itemId, ItemGrace, ItemMineral);
+}
+
+void ATPSPlayer::BuyItemServer_Implementation(int32 itemId, int ItemGrace, int ItemMineral)
+{
+	BuyItemMulti(itemId, ItemGrace, ItemMineral);
+}
+
+void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int ItemMineral)
+{
+	if (Grace < ItemGrace || Mineral < ItemMineral)
+		return;
+
+	isBought = false;
+
+	if (itemId >= 100)
+	{
+		switch (itemId)
+		{
+			// Pistol Ammo
+		case 101:
+			if (playerFire->weapon_Pistol) {
+				playerFire->weapon_Pistol->Ammo += 12;
+				isBought = true;
+			}
+			break;
+
+			// Rifle Ammo
+		case 102:
+			if (playerFire->weapon_Rifle) {
+				playerFire->weapon_Rifle->Ammo += 30;
+				isBought = true;
+			}
+			break;
+
+			//Shotgun Ammo
+		case 103:
+			if (playerFire->weapon_Rifle) {
+				playerFire->weapon_Rifle->Ammo += 8;
+				isBought = true;
+			}
+			break;
+
+			//Bow Ammo
+		case 104:
+			if (playerFire->weapon_Rifle) {
+				playerFire->weapon_Bow->currAmmo += 20;
+				isBought = true;
+			}
+			break;
+		}
+	}
+	else
+	{
+		switch (itemId)
+		{
+			// Sword
+		case 0:
+			if (playerFire->weapon_Sword == nullptr) {
+				playerFire->SetWeapon(WeaponType::Sword, true);
+				isBought = true;
+			}
+			break;
+			
+			// Pistol
+		case 1:
+			if (playerFire->weapon_Pistol == nullptr) {
+				playerFire->SetWeapon(WeaponType::Pistol, true);
+				isBought = true;
+			}
+			break;
+
+			// Rifle
+		case 2:
+			if (playerFire->weapon_Rifle == nullptr) {
+				playerFire->SetWeapon(WeaponType::Rifle, true);
+				isBought = true;
+			}
+			break;
+
+			//Shotgun
+		case 3:
+			if (playerFire->weapon_Rifle == nullptr) {
+				playerFire->SetWeapon(WeaponType::Shotgun, true);
+				isBought = true;
+			}
+			break;
+
+			//Bow
+		case 4:
+			if (playerFire->weapon_Rifle == nullptr) {
+				playerFire->SetWeapon(WeaponType::Bow, true);
+				isBought = true;
+			}
+			break;
+		}
+	}
+
+	if (isBought) {
+		Grace -= ItemGrace;
+		Mineral -= ItemMineral;
 	}
 }
 

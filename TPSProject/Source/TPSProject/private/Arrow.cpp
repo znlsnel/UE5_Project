@@ -113,8 +113,8 @@ void AArrow::ShootArrow(FVector target, float power)
 	power /= 1.5f;
 
 	ProjectileMovementComp->SetUpdatedComponent(ArrowMesh);
-	ProjectileMovementComp->InitialSpeed = 4000.0f * power;
-	ProjectileMovementComp->MaxSpeed = 4000.0f * power;
+	ProjectileMovementComp->InitialSpeed = 7000.0f * power;
+	ProjectileMovementComp->MaxSpeed = 7000.0f * power;
 	//ProjectileMovementComp->bRotationFollowsVelocity = true;
 	ProjectileMovementComp->bShouldBounce = true;
 	ProjectileMovementComp->Bounciness = 0.3f;

@@ -75,7 +75,7 @@ void AWeapon_Bow::Attack(bool isPress)
 
 		float pow = FMath::Min(lastFireTime - lastDrawTime, 1.5f);
 
-		if (pow > 0.4f)
+		if (pow > 0.4f || currAmmo <= 0)
 			section = Fire;
 		else
 			section = DrawCancel;
@@ -131,6 +131,7 @@ void AWeapon_Bow::ShootArrow(float power)
 	FVector ShootDir = camLocation.ForwardVector * 10000;
 
 	arrow->ShootArrow(TraceStartPoint + TraceStartRotation.Vector() * 10000, power);
+	currAmmo = FMath::Max(currAmmo-1, 0);
 }
 
 void AWeapon_Bow::PlayBowAnim(bool DrawBack)

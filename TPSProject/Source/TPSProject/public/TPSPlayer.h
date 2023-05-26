@@ -225,7 +225,25 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 		bool isMyPlayer = false;
 
+	UPROPERTY(BlueprintReadWrite)
+		int Grace = 1000;
+
+	UPROPERTY(BlueprintReadWrite)
+		int Mineral = 1000;
+
+	UPROPERTY(BlueprintReadOnly)
+		bool isBought = false;
 // ÇÔ¼ö========================================================================
+	UFUNCTION(BlueprintCallable)
+		void BuyItem(int32 itemId, int ItemGrace, int ItemMineral);
+
+	UFUNCTION(Server, Reliable)
+		void BuyItemServer(int32 itemId, int ItemGrace, int ItemMineral);
+		void BuyItemServer_Implementation(int32 itemId, int ItemGrace, int ItemMineral);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void BuyItemMulti(int32 itemId, int ItemGrace, int ItemMineral);
+		void BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int ItemMineral);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Health)
 		void OnGameOver();

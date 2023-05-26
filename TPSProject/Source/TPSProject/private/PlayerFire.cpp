@@ -60,10 +60,10 @@ void UPlayerFire::BeginPlay()
 	anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
 
 	SetWeapon(WeaponType::Pistol);
-	SetWeapon(WeaponType::Rifle, false);
-	SetWeapon(WeaponType::Shotgun, false);
-	SetWeapon(WeaponType::Sword, false);
-	SetWeapon(WeaponType::Bow, false);
+	//SetWeapon(WeaponType::Rifle, false);
+	//SetWeapon(WeaponType::Shotgun, false);
+	//SetWeapon(WeaponType::Sword, false);
+	//SetWeapon(WeaponType::Bow, false);
 }
 
 void UPlayerFire::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -160,6 +160,7 @@ void UPlayerFire::ChangeWeapon()
 {
 	if (currWeapon)
 		currWeapon->HideWeapon();
+	if (nextWeapon == nullptr) return;
 	nextWeapon->UncoverWeapon();
 	currWeapon = nextWeapon;
 
