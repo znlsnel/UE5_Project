@@ -53,11 +53,17 @@ void UPlayerMove::SetupInputBinding(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("Dash_D"), IE_DoubleClick, this, &UPlayerMove::DoubleClick<DashType::D>);
 }
 
-
+#include "BuildableItem.h"
 void UPlayerMove::Turn(float value)
 {
 	turnValue += value;
 	turnValue = UKismetMathLibrary::FClamp(turnValue, -10, 10);
+	
+	ABuildableItem* tempItem = me->buildableItem;
+	if (IsValid(tempItem) && tempItem->isBuild && tempItem->isSetLocation == false) {
+		tempItem->turnValue = value;
+		return;
+	}
 
 	if (me->playerUI->IsMouseActive) return;
 	me->AddControllerYawInput(value);
@@ -67,6 +73,11 @@ void UPlayerMove::LookUp(float value)
 {
 	lookUpValue += value;
 	lookUpValue = UKismetMathLibrary::FClamp(lookUpValue, -10, 10);
+
+	ABuildableItem* tempItem = me->buildableItem;
+	if (IsValid(tempItem) && tempItem->isBuild && tempItem->isSetLocation == false) {
+		return;
+	}
 
 	if (me->playerUI->IsMouseActive) return;
 	me->AddControllerPitchInput(value);

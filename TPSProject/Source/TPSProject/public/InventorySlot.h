@@ -32,6 +32,9 @@ public:// º¯¼ö
 	UPROPERTY(BlueprintReadWrite) 
 		class UTexture2D* ItemIcon;
 	
+	UPROPERTY(EditAnywhere)
+		class UTexture2D* defaultIcon;
+
 	TArray<class AItem*> Items;
 
 	UPROPERTY(BlueprintReadWrite)

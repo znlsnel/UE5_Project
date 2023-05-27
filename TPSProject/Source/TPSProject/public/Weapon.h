@@ -67,6 +67,7 @@ public:
 	//		void ClickWidgetMulti(bool isFire);
 	//	void ClickWidgetMulti_Implementation(bool isFire);
 
+
 	UFUNCTION(BlueprintImplementableEvent)
 		void ClickWorldWidget(bool isPress);
 	FVector MyNormalize(const FVector& Invec);

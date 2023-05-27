@@ -48,6 +48,12 @@
     <ClCompile Include="..\..\Source\TPSProject\private\Arrow.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\BuildableItem.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\BuildableItemCheckUI.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\Crosshair.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -175,6 +181,12 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Arrow.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\BuildableItem.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\BuildableItemCheckUI.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Crosshair.h">

@@ -15,6 +15,7 @@
 #include "Crosshair.h"
 #include "TPSPlayerController.h"
 #include "StoreUI.h"
+#include "BuildableItem.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Kismet/GameplayStatics.h>
@@ -80,6 +81,12 @@ void UPlayerFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 void UPlayerFire::InputFire(bool isPressed)
 {
 	isFire = isPressed;
+	if (me->buildableItem && me->buildableItem->isBuild)
+	{
+		me->buildableItem->GetMouseInput(isPressed);
+		return;
+	}
+		
 	//me->ClickWidget(isFire);
 	me->ClickBPWidget(isFire);
 	if (!isFire)

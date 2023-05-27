@@ -18,6 +18,7 @@
 #include "StoreUI.h"
 #include "Weapon_Gun.h"
 #include "Weapon_Bow.h"
+#include "BuildableItem.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -404,10 +405,11 @@ void ATPSPlayer::BuyItemServer_Implementation(int32 itemId, int ItemGrace, int I
 
 void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int ItemMineral)
 {
+	isBought = false;
+
 	if (Grace < ItemGrace || Mineral < ItemMineral)
 		return;
 
-	isBought = false;
 
 	if (itemId >= 100)
 	{
@@ -431,15 +433,15 @@ void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int It
 
 			//Shotgun Ammo
 		case 103:
-			if (playerFire->weapon_Rifle) {
-				playerFire->weapon_Rifle->Ammo += 8;
+			if (playerFire->weapon_Shotgun) {
+				playerFire->weapon_Shotgun->Ammo += 8;
 				isBought = true;
 			}
 			break;
 
 			//Bow Ammo
 		case 104:
-			if (playerFire->weapon_Rifle) {
+			if (playerFire->weapon_Bow) {
 				playerFire->weapon_Bow->currAmmo += 20;
 				isBought = true;
 			}
@@ -476,7 +478,7 @@ void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int It
 
 			//Shotgun
 		case 3:
-			if (playerFire->weapon_Rifle == nullptr) {
+			if (playerFire->weapon_Shotgun == nullptr) {
 				playerFire->SetWeapon(WeaponType::Shotgun, true);
 				isBought = true;
 			}
@@ -484,7 +486,7 @@ void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int It
 
 			//Bow
 		case 4:
-			if (playerFire->weapon_Rifle == nullptr) {
+			if (playerFire->weapon_Bow == nullptr) {
 				playerFire->SetWeapon(WeaponType::Bow, true);
 				isBought = true;
 			}

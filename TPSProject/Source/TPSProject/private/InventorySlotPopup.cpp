@@ -7,6 +7,7 @@
 #include "Weapon.h"
 #include "AmmoBox.h"
 #include "TPSPlayer.h"
+#include "BuildableItem.h"
 
 #include <Blueprint/WidgetLayoutLibrary.h>
 
@@ -35,6 +36,7 @@ void UInventorySlotPopup::InitializePopup(UInventorySlot* InventorySlot)
 
 void UInventorySlotPopup::EquipOrUseItem()
 {
+
 	switch (myInventorySlot->itemType)
 	{
 	case ItemType::Weapon:
@@ -53,6 +55,16 @@ void UInventorySlotPopup::EquipOrUseItem()
 		if (isAmmoBoxUsed) myInventorySlot->RemoveItemFromInventory();
 	}
 		break;
+
+	case ItemType::Building:
+	{
+		ABuildableItem* item = Cast<ABuildableItem>(myInventorySlot->Items.Last());
+
+		if (item->isBuild == false)
+		{
+			item->UseItem(myInventorySlot);
+		}
+	}
 	}
 	RemoveFromParent();
 }

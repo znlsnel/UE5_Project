@@ -167,6 +167,7 @@ void AWeapon::Reload()
 
 
 
+
 FVector AWeapon::MyNormalize(const FVector& Invec)
 {
 	double Length = Invec.Size();

@@ -14,13 +14,14 @@ void UInventorySlot::RemoveItemFromInventory()
 	{
 		itemType = ItemType::None;
 
-		ConstructorHelpers::FObjectFinder<UTexture2D> tempT(TEXT("Texture2D'/Game/Megascans/Surfaces/Old_Fabric_sbdkmxp0/T_Old_Fabric_sbdkmxp0_2K_D.T_Old_Fabric_sbdkmxp0_2K_D'"));
+		//ConstructorHelpers::FObjectFinder<UTexture2D> tempTexture(TEXT("Texture2D'/Game/Megascans/Surfaces/Old_Fabric_sbdkmxp0/T_Old_Fabric_sbdkmxp0_2K_D.T_Old_Fabric_sbdkmxp0_2K_D"));
 
-		if (tempT.Succeeded()){
-			ItemIcon = tempT.Object;
-		}
-		else
-			ItemIcon = nullptr;
+		//if (tempTexture.Succeeded()){
+		//	ItemIcon = tempTexture.Object;
+		//}
+		//else
+		//ItemIcon = nullptr;
+		ItemIcon = defaultIcon;
 		isInUse = false;
 		UpdateInventory();
 	}

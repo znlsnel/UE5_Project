@@ -233,6 +233,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 		bool isBought = false;
+
+	class ABuildableItem* buildableItem;
+
 // ÇÔ¼ö========================================================================
 	UFUNCTION(BlueprintCallable)
 		void BuyItem(int32 itemId, int ItemGrace, int ItemMineral);

@@ -35,6 +35,7 @@ enum class ItemType : uint8
 	Ammo		UMETA(DisplayName = "Ammo"),
 	Grace		UMETA(DisplayName = "Grace"),
 	Mineral		UMETA(DisplayName = "Mineral"),
+	Building		UMETA(DisplayName = "Building"),
 	None		UMETA(DisplayName = "None"),
 };
 

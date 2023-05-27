@@ -90,6 +90,7 @@ void AItem::RemovePickupCollision()
 	//pickupCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 }
 
+
 void AItem::DropItemInServer_Implementation()
 {
 	DropItemMulticast();
