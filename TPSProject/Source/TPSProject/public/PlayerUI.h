@@ -59,6 +59,7 @@ public:
 	bool IsMouseActive = false;
 
 
-
+	// NoneOnOff : 0 -> Toggle, 1 -> On, 2 -> Off
 	void ToggleInventory();
+	void ToggleInventory(bool On);
 };

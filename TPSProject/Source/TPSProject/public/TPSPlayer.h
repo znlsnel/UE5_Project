@@ -153,6 +153,14 @@ public:
 		void PlayBowAnimMulti(bool DrawBack);
 		void PlayBowAnimMulti_Implementation(bool DrawBack);
 
+	UFUNCTION(Server, Reliable)
+		void SetTranceformBuildableItem(class ABuildableItem* item, FVector lot, FRotator rot);
+		void SetTranceformBuildableItem_Implementation(class ABuildableItem* item, FVector lot, FRotator rot);
+
+	UFUNCTION(NetMulticast, Reliable)
+		void SetTranceformBuildableItemMulti(class ABuildableItem* item, FVector lot, FRotator rot);
+		void SetTranceformBuildableItemMulti_Implementation(class ABuildableItem* item, FVector lot, FRotator rot);
+
 #pragma endregion
 
 	static int playerId;
@@ -192,6 +200,9 @@ public:
 	UPROPERTY(VisibleAnywhere )
 		class UPlayerUI* playerUI;
 	class UPlayerAnim* playerAnim;
+
+	UPROPERTY(EditAnywhere)
+		class UItemFactoryComp* itemFactory;
 
 //======================================================================
 
@@ -235,18 +246,19 @@ public:
 		bool isBought = false;
 
 	class ABuildableItem* buildableItem;
+	TArray<class ABuildableItem*> ItemArr;
 
 // ÇÔ¼ö========================================================================
 	UFUNCTION(BlueprintCallable)
-		void BuyItem(int32 itemId, int ItemGrace, int ItemMineral);
+		void BuyItem(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
 
 	UFUNCTION(Server, Reliable)
-		void BuyItemServer(int32 itemId, int ItemGrace, int ItemMineral);
-		void BuyItemServer_Implementation(int32 itemId, int ItemGrace, int ItemMineral);
+		void BuyItemServer(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
+		void BuyItemServer_Implementation(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
 
 	UFUNCTION(NetMulticast, Reliable)
-		void BuyItemMulti(int32 itemId, int ItemGrace, int ItemMineral);
-		void BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int ItemMineral);
+		void BuyItemMulti(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
+		void BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Health)
 		void OnGameOver();
@@ -254,7 +266,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Initialization)
 		void OnInitialization();
-
+	FTimerHandle addItemTimer;
 	class UInventory* GetInventory();
 	void GetMoney(int money);
 

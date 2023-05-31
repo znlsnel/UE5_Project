@@ -46,8 +46,6 @@ void UScreenUI::SetupInputBinding(UInputComponent* PlayerInputComponent)
 
 void UScreenUI::ToggleInventory()
 {
-	APlayerController* pc = GetWorld()->GetFirstPlayerController();
-
 	if (bOpenInventory)
 	{
 
@@ -62,9 +60,18 @@ void UScreenUI::ToggleInventory()
 	BP_ToggleInventory();
 }
 
+void UScreenUI::ToggleInventory(bool On)
+{
+	if (On == bOpenInventory) 
+		return;
+
+	InventoryOnOff(On);
+}
+
 FString UScreenUI::UpdateAmmoCount()
 {
 	AWeapon* weapon = myPlayer->playerFire->currWeapon;
+	if (weapon == nullptr) return FString("");
 	FString ammoString = FString::Printf(TEXT("%d / %d"), weapon->currAmmo, weapon->Ammo);
 	if (weapon->weaponType == WeaponType::Sword)
 		ammoString = FString::Printf(TEXT(""));

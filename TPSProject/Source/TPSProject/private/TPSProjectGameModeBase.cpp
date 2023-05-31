@@ -2,6 +2,7 @@
 
 
 #include "TPSProjectGameModeBase.h"
+#include "TPSPlayer.h"
 #include "EnemyManager.h"
 #include "TPSPlayer.h"
 
@@ -10,6 +11,7 @@
 #include <Kismet/GameplayStatics.h>
 #include<Blueprint/UserWidget.h>
 #include <Kismet/KismetSystemLibrary.h>
+
 
 #include <Net/UnrealNetwork.h>
 
@@ -33,6 +35,7 @@ void ATPSProjectGameModeBase::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ATPSProjectGameModeBase, EnemyManager);
+	//DOREPLIFETIME(ATPSProjectGameModeBase, managedActors);
 }
 
 void ATPSProjectGameModeBase::BeginPlay()
@@ -41,6 +44,22 @@ void ATPSProjectGameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	//GetWorldTimerManager().SetTimer(StartTimer, this, &ATPSProjectGameModeBase::StartGameInServer, 15.5f);
+}
+
+void ATPSProjectGameModeBase::RegisterActor(AActor* actorTpRegister)
+{
+	managedActors.Add(actorTpRegister);
+}
+
+void ATPSProjectGameModeBase::RegisterActorServer_Implementation()
+{
+	RegisterActorMulti();
+}
+
+void ATPSProjectGameModeBase::RegisterActorMulti_Implementation()
+{
+	if (tempActor)
+		managedActors.Add(tempActor);
 }
 
 

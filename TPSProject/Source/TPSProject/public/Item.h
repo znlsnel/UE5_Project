@@ -23,11 +23,13 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+
 	void DropItemOnGround();
 	void CreatePickupCollision();
 	void RemovePickupCollision();
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(client, Reliable)
 		void DropItemInServer();
 		void DropItemInServer_Implementation();
 

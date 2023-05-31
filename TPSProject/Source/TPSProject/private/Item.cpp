@@ -31,6 +31,7 @@ void AItem::Tick(float DeltaTime)
 
 }
 
+
 void AItem::DropItemOnGround()
 {
 	//DetachRootComponentFromParent();

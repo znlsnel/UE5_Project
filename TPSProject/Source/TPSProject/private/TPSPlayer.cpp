@@ -19,6 +19,8 @@
 #include "Weapon_Gun.h"
 #include "Weapon_Bow.h"
 #include "BuildableItem.h"
+#include "TPSProjectGameModeBase.h"
+#include "ItemFactoryComp.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -104,6 +106,7 @@ ATPSPlayer::ATPSPlayer()
 
 	myController = Cast<ATPSPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
+	itemFactory = CreateDefaultSubobject<UItemFactoryComp>(TEXT("itemFactory"));
 }
 
 ATPSPlayer::~ATPSPlayer()
@@ -124,6 +127,7 @@ void ATPSPlayer::BeginPlay()
 		playerUI->screenUI->UpdateScreenUI();
 
 	playerAnim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+
 }
 
 void ATPSPlayer::StartGame()
@@ -222,6 +226,11 @@ void ATPSPlayer::AddItemInServer_Implementation(AItem* item)
 
 void ATPSPlayer::AddItemMulticast_Implementation(AItem* item)
 {
+	if (IsValid(item) == false)
+	{
+		return;
+	}
+
 	item->myPlayer = this;
 	GetInventory()->AddItemToInventory(item);
 	//item->SetActorHiddenInGame(true);
@@ -324,6 +333,23 @@ void ATPSPlayer::PlayBowAnimMulti_Implementation(bool DrawBack)
 	Cast<AWeapon_Bow>(playerFire->weapon_Bow)->PlayBowAnim(DrawBack);
 }
 
+void ATPSPlayer::SetTranceformBuildableItem_Implementation(ABuildableItem* item, FVector lot, FRotator rot)
+{
+	SetTranceformBuildableItemMulti(item, lot, rot);
+}
+
+void ATPSPlayer::SetTranceformBuildableItemMulti_Implementation(ABuildableItem* item, FVector lot, FRotator rot)
+{
+	if (IsValid(item))
+		item->SyncTranceform(lot, rot);
+	else if (IsValid(buildableItem))
+		buildableItem->SyncTranceform(lot, rot);
+	else
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Item"));
+	}
+}
+
 int ATPSPlayer::playerId = 0;
 const int ATPSPlayer::GetPlayerId()
 {
@@ -393,62 +419,26 @@ void ATPSPlayer::OnDamageMulti_Implementation(int damage)
 	}
 }
 
-void ATPSPlayer::BuyItem(int32 itemId, int ItemGrace, int ItemMineral)
+void ATPSPlayer::BuyItem(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount)
 {
-	BuyItemServer(itemId, ItemGrace, ItemMineral);
+	BuyItemServer(itemId, ItemGrace, ItemMineral, ItemCount);
 }
 
-void ATPSPlayer::BuyItemServer_Implementation(int32 itemId, int ItemGrace, int ItemMineral)
+void ATPSPlayer::BuyItemServer_Implementation(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount)
 {
-	BuyItemMulti(itemId, ItemGrace, ItemMineral);
+	BuyItemMulti(itemId, ItemGrace, ItemMineral, ItemCount);
 }
 
-void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int ItemMineral)
+void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount)
 {
 	isBought = false;
 
-	if (Grace < ItemGrace || Mineral < ItemMineral)
+	if (itemId < 100) ItemCount = 1;
+
+	if (Grace < ItemGrace * ItemCount || Mineral < ItemMineral * ItemCount)
 		return;
 
-
-	if (itemId >= 100)
-	{
-		switch (itemId)
-		{
-			// Pistol Ammo
-		case 101:
-			if (playerFire->weapon_Pistol) {
-				playerFire->weapon_Pistol->Ammo += 12;
-				isBought = true;
-			}
-			break;
-
-			// Rifle Ammo
-		case 102:
-			if (playerFire->weapon_Rifle) {
-				playerFire->weapon_Rifle->Ammo += 30;
-				isBought = true;
-			}
-			break;
-
-			//Shotgun Ammo
-		case 103:
-			if (playerFire->weapon_Shotgun) {
-				playerFire->weapon_Shotgun->Ammo += 8;
-				isBought = true;
-			}
-			break;
-
-			//Bow Ammo
-		case 104:
-			if (playerFire->weapon_Bow) {
-				playerFire->weapon_Bow->currAmmo += 20;
-				isBought = true;
-			}
-			break;
-		}
-	}
-	else
+	if (itemId < 100)
 	{
 		switch (itemId)
 		{
@@ -459,7 +449,7 @@ void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int It
 				isBought = true;
 			}
 			break;
-			
+
 			// Pistol
 		case 1:
 			if (playerFire->weapon_Pistol == nullptr) {
@@ -492,11 +482,99 @@ void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int It
 			}
 			break;
 		}
+
+	}
+	else if (itemId < 1000)
+	{
+
+		switch (itemId)
+		{
+			// Pistol Ammo
+		case 101:
+			if (playerFire->weapon_Pistol) {
+				playerFire->weapon_Pistol->Ammo += (12 * ItemCount);
+				isBought = true;
+			}
+			break;
+
+			// Rifle Ammo
+		case 102:
+			if (playerFire->weapon_Rifle) {
+				playerFire->weapon_Rifle->Ammo += (30 * ItemCount);
+				isBought = true;
+			}
+			break;
+
+			//Shotgun Ammo
+		case 103:
+			if (playerFire->weapon_Shotgun) {
+				playerFire->weapon_Shotgun->Ammo += (8 * ItemCount);
+				isBought = true;
+			}
+			break;
+
+			//Bow Ammo
+		case 104:
+			if (playerFire->weapon_Bow) {
+				playerFire->weapon_Bow->currAmmo += (20 * ItemCount);
+				isBought = true;
+			}
+			break;
+		}
+	}
+
+	
+	else if (itemId < 10000)
+	{
+		for (int i = 0; i < ItemCount; i++)
+		{
+			switch (itemId)
+			{
+
+				// 돌담
+			case 1000: {
+				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->StoneWall)));
+				isBought = true;
+			}
+				break;
+
+				// 바리케이드
+			case 1001: {
+				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Barricade)));
+				isBought = true;
+			}
+				break;
+
+				// 부서진담
+			case 1002: {
+				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->BrokenWalll)));
+				isBought = true;
+			}
+				break;
+
+				// 모래주머니 담
+			case 1003: {
+				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Sandbag)));
+				isBought = true;
+			}
+				break;
+			}
+		}
+		GetWorldTimerManager().ClearTimer(addItemTimer);
+		GetWorld()->GetTimerManager().SetTimer(addItemTimer, FTimerDelegate::CreateLambda([&]() {
+				for (auto item : ItemArr)
+				{
+					
+					item->myPlayer = this;
+					GetInventory()->AddItemToInventory(item);
+				}
+			}), 1.f, false);
+
 	}
 
 	if (isBought) {
-		Grace -= ItemGrace;
-		Mineral -= ItemMineral;
+		Grace -= ItemGrace * ItemCount;
+		Mineral -= ItemMineral * ItemCount;
 	}
 }
 

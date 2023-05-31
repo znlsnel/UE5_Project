@@ -213,5 +213,11 @@ void UPlayerUI::InitializeWidgets_Server_Implementation()
 
 void UPlayerUI::ToggleInventory()
 {
-	screenUI->ToggleInventory();
+		screenUI->ToggleInventory();
+}
+
+// true -> On, false -> Off
+void UPlayerUI::ToggleInventory(bool OnOff)
+{
+	screenUI->ToggleInventory(OnOff);
 }

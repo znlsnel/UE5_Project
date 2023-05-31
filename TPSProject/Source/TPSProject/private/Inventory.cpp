@@ -8,6 +8,7 @@
 #include "Item.h"
 #include "Weapon.h"
 #include "AmmoBox.h"
+#include "BuildableItem.h"
 
 #include <Styling/SlateBrush.h>
 #include <Engine/Texture2D.h>
@@ -60,10 +61,7 @@ bool UInventory::AddItemToInventory(AItem* Item)
 			isEquipable = true;
 
 	}
-	else if (Item->itemType == ItemType::Ammo)
-	{
 
-	}
 
 	if (isEquipable)
 	{
@@ -75,7 +73,11 @@ bool UInventory::AddItemToInventory(AItem* Item)
 
 		UInventorySlot* tempSlot = FindFirstEmptySlot(Item);
 		Item->SetActorHiddenInGame(true);
-		if (tempSlot == nullptr) return false;
+		Item->SetActorEnableCollision(false);
+		if (tempSlot == nullptr) {
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Failed Add!"));
+			return false;
+		}
 		tempSlot->Items.Push(Item);
 		tempSlot->itemType = Item->itemType;
 		tempSlot->ItemIcon = Item->ItemIcon;
@@ -84,6 +86,9 @@ bool UInventory::AddItemToInventory(AItem* Item)
 		tempSlot->UpdateInventory();
 
 	}
+
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Add!"));
+
 	return true;
 
 }
@@ -114,6 +119,11 @@ UInventorySlot* UInventory::FindFirstEmptySlot(AItem* item)
 
 			else if (item->itemType == ItemType::Ammo && Cast<AAmmoBox>(slot->Items[0])->ammoType
 				== Cast<AAmmoBox>(item)->ammoType) isFindedMatch = true;
+
+			else if (item->itemType == ItemType::Building && Cast<ABuildableItem>(slot->Items[0])->buildableItemType
+				== Cast<ABuildableItem>(item)->buildableItemType) 
+				isFindedMatch = true;
+
 		}
 		if (isFindedMatch)
 		{

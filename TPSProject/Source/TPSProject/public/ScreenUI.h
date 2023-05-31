@@ -29,6 +29,8 @@ public:
 	void Initialization(class ATPSPlayer* player);
 	void SetupInputBinding(class UInputComponent* PlayerInputComponent);
 	void ToggleInventory();
+	void ToggleInventory(bool On);
+
 public:
 	class ATPSPlayer* myPlayer;
 
@@ -37,12 +39,15 @@ public:
 	UPROPERTY(EditAnywhere, blueprintReadWrite, Category = Inventory)
 		class UInventory* inventory;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 		bool bOpenInventory = false;
 	UPROPERTY(EditAnywhere, blueprintReadWrite, category = Player)
 		float hpRatio;
 	UPROPERTY(EditAnywhere, blueprintReadWrite, category = Player)
 		FString hpInfo;
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void InventoryOnOff(bool On);
 
 	UPROPERTY(EditAnywhere)
 		UTexture2D* PistolUI;

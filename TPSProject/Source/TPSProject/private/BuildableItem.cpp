@@ -6,43 +6,44 @@
 #include "PlayerMove.h"
 #include "InventorySlot.h"
 #include "BuildableItemCheckUI.h"
+#include "TPSProjectGameModeBase.h"
+#include "PlayerUI.h"
 
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/BoxComponent.h>
+#include <Net/UnrealNetwork.h>
+#include <Components/ArrowComponent.h>
 
 ABuildableItem::ABuildableItem()
 {
+//	arrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
+	SetReplicates(true);
 	Tags.Add(TEXT("BuildableItem"));
 	myPlayer = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	boxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 void ABuildableItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (isBuild)
-	{
-
-		if (isSetLocation)
-			SetLocation();
-		else
-			SetRotation();
-	}
+	UpdateTranceform();
 }
 
 void ABuildableItem::BeginPlay()
 {
 	Super::BeginPlay();
+	initItem();
+}
 
-
+void ABuildableItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 }
 
-#include "PlayerUI.h"
 void ABuildableItem::UseItem(UInventorySlot* inventorySlot)
 {
 
@@ -50,10 +51,10 @@ void ABuildableItem::UseItem(UInventorySlot* inventorySlot)
 
 	boxCollision->SetCollisionResponseToChannel
 		(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
-
+	boxCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//boxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera,
 	//	ECollisionResponse::ECR_Ignore);
-
+	RootComponent = boxCollision;
 	myInventorySlot = inventorySlot;
 	isSetLocation = true;
 	myPlayer->buildableItem = this;
@@ -61,12 +62,13 @@ void ABuildableItem::UseItem(UInventorySlot* inventorySlot)
 
 	if (IsValid(CheckUI) == false)
 	{
-		CheckUI = CreateWidget<UBuildableItemCheckUI>(GetWorld(), CheckWidgetTS);
-		CheckUI->parentItem = this;
+		//CheckUI = CreateWidget<UBuildableItemCheckUI>(GetWorld(), CheckWidgetTS);
+		CheckUI = CreateWidget<UBuildableItemCheckUI>(GetWorld(), CheckUIFactory);
 	}
 
-	myPlayer->playerUI->ToggleInventory();
+	myPlayer->playerUI->ToggleInventory(false);
 	myPlayer->playerUI->ToggleMouse(false);
+
 }
 void ABuildableItem::GetMouseInput(bool isPressed)
 {
@@ -79,6 +81,8 @@ void ABuildableItem::GetMouseInput(bool isPressed)
 	{
 		if (GetWorld()->GetTimeSeconds() -lastClickTime < 0.2) {
 			if (IsValid(CheckUI)) {
+				myPlayer->playerUI->ToggleMouse(true);
+				CheckUI->parentItem = this;
 				CheckUI->OpenCheckUI();
 				isBuild = false;
 			}
@@ -94,7 +98,6 @@ void ABuildableItem::GetMouseInput(bool isPressed)
 
 void ABuildableItem::SetLocation()
 {
-//	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("SetLocation"));
 	FHitResult fHit = LineTrace();
 	FVector pos = fHit.ImpactPoint;
 
@@ -103,8 +106,6 @@ void ABuildableItem::SetLocation()
 
 void ABuildableItem::SetRotation()
 {
-
-
 	AddActorWorldRotation(FRotator(0, turnValue, 0));
 }
 
@@ -127,21 +128,29 @@ FHitResult ABuildableItem::LineTrace()
 	return pHitResult;
 }
 
+
+void ABuildableItem::UpdateTranceform()
+{
+	
+	if (isBuild)
+	{
+
+		if (isSetLocation)
+			SetLocation();
+		else
+			SetRotation();
+	}
+}
+
 void ABuildableItem::completeBuilding(bool decide)
 {
 	if (decide)
 	{
-		myPlayer->buildableItem = nullptr;
-
-		boxCollision->SetCollisionResponseToChannel
-		(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-
 		//boxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera,
 		//	ECollisionResponse::ECR_Ignore);
-		myInventorySlot->RemoveItemFromInventory();
-
 		myPlayer->buildableItem = this;
-		isBuild = false;
+		myPlayer->SetTranceformBuildableItem(this, GetActorLocation(), GetActorRotation());
+
 	}
 	else
 	{
@@ -155,8 +164,53 @@ void ABuildableItem::completeBuilding(bool decide)
 void ABuildableItem::CancelBuilding()
 {
 	SetActorHiddenInGame(true);
+	myPlayer->buildableItem = nullptr;
 	isBuild = false;
 	myPlayer->playerUI->ToggleMouse(false);
 
+}
+//
+//void ABuildableItem::SyncTranceform_Implementation()
+//{
+//	SyncTranceformMulti();
+//}
+
+
+void ABuildableItem::SyncTranceform(FVector lot, FRotator rot)
+{
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("loc : %f, %f, %f \n rot : %f, %f, %f"), lot.X, lot.Y, lot.Z, rot.Roll, rot.Yaw, rot.Pitch));
+
+	myPlayer->buildableItem = nullptr;
+	isBuild = false;
+
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
+
+	boxCollision->SetCollisionResponseToChannel
+	(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+	boxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	isBuild = false;
+
+	SetActorLocation(lot);
+	SetActorRotation(rot);
+
+	if (IsValid(myInventorySlot)) {
+		myInventorySlot->RemoveItemFromInventory();
+		if (myInventorySlot->itemCount > 0 && myInventorySlot->Items.IsEmpty() == false) {
+			Cast<ABuildableItem>(myInventorySlot->Items.Last())->UseItem(myInventorySlot);
+		}
+	}
+
+}
+
+void ABuildableItem::DamageProcess()
+{
+	if (isDestroy) return;
+	shield--;
+	if (shield == 0)
+	{
+		
+	}
 }
 

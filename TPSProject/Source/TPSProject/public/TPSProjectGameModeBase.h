@@ -22,6 +22,17 @@ protected:
 
 	virtual void BeginPlay()override;
 
+public:
+	void RegisterActor(AActor* actorTpRegister);
+
+	UFUNCTION(Server, Reliable)
+		void RegisterActorServer();
+		void RegisterActorServer_Implementation();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void RegisterActorMulti();
+		void RegisterActorMulti_Implementation();
+
 	UFUNCTION(Server, Reliable)
 		void StartGameInServer();
 		void StartGameInServer_Implementation();
@@ -32,6 +43,11 @@ protected:
 public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class AEnemyManager> enemyManagerFactory;
+	
+		AActor* tempActor;
+
+	//UPROPERTY(Replicated)
+	TArray<AActor*> managedActors;
 
 	UPROPERTY(Replicated)
 	class AEnemyManager* EnemyManager;

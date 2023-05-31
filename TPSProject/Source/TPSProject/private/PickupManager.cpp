@@ -74,11 +74,13 @@ FHitResult UPickupManager::LineTrace()
 
 void UPickupManager::CompletedProgressBar()
 {
-	if (pickupItem == nullptr) return;
-
-
+	if (pickupItem == nullptr)
+	{
+		return;
+	}
 
 	me->AddItemInServer(pickupItem);
+	//me->AddItemMulticast(pickupItem);
 	//pickupItem->AddItemInServer(me);
 	//Cast<AWeapon>(pickupItem)->SynchronizeWhitPlayer(me);
 }
