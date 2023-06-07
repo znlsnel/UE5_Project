@@ -30,6 +30,14 @@ public:
 		void ATVUI();
 	// Called every frame
 
+	UFUNCTION(Server, Reliable)
+		void SpawnMonster();
+		void SpawnMonster_Implementation();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void CreateMonster(FVector location);
+		void CreateMonster_Implementation(FVector location);
+
 	virtual void Tick(float DeltaTime) override;
 
 	class ATPSPlayer* locallyPlayer;
@@ -38,7 +46,7 @@ public:
 		void SpawnEnemy();
 		void SpawnEnemy_Implementation();
 
-	UFUNCTION(client, Reliable)
+	UFUNCTION(Client, Reliable)
 		void CreateEnemy(FVector location);
 		void CreateEnemy_Implementation(FVector location);
 
@@ -51,29 +59,20 @@ public:
 		//void FindSpawnPoints_Implementation();
 
 	UFUNCTION(Server, Reliable)
-		void StartRound();
-		void StartRound_Implementation();
+		void StartRound(bool roundStart);
+		void StartRound_Implementation(bool roundStart);
 	
-		UFUNCTION(NetMulticast, Reliable)
-			void SyncTime(int currTime);
-			void SyncTime_Implementation(int currTime);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void IncreaseKillCount();
-		void IncreaseKillCount_Implementation();
-
+	UFUNCTION(BlueprintCallable)
+		void RoundEvent(bool start);
 	
 		//void LoopCount();
 
 public:
 	// 스폰을 위한 알람 타이머
 	FTimerHandle spawnTimerHandle;
-	FTimerHandle roundTimerHandle;
-	FTimerHandle startTimerHandle;
 	bool isbreakTime = true;
+	int currRound = 0;
 
-	int serverTime = 15;
-	int serverRound = 0;
 	// 랜덤 시간 간격 최솟값
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
 		float minTime = 3.f;
@@ -90,11 +89,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
 		TSubclassOf<class AEnemy> enemyFactory;
 
+	UPROPERTY(EditAnywhere, Category = SpawnSettings)
+		TSubclassOf<class AMonster> monsterFactory;
+
 		TArray<class AEnemy*> enemyPool;
 
-	UPROPERTY(EditAnywhere, Category = RoundUI)
-		TSubclassOf<class URoundUI> roundUIFactory;
-	class URoundUI* roundUI;
 
 
 		int32 monsterSpawnLimit = 15;

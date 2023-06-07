@@ -109,6 +109,21 @@ void UInventory::DisablePopup()
 
 UInventorySlot* UInventory::FindFirstEmptySlot(AItem* item)
 {
+	UInventorySlot* result = FindSameItemSlot(item);
+
+	if (IsValid(result))
+		return result;
+
+	for (auto slot : InventorySlotArray)
+	{
+		if (slot->isInUse == false) return slot;
+	}
+
+	return nullptr;
+}
+
+UInventorySlot* UInventory::FindSameItemSlot(AItem* item)
+{
 	bool isFindedMatch = false;
 	for (auto slot : InventorySlotArray)
 	{
@@ -121,7 +136,7 @@ UInventorySlot* UInventory::FindFirstEmptySlot(AItem* item)
 				== Cast<AAmmoBox>(item)->ammoType) isFindedMatch = true;
 
 			else if (item->itemType == ItemType::Building && Cast<ABuildableItem>(slot->Items[0])->buildableItemType
-				== Cast<ABuildableItem>(item)->buildableItemType) 
+				== Cast<ABuildableItem>(item)->buildableItemType)
 				isFindedMatch = true;
 
 		}
@@ -130,13 +145,6 @@ UInventorySlot* UInventory::FindFirstEmptySlot(AItem* item)
 			return slot;
 		}
 	}
-
-
-	for (auto slot : InventorySlotArray)
-	{
-		if (slot->isInUse == false) return slot;
-	}
-
 	return nullptr;
 }
 

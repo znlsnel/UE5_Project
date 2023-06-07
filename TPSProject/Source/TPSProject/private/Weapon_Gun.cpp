@@ -76,7 +76,7 @@ void AWeapon_Gun::createNiagara(FHitResult pHitResult)
 		else
 			damage = damage - (damage / 4);
 
-
+		enemy->fsm->SetTarget(myPlayer);
 		enemy->fsm->OnDamageProcess(damage, myPlayer);
 	}
 

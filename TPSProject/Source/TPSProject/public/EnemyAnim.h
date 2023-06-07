@@ -44,5 +44,5 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		int AttackDamage = 5;
 	int initAttackDamage = 5;
-	class ATPSPlayer* target;
+	class AActor* target;
 };

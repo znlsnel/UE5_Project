@@ -43,7 +43,7 @@ void ATPSProjectGameModeBase::BeginPlay()
 	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
 	Super::BeginPlay();
 
-	//GetWorldTimerManager().SetTimer(StartTimer, this, &ATPSProjectGameModeBase::StartGameInServer, 15.5f);
+	StartGameInServer();
 }
 
 void ATPSProjectGameModeBase::RegisterActor(AActor* actorTpRegister)

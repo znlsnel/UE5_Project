@@ -22,7 +22,8 @@ public class TPSProject : ModuleRules
 			"SlateCore",
 			"OnlineSubsystem",
 			"OnlineSubsystemUtils",
-			"Networking"
+			"Networking",
+			"GameplayTasks"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

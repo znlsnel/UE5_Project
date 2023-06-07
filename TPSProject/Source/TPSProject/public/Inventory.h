@@ -27,6 +27,7 @@ public: // 함수
 
 	void DisablePopup();
 	class UInventorySlot* FindFirstEmptySlot(class AItem* item);
+	class UInventorySlot* FindSameItemSlot(class AItem* item);
 
 
 public: // 변수

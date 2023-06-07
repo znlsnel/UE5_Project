@@ -161,6 +161,7 @@ public:
 		void SetTranceformBuildableItemMulti(class ABuildableItem* item, FVector lot, FRotator rot);
 		void SetTranceformBuildableItemMulti_Implementation(class ABuildableItem* item, FVector lot, FRotator rot);
 
+		FTimerHandle SetTranceformBuildableTimer;
 #pragma endregion
 
 	static int playerId;
@@ -245,8 +246,11 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		bool isBought = false;
 
+	UPROPERTY(Replicated)
 	class ABuildableItem* buildableItem;
 	TArray<class ABuildableItem*> ItemArr;
+	class UInventorySlot* currInventorySlot;
+
 
 // ÇÔ¼ö========================================================================
 	UFUNCTION(BlueprintCallable)

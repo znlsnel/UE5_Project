@@ -6,6 +6,8 @@
 #include "Enemy.h"
 #include "TPSProject.h"
 #include "EnemyAnim.h"
+#include "BuildableItem.h"
+#include "Doomstone.h"
 
 #include <AIController.h>
 #include <Kismet/GameplayStatics.h>
@@ -36,17 +38,13 @@ void UEnemyFSM::BeginPlay()
 	isActive = true;
 	// 월드에서 ATPSPlayer 타깃 찾아오기\
 
-	TArray<AActor*, FDefaultAllocator> actors; UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATPSPlayer::StaticClass(), actors);
-
-	for (auto player : actors)
-		players.Add(Cast<ATPSPlayer>(player));
-
 	me = Cast<AEnemy>(GetOwner());
 
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
 	anim->me = me;
 	ai = Cast<AAIController>(me->GetController());
-	
+	stoneStatue = UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass());
+	target = stoneStatue;
 }
 
 
@@ -54,8 +52,6 @@ void UEnemyFSM::BeginPlay()
 void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-
 
 	switch (mState)
 	{
@@ -105,8 +101,11 @@ void UEnemyFSM::InitializeEnemyMulticast_Implementation(FVector spawnPoint)
 	anim->animState = mState;
 	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	anim->InitializeEnemy();
-	LoopSecond();
+	ai = Cast<AAIController>(me->GetController());
+	UpdageTargetTick();
+	//LoopSecond();
 }
+
 
 void UEnemyFSM::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -168,10 +167,8 @@ void UEnemyFSM::MoveState_Implementation()
 		anim->animState = mState;
 		return;
 	}
-	if (target == nullptr) 
-	{
-		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Target!!"));
-		return;
+	if (target == nullptr) {
+		target = stoneStatue;
 	}
 	FVector destination = target->GetActorLocation();
 	FVector dir = destination - me->GetActorLocation();
@@ -207,8 +204,13 @@ void UEnemyFSM::MoveStateMulticast_Implementation(FVector destination, FVector d
 	req.SetAcceptanceRadius(3);
 	req.SetGoalLocation(destination);
 
+	if (ai == nullptr) {
+		ai = Cast<AAIController>( me->GetController());
+		return;
+	}
 	// 길 찾기를 위한 쿼리 생성
 	ai->BuildPathfindingQuery(req, query);
+
 
 	// 길 찾기 결과 가져오기
 	FPathFindingResult r = ns->FindPathSync(query);
@@ -234,8 +236,12 @@ void UEnemyFSM::MoveStateMulticast_Implementation(FVector destination, FVector d
 	}
 
 
+	float tempRange = attackRange;
 	// 타깃과 가까워지면 공격 상태로 전환
-	if (dir.Length() < attackRange)
+	if (target->ActorHasTag("DoomStone"))
+		tempRange += 250;
+
+	if (dir.Length() < tempRange)
 	{
 		ai->StopMovement();
 
@@ -244,6 +250,7 @@ void UEnemyFSM::MoveStateMulticast_Implementation(FVector destination, FVector d
 		anim->bAttackPlay = true;
 		currentTime = attackDelayTime;
 	}
+
 
 }
 
@@ -263,25 +270,28 @@ void UEnemyFSM::AttackState_Implementation()
 		AttackMulticast(target);
 }
 
-void UEnemyFSM::AttackMulticast_Implementation(ATPSPlayer* player)
+void UEnemyFSM::AttackMulticast_Implementation(AActor* targetActor)
 {
-	
+
+
 	if (anim->isWin)
 	{
 		mState = EEnemyState::Bictory;
 		anim->animState = mState;
 		return;
 	}
-	else
-	mState = EEnemyState::Attack;
-	anim->animState = mState;
+	else {
+		mState = EEnemyState::Attack;
+		anim->animState = mState;
+	}
+
+
 	// 목표 : 일정 시간에 한 번씩 공격하고 싶다.
 	// 1. 시간이 흘러야 한다.
 	currentTime += GetWorld()->DeltaTimeSeconds;
 	// 2. 공격 시간이 됐으니깝
 	if (currentTime > attackDelayTime)
 	{
-		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Attack!!!"), true, true, FLinearColor::Green, 2.0f);
 		currentTime = 0;
 		anim->bAttackPlay = true;
 
@@ -289,13 +299,17 @@ void UEnemyFSM::AttackMulticast_Implementation(ATPSPlayer* player)
 	anim->bAttackPlay = true;
 
 	// 타깃과의 거리 체크
-	float distance = FVector::Distance(player->GetActorLocation(), me->GetActorLocation());
-	
+	float distance = FVector::Distance(targetActor->GetActorLocation(), me->GetActorLocation());
 
-		anim->target = player;
+	float tempRange = attackRange;
+	// 타깃과 가까워지면 공격 상태로 전환
+	if (target->ActorHasTag("DoomStone"))
+		tempRange += 250;
+
+		anim->target = targetActor;
 
 	// 타깃과의 거리가 공격 범위를 벗어낫는지
-	if (distance > attackRange)
+	if (distance > tempRange)
 	{
 		mState = EEnemyState::Move;
 		anim->animState = mState;
@@ -406,13 +420,18 @@ void UEnemyFSM::DeadEnemyMulti_Implementation(class ATPSPlayer* player)
 
 	int money = 10;
 	player->GetMoney(money);
+	player->Mineral += 20;
+	player->Grace += 50;
+
 	me->DieEvent(player);
 	//me->IncreaseKillCount();
 	deadLocation = me->GetActorLocation();
+	GetWorld()->GetTimerManager().ClearTimer(UpdateTargetTimer);
 }
 
 void UEnemyFSM::RoundInitEnemy_Implementation(float bonusAtt, float bonusHp)
 {
+
 	hp = initHp * bonusHp;
 	anim->AttackDamage = anim->initAttackDamage + bonusAtt;
 }
@@ -436,56 +455,43 @@ void UEnemyFSM::BroadcastPos_Implementation(FVector Pos)
 	this->randomPos = Pos;
 }
 
-void UEnemyFSM::LoopSecond()
+void UEnemyFSM::SetTarget_Implementation(AActor* targetActor)
 {
-	if (IsValid(me))
-		LoopFindPlayer(players, me->GetActorLocation());
-
-	if (target == nullptr)
-	{
-		anim->isWin = true;
-
-		mState = EEnemyState::Bictory;
-		anim->animState = mState;
-			//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Bictory"));
-		
+	if (targetActor->ActorHasTag("Player")){
+		if ((me->GetActorLocation() - targetActor->GetActorLocation()).Length() > 500) return;
 	}
-
-	GetWorld()->GetTimerManager().SetTimer(findPlayerTimer, this, &UEnemyFSM::LoopSecond, 1.0f);
+	SetTargetMultil(targetActor);
 }
 
-void UEnemyFSM::LoopFindPlayer_Implementation(const TArray<class ATPSPlayer*> &playerArr, FVector enemyPos)
+void UEnemyFSM::UpdageTargetTick_Implementation()
 {
-	bool isBictory = true;
-	ATPSPlayer* closePlayer = nullptr;
-	double minLength = 1123123123;
+	if (target != nullptr) return;
 
-	for (auto player : players)
-	{
-		if (player->isDie) continue;
-
-
-		double length = (enemyPos - player->GetActorLocation()).Length();
-
-		if (length < minLength)
-		{
-			minLength = length;
-			closePlayer = player;
+	if (target->ActorHasTag("Player")) {
+		if (Cast<ATPSPlayer>(target)->isDie == false &&
+			(target->GetActorLocation() - me->GetActorLocation()).Length() < 500) {
+			return;
 		}
-		isBictory = false;
-
 	}
 
-	FindNearestPlayer(closePlayer, isBictory);
+	if (target->ActorHasTag("BuildableItem")) {
+		if (Cast<ABuildableItem>(target)->isDestroy == false)
+			return;
+	}
+
+	SetTargetMultil(stoneStatue);
+
+	GetWorld()->GetTimerManager().ClearTimer(UpdateTargetTimer);
+	GetWorld()->GetTimerManager().SetTimer(UpdateTargetTimer, this, &UEnemyFSM::UpdageTargetTick, 1.f, true);
 }
 
-
-void UEnemyFSM::FindNearestPlayer_Implementation(class ATPSPlayer* player, bool isBictory)
+void UEnemyFSM::SetTargetMultil_Implementation(AActor* targetActor)
 {
-
- 	target = player;
-
+	target = targetActor;
 }
+
+
+
 
 
 

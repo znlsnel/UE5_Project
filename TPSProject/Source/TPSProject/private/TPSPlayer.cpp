@@ -40,6 +40,7 @@
 ATPSPlayer::ATPSPlayer()
 {
 	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
+	Tags.Add("Player");
 	UE_SET_LOG_VERBOSITY(LogTemp, NoLogging);
 	//SubObjects
 	{
@@ -158,7 +159,7 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 void ATPSPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	//DOREPLIFETIME(ATPSPlayer, hp);
+	DOREPLIFETIME(ATPSPlayer, buildableItem);
 	//DOREPLIFETIME(ATPSPlayer, initialHp);
 
 }
@@ -233,6 +234,7 @@ void ATPSPlayer::AddItemMulticast_Implementation(AItem* item)
 
 	item->myPlayer = this;
 	GetInventory()->AddItemToInventory(item);
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Add In Inventory"));
 	//item->SetActorHiddenInGame(true);
 }
 
@@ -335,19 +337,22 @@ void ATPSPlayer::PlayBowAnimMulti_Implementation(bool DrawBack)
 
 void ATPSPlayer::SetTranceformBuildableItem_Implementation(ABuildableItem* item, FVector lot, FRotator rot)
 {
-	SetTranceformBuildableItemMulti(item, lot, rot);
+	if (IsValid(item)) {
+		SetTranceformBuildableItemMulti(item, lot, rot);
+	}
 }
 
 void ATPSPlayer::SetTranceformBuildableItemMulti_Implementation(ABuildableItem* item, FVector lot, FRotator rot)
 {
-	if (IsValid(item))
+	if (IsValid(item)) {
 		item->SyncTranceform(lot, rot);
-	else if (IsValid(buildableItem))
-		buildableItem->SyncTranceform(lot, rot);
+	}
 	else
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Item"));
 	}
+
+
 }
 
 int ATPSPlayer::playerId = 0;
@@ -562,14 +567,20 @@ void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int It
 		}
 		GetWorldTimerManager().ClearTimer(addItemTimer);
 		GetWorld()->GetTimerManager().SetTimer(addItemTimer, FTimerDelegate::CreateLambda([&]() {
-				for (auto item : ItemArr)
+				while (ItemArr.Num() > 0)
 				{
-					
+					auto item = ItemArr.Pop();
+
+						
+
 					item->myPlayer = this;
-					GetInventory()->AddItemToInventory(item);
+					if (GetNetMode() != NM_DedicatedServer && GetLocalRole() == ROLE_AutonomousProxy) {
+						GetInventory()->AddItemToInventory(item);
+						UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Add In Inventory"));
+					}
 				}
 			}), 1.f, false);
-
+		
 	}
 
 	if (isBought) {

@@ -3,6 +3,7 @@
 
 #include "EnemyManager.h"
 #include "Enemy.h"
+#include "Monster.h"
 #include "EnemyFSM.h"
 #include "RoundUI.h"
 #include "TPSPlayer.h"
@@ -31,16 +32,11 @@ void AEnemyManager::BeginPlay()
 	Super::BeginPlay();
 
 
-
 	StartGame();
 }
 
 void AEnemyManager::StartGame()
 {
-
-	roundUI = CreateWidget<URoundUI>(GetWorld(), roundUIFactory);
-	// 1. 랜덤한 생성 시간 구하기
-	GetWorld()->GetTimerManager().SetTimer(startTimerHandle, this, &AEnemyManager::ATVUI, 2.5f);
 
 	TArray<class AActor*, FDefaultAllocator> playerArr;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATPSPlayer::StaticClass(), playerArr);
@@ -54,15 +50,22 @@ void AEnemyManager::StartGame()
 	}
 
 	FindSpawnPoints();
-	StartRound();
 }
 
-void AEnemyManager::ATVUI()
+void AEnemyManager::SpawnMonster_Implementation()
 {
-	if (IsValid(roundUI)) roundUI->AddToViewport();
+	int spawnIndex = FMath::RandRange(0, spawnPoints.Num() - 1);
+	FVector spawnPos = spawnPoints[spawnIndex]->GetActorLocation();
+	CreateMonster(spawnPos);
 }
 
 
+
+void AEnemyManager::CreateMonster_Implementation(FVector location)
+{
+	AMonster* monster = Cast<AMonster>(GetWorld()->SpawnActor<AActor>(monsterFactory, location, FRotator(0, 0, 0)));
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Spawn"));
+}
 
 // Called every frame
 void AEnemyManager::Tick(float DeltaTime)
@@ -75,9 +78,7 @@ void AEnemyManager::Tick(float DeltaTime)
 void AEnemyManager::SpawnEnemy_Implementation()
 {
 
-
 	int spawnIndex = FMath::RandRange(0, spawnPoints.Num() - 1);
-	int spawnCount = 0;
 	if (enemyPool.Num() >= monsterSpawnLimit)
 	{
 		for (auto monster : enemyPool)
@@ -90,12 +91,7 @@ void AEnemyManager::SpawnEnemy_Implementation()
 				genPos.Z += 150;
 
 				RecycleEnemy(monster, genPos);
-				spawnCount++;
-				if (spawnCount >= serverRound)
-				{
-					break;
-					spawnCount = 0;
-				}
+				break;
 			}
 		}
 	}
@@ -105,13 +101,9 @@ void AEnemyManager::SpawnEnemy_Implementation()
 		FVector tempPos = spawnPoints[spawnIndex]->GetActorLocation();
 		tempPos.Z += 150;
 
-		for (int i = 0; i < serverRound; i++)
-			CreateEnemy(tempPos);
+		CreateEnemy(tempPos);
 
 	}
-
-	spawnCount = 0;
-
 	// 다시 랜덤 시간에 CreateEnemy 함수가 호출되도록 타이머 설정
 	float createTime = FMath::RandRange(minTime, maxTime);
 
@@ -121,10 +113,14 @@ void AEnemyManager::SpawnEnemy_Implementation()
 
 void AEnemyManager::CreateEnemy_Implementation(FVector location)
 {
-
-		
-	AEnemy* enemy = Cast<AEnemy>(GetWorld()->SpawnActor<AActor>(enemyFactory, location, FRotator(0, 0, 0)));
 	
+	//AEnemy* enemy = Cast<AEnemy>(GetWorld()->SpawnActor<AActor>(enemyFactory, location, FRotator(0, 0, 0)));
+	AEnemy* enemy = nullptr;
+
+	enemy = Cast<AEnemy>(GetWorld()->SpawnActor<AActor>(enemyFactory, location, FRotator(0, 0, 0)));
+	
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("SpawnEnemy"), true, true, FLinearColor::Green, 20.f);
+
 	if (IsValid(enemy))
 	{
 		if (locallyPlayer)
@@ -133,17 +129,20 @@ void AEnemyManager::CreateEnemy_Implementation(FVector location)
 		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Yeeeeeeeeeeeeeeeeeeee"));
 		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Location : %f, %f, %f"), location.X, location.Y, location.Z));
 
+		if (enemy->fsm == nullptr) {
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No FSM"), true, true, FLinearColor::Green, 20.f);
+
+			return;
+		}
+
+
+
 		enemy->fsm->InitializeEnemy(location);
 		enemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp);
 		enemyPool.Add(enemy);
 		enemy->enemyManager = this;
 	}
-	else
-	{
-		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("faild CreateEnemy"));
-		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Location : %f, %f, %f"), location.X, location.Y, location.Z));
 
-	}
 }
 
 void AEnemyManager::RecycleEnemy_Implementation(AEnemy* enemy, FVector location)
@@ -172,72 +171,33 @@ void AEnemyManager::FindSpawnPoints()
 	}
 }
 
-void AEnemyManager::StartRound_Implementation()
+void AEnemyManager::StartRound_Implementation(bool roundStart)
 {
 	if (GetNetMode() != NM_DedicatedServer) return;
 
-	serverTime--;
-	SyncTime(serverTime);
-	if (serverTime == 0)
+
+	if (roundStart) 
 	{
-		if (isbreakTime) // 쉬는시간 종료
-		{
-			serverRound++;
-			isbreakTime = false;
-			serverTime = 90;
+		currRound++;
+		isbreakTime = false;
 
-			enemyBonusAttackPower = (serverRound - 1) * 5;
-			enemyBonusHp *= 1.5f;
+		enemyBonusAttackPower = (currRound - 1) * 5;
+		enemyBonusHp *= 1.5f;
 
-			float createTime = FMath::RandRange(minTime, maxTime);
-			GetWorld()->GetTimerManager().SetTimer(spawnTimerHandle, this, &AEnemyManager::SpawnEnemy, createTime);
-		}
-		else // 쉬는시간 시작
-		{
-			isbreakTime = true;
-			serverTime = 30;
-			GetWorld()->GetTimerManager().ClearTimer(spawnTimerHandle);
-		}
+		float createTime = FMath::RandRange(minTime, maxTime);
+		GetWorld()->GetTimerManager().SetTimer(spawnTimerHandle, this, &AEnemyManager::SpawnEnemy, createTime);
 	}
-
-	GetWorldTimerManager().SetTimer(roundTimerHandle, this, &AEnemyManager::StartRound, 1.0f);
-
-}
-
-void AEnemyManager::SyncTime_Implementation(int currTime)
-{
-	if (GetNetMode() == NM_DedicatedServer)
-		return;
-	
-	roundUI->roundTime = currTime ;
-
-	if (currTime == 0)
+	else 
 	{
-		roundUI->isEndBreakTime = isbreakTime;
-		if (isbreakTime) // 쉬는시간 종료
-		{
-			roundUI->Round++;
-			isbreakTime = false;
-			roundUI->roundTime = 90;
-		}
-		else // 쉬는시간 시작
-		{
-			isbreakTime = true;
-			roundUI->roundTime = 30;
-		}
+		isbreakTime = true;
+		GetWorld()->GetTimerManager().ClearTimer(spawnTimerHandle);
 	}
 
 }
 
-void AEnemyManager::IncreaseKillCount_Implementation()
+void AEnemyManager::RoundEvent(bool start)
 {
-	
-	if (GetNetMode() == NM_DedicatedServer)
-		return;
-	
-
-	//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("IncreaseKillCount!"));
-	roundUI->UpdateKillCount();
+	StartRound(start);
 }
 
 
@@ -246,7 +206,6 @@ void AEnemyManager::GetLifeTimeReplicatedProps(TArray<class FLifetimeProperty>& 
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AEnemyManager, enemyPool);
-	DOREPLIFETIME(AEnemyManager, roundUI);
 	DOREPLIFETIME(AEnemyManager, spawnPoints);
 	//DOREPLIFETIME(AEnemyManager, roundTimerHandle);
 	//DOREPLIFETIME(AEnemyManager, spawnTimerHandle);

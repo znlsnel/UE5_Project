@@ -8,6 +8,7 @@
 #include "BuildableItemCheckUI.h"
 #include "TPSProjectGameModeBase.h"
 #include "PlayerUI.h"
+#include "Inventory.h"
 
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
@@ -24,6 +25,11 @@ ABuildableItem::ABuildableItem()
 	boxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+ABuildableItem::~ABuildableItem()
+{
+
 }
 
 void ABuildableItem::Tick(float DeltaTime)
@@ -55,7 +61,8 @@ void ABuildableItem::UseItem(UInventorySlot* inventorySlot)
 	//boxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera,
 	//	ECollisionResponse::ECR_Ignore);
 	RootComponent = boxCollision;
-	myInventorySlot = inventorySlot;
+	myPlayer->currInventorySlot = inventorySlot;
+
 	isSetLocation = true;
 	myPlayer->buildableItem = this;
 	isBuild = true;
@@ -80,6 +87,7 @@ void ABuildableItem::GetMouseInput(bool isPressed)
 	else
 	{
 		if (GetWorld()->GetTimeSeconds() -lastClickTime < 0.2) {
+
 			if (IsValid(CheckUI)) {
 				myPlayer->playerUI->ToggleMouse(true);
 				CheckUI->parentItem = this;
@@ -100,6 +108,10 @@ void ABuildableItem::SetLocation()
 {
 	FHitResult fHit = LineTrace();
 	FVector pos = fHit.ImpactPoint;
+
+	float BoxZSize = boxCollision->GetScaledBoxExtent().Z;
+	pos.Z += BoxZSize;
+	//pos.Z += 200;
 
 	SetActorLocation(pos);
 }
@@ -146,6 +158,7 @@ void ABuildableItem::completeBuilding(bool decide)
 {
 	if (decide)
 	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("GetMouse"));
 		//boxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera,
 		//	ECollisionResponse::ECR_Ignore);
 		myPlayer->buildableItem = this;
@@ -175,7 +188,6 @@ void ABuildableItem::CancelBuilding()
 //	SyncTranceformMulti();
 //}
 
-
 void ABuildableItem::SyncTranceform(FVector lot, FRotator rot)
 {
 	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("loc : %f, %f, %f \n rot : %f, %f, %f"), lot.X, lot.Y, lot.Z, rot.Roll, rot.Yaw, rot.Pitch));
@@ -195,16 +207,22 @@ void ABuildableItem::SyncTranceform(FVector lot, FRotator rot)
 	SetActorLocation(lot);
 	SetActorRotation(rot);
 
-	if (IsValid(myInventorySlot)) {
-		myInventorySlot->RemoveItemFromInventory();
-		if (myInventorySlot->itemCount > 0 && myInventorySlot->Items.IsEmpty() == false) {
-			Cast<ABuildableItem>(myInventorySlot->Items.Last())->UseItem(myInventorySlot);
+	
+
+	if (IsValid(myPlayer->currInventorySlot) || myPlayer->GetInventory()->FindSameItemSlot(this) ) {
+
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Valid Slot"));
+		myPlayer->currInventorySlot->RemoveItemFromInventory();
+		if (myPlayer->currInventorySlot->itemCount > 0 && myPlayer->currInventorySlot->Items.IsEmpty() == false) {
+			Cast<ABuildableItem>(myPlayer->currInventorySlot->Items.Last())->UseItem(myPlayer->currInventorySlot);
 		}
 	}
+	else
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Slot"));
 
 }
 
-void ABuildableItem::DamageProcess()
+void ABuildableItem::DamageProcess(int Damage)
 {
 	if (isDestroy) return;
 	shield--;

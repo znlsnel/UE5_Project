@@ -36,20 +36,22 @@ public:
 	UFUNCTION(Server, Reliable)
 		void StartGameInServer();
 		void StartGameInServer_Implementation();
-		UFUNCTION(NetMulticast, Reliable)
-			void StartGame();
-			void StartGame_Implementation();
+
+	UFUNCTION(NetMulticast, Reliable)
+		void StartGame();
+		void StartGame_Implementation();
 
 public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class AEnemyManager> enemyManagerFactory;
-	
+	UPROPERTY(EditAnywhere, blueprintReadOnly, Category = SpawnSettings)
+		TSubclassOf<class AMonster> monsterFactory;
 		AActor* tempActor;
 
 	//UPROPERTY(Replicated)
 	TArray<AActor*> managedActors;
 
-	UPROPERTY(Replicated)
-	class AEnemyManager* EnemyManager;
+	UPROPERTY(Replicated, BlueprintReadOnly)
+		class AEnemyManager* EnemyManager;
 	FTimerHandle StartTimer;
 };

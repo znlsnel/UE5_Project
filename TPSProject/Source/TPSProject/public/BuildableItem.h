@@ -16,6 +16,7 @@ class TPSPROJECT_API ABuildableItem : public AItem
 	
 protected:
 	ABuildableItem();
+	~ABuildableItem();
 	virtual void Tick(float DeltaTime) override;
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -53,7 +54,7 @@ public:
 
 
 
-	void DamageProcess();
+	void DamageProcess(int Damage);
 
 
 public:
@@ -88,4 +89,5 @@ public:
 
 	float lastClickTime = 0.f;
 	float turnValue = 0.f;
+	static int ItemId;
 };

@@ -33,12 +33,14 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	UFUNCTION(Server, Reliable)
-	void InitializeEnemy(FVector spawnPoint);
-	void InitializeEnemy_Implementation(FVector spawnPoint);
+		void InitializeEnemy(FVector spawnPoint);
+		void InitializeEnemy_Implementation(FVector spawnPoint);
+
 	UFUNCTION(NetMulticast, Reliable)
 		void InitializeEnemyMulticast(FVector spawnPoint);
-	void InitializeEnemyMulticast_Implementation(FVector spawnPoint);
+		void InitializeEnemyMulticast_Implementation(FVector spawnPoint);
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& arr)const override;
 
@@ -64,8 +66,8 @@ public:
 		void AttackState();
 		void AttackState_Implementation();
 		UFUNCTION(NetMulticast, Reliable)
-			void AttackMulticast(class ATPSPlayer* player);
-			void AttackMulticast_Implementation(class ATPSPlayer* player);
+			void AttackMulticast(AActor* targetActor);
+			void AttackMulticast_Implementation( AActor* targetActor);
 
 	// 피격 상태
 	UFUNCTION(Server, Reliable)
@@ -115,18 +117,22 @@ public:
 	void GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void BroadcastPos(FVector Pos);
-	void BroadcastPos_Implementation(FVector Pos);
+		void BroadcastPos(FVector Pos);
+		void BroadcastPos_Implementation(FVector Pos);
 
-	void LoopSecond();
-	UFUNCTION(Client, Reliable)
-	void LoopFindPlayer(const TArray<class ATPSPlayer*> &playerArr, FVector enemyPos);
-	void LoopFindPlayer_Implementation(const TArray<class ATPSPlayer*> &playerArr, FVector enemyPos);
+		//
+	UFUNCTION(Server, Reliable)
+		void SetTarget(AActor* targetActor);
+		void SetTarget_Implementation(AActor* targetActor);
+
+	UFUNCTION(Server, Reliable)
+		void UpdageTargetTick();
+		void UpdageTargetTick_Implementation();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void FindNearestPlayer(class ATPSPlayer* player, bool isBictory);
-	void FindNearestPlayer_Implementation(class ATPSPlayer* player, bool isBictory);
-
+		void SetTargetMultil(AActor* targetActor);
+		void SetTargetMultil_Implementation(AActor* targetActor);
+		//
 
 	// 길 찾기 수행시 랜덤 위치
 	UPROPERTY(Replicated)
@@ -135,7 +141,7 @@ public:
 	bool isAttacked = false;
 public:
 	bool isActive = false;
-	FTimerHandle findPlayerTimer;
+	FTimerHandle UpdateTargetTimer;
 
 	// EnemyState
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSM)
@@ -149,7 +155,8 @@ public:
 
 	// 타깃
 	UPROPERTY(VisibleAnywhere, Category = FSM)
-		class ATPSPlayer* target;
+		class AActor* target;
+	class AActor* stoneStatue;
 
 	// 소유 액터
 	UPROPERTY()
@@ -185,6 +192,5 @@ public:
 	UPROPERTY()
 		class AAIController* ai;
 	
-	TArray<class ATPSPlayer*> players;
 	FVector deadLocation = FVector(0, 0, 0);
 };

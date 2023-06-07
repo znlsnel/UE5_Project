@@ -104,7 +104,5 @@ void AEnemy::AddWorldDamageUI_M_Implementation(FRotator genRot, int Damage)
 void AEnemy::DieEvent(ATPSPlayer* player)
 {
 
-	if (enemyManager)
-		enemyManager->IncreaseKillCount();
 }
 
