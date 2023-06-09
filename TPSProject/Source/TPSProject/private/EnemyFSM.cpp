@@ -8,6 +8,7 @@
 #include "EnemyAnim.h"
 #include "BuildableItem.h"
 #include "Doomstone.h"
+#include "EnemyHpBar.h"
 
 #include <AIController.h>
 #include <Kismet/GameplayStatics.h>
@@ -78,9 +79,6 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 			Bictory();
 			break;
 	}
-	 
-
-	// ...
 }
 
 void UEnemyFSM::InitializeEnemy_Implementation(FVector spawnPoint)
@@ -93,7 +91,7 @@ void UEnemyFSM::InitializeEnemyMulticast_Implementation(FVector spawnPoint)
 	spawnPoint.Z += 100;
 	anim->isDead = false;
 	isActive = true;
-	hp = initHp;
+	hp = maxHp;
 	me->SetActorHiddenInGame(false);
 	me->SetActorLocation(spawnPoint);
 	me->SetActorRotation(FRotator(0, 0, 0));
@@ -103,7 +101,7 @@ void UEnemyFSM::InitializeEnemyMulticast_Implementation(FVector spawnPoint)
 	anim->InitializeEnemy();
 	ai = Cast<AAIController>(me->GetController());
 	UpdageTargetTick();
-	//LoopSecond();
+	
 }
 
 
@@ -170,17 +168,22 @@ void UEnemyFSM::MoveState_Implementation()
 	if (target == nullptr) {
 		target = stoneStatue;
 	}
+
 	FVector destination = target->GetActorLocation();
 	FVector dir = destination - me->GetActorLocation();
+
+	AAIController* cont = Cast<AAIController>(me->GetController());
+
 	MoveStateMulticast(destination, dir);
 }
 
 
 
 
-void UEnemyFSM::MoveStateMulticast_Implementation(FVector destination, FVector dir)
+void UEnemyFSM::MoveStateMulticast(FVector destination, FVector dir)
 {
 	//if (GetNetMode() == NM_DedicatedServer) return;
+
 	if (anim->isWin)
 	{
 		mState = EEnemyState::Bictory;
@@ -194,23 +197,27 @@ void UEnemyFSM::MoveStateMulticast_Implementation(FVector destination, FVector d
 	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 
 	if (ns == nullptr) return;
+
 	// 목적지 길 찾기 경로 데이터 검색
 	// FindPathSync()함수는 FPathFindingQuery 구조체 정보가 필요합니다. 
 	// 이 쿼리(질의문)을 내비게이션 시스템에 전달해 길 찾기 정보를 찾아내려고 합니다. 이를 위해 FPathFindingQuery 타입의 변수를 query를 선언
+
 	FPathFindingQuery query;
 	FAIMoveRequest req;
 
 	// 목적지에서 인지할 수 있는 거리
-	req.SetAcceptanceRadius(3);
-	req.SetGoalLocation(destination);
+	req.SetAcceptanceRadius(10);
+
+	req.SetGoalActor(target);
 
 	if (ai == nullptr) {
-		ai = Cast<AAIController>( me->GetController());
+		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Cont"));
 		return;
 	}
+
+
 	// 길 찾기를 위한 쿼리 생성
 	ai->BuildPathfindingQuery(req, query);
-
 
 	// 길 찾기 결과 가져오기
 	FPathFindingResult r = ns->FindPathSync(query);
@@ -220,19 +227,14 @@ void UEnemyFSM::MoveStateMulticast_Implementation(FVector destination, FVector d
 	{
 		// 타깃쪽으로 이동
 		ai->MoveToLocation(destination);
+		//ai->MoveToActor(target);
+		//ai->MoveTo(req, &r.Path);
 	}
 	else
 	{
-		// 랜덤한 위치로 이동
-		auto result = ai->MoveToLocation(randomPos);
-
-		// 목적지에 도착하면
-		if (result == EPathFollowingRequestResult::AlreadyAtGoal)
-		{
-
-			// 새로운 랜덤 위치 가져오기
-			GetRandomPositionInNavMesh(me->GetActorLocation(), 500, randomPos);
-		}
+		ai->StopMovement();
+		mState = EEnemyState::Idle;
+		anim->animState = mState;
 	}
 
 
@@ -402,6 +404,7 @@ void UEnemyFSM::OnDamageProcessMulticast_Implementation(int damage, ATPSPlayer* 
 		int32 index = FMath::RandRange(0, 1);
 		FString sectionName = FString::FString::Printf(TEXT("Damege%d"), index);
 		anim->PlayDamageAnim(FName(*sectionName));
+		me->HpBar->UpdateHpBar(this);
 	}
 	else
 	{
@@ -419,7 +422,6 @@ void UEnemyFSM::DeadEnemyMulti_Implementation(class ATPSPlayer* player)
 	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	int money = 10;
-	player->GetMoney(money);
 	player->Mineral += 20;
 	player->Grace += 50;
 
@@ -432,7 +434,7 @@ void UEnemyFSM::DeadEnemyMulti_Implementation(class ATPSPlayer* player)
 void UEnemyFSM::RoundInitEnemy_Implementation(float bonusAtt, float bonusHp)
 {
 
-	hp = initHp * bonusHp;
+	hp = maxHp * bonusHp;
 	anim->AttackDamage = anim->initAttackDamage + bonusAtt;
 }
 

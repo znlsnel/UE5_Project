@@ -34,7 +34,5 @@ void ADoomstone::OnHitEvent(int Damage)
 	if (Hp < 0) Hp = 0;
 
 	UpdateStatueHp();
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Damage : %f"), Damage));
-
 }
 

@@ -36,5 +36,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class ABuildableItem> Sandbag;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class ABuildableItem> Turret;
 		
 };

@@ -57,9 +57,11 @@ public:
 	void MoveState();
 	void MoveState_Implementation();
 
-	UFUNCTION(NetMulticast, Reliable)
+	//UFUNCTION(NetMulticast, Reliable)
 	void MoveStateMulticast(FVector desination, FVector dir);
-	void MoveStateMulticast_Implementation(FVector desination, FVector dir);
+	//void MoveStateMulticast_Implementation(FVector desination, FVector dir);
+
+
 #pragma endregion
 
 	UFUNCTION(Server, Reliable)
@@ -176,7 +178,7 @@ public:
 
 	// Ã¼·Â
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
-		int32 initHp = 10;
+		int32 maxHp = 10;
 
 	UPROPERTY(EditAnywhere, Category = FSM)
 		float damageDelayTime = 0.5f;

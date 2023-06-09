@@ -77,6 +77,7 @@ void ABuildableItem::UseItem(UInventorySlot* inventorySlot)
 	myPlayer->playerUI->ToggleMouse(false);
 
 }
+
 void ABuildableItem::GetMouseInput(bool isPressed)
 {
 	if (isPressed)

@@ -13,6 +13,7 @@ void UEnemyAnim::OnEndAttackAnimation()
 {
 	if (me->GetNetMode() != NM_DedicatedServer || target == nullptr) return;
 
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("AttackDamage : %d"), AttackDamage));
 
 	if (target->ActorHasTag("Player"))
 		Cast<ATPSPlayer>(target)->OnHitEvent(AttackDamage);

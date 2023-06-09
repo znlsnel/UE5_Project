@@ -78,10 +78,16 @@
     <ClCompile Include="..\..\Source\TPSProject\private\Enemy.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\EnemyAI.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\EnemyAnim.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\EnemyFSM.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\EnemyHpBar.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\EnemyManager.cpp">
@@ -168,6 +174,12 @@
     <ClCompile Include="..\..\Source\TPSProject\private\TPSProjectGameModeBase.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\TurretBullet.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\TurretItem.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\Weapon.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -237,10 +249,16 @@
     <ClInclude Include="..\..\Source\TPSProject\public\Enemy.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\EnemyAI.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\EnemyAnim.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\EnemyFSM.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\EnemyHpBar.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\EnemyManager.h">
@@ -325,6 +343,12 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\TPSProjectGameModeBase.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\TurretBullet.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\TurretItem.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Weapon.h">

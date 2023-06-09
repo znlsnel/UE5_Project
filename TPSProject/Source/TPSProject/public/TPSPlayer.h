@@ -238,10 +238,10 @@ public:
 		bool isMyPlayer = false;
 
 	UPROPERTY(BlueprintReadWrite)
-		int Grace = 1000;
+		int Grace = 10000;
 
 	UPROPERTY(BlueprintReadWrite)
-		int Mineral = 1000;
+		int Mineral = 10000;
 
 	UPROPERTY(BlueprintReadOnly)
 		bool isBought = false;
@@ -272,7 +272,6 @@ public:
 		void OnInitialization();
 	FTimerHandle addItemTimer;
 	class UInventory* GetInventory();
-	void GetMoney(int money);
 
 	//
 };

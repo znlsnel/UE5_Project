@@ -45,10 +45,10 @@ void AWeapon::UnSynchronizeWhitPlayer()
 
 void AWeapon::Attack()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Attack! in AWeapon!"));
 	if (isSynchronized == false) return;
-	if (currAmmo == 0)
+	if (currAmmo <= 0)
 	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Attack! in AWeapon!"));
 		UGameplayStatics::PlaySoundAtLocation(this, weaponDryClick, myPlayer->GetActorLocation());
 		return;
 	}

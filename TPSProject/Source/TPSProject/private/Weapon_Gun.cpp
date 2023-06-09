@@ -13,6 +13,7 @@ AWeapon_Gun::AWeapon_Gun()
 void AWeapon_Gun::Attack()
 {
 	Super::Attack();
+	if (currAmmo <= 0) return;
 	FireWeapon();
 }
 

@@ -35,7 +35,7 @@ public:
 		void AddWorldDamageUI_M_Implementation(FRotator genRot, int Damage);
 
 	void DieEvent(class ATPSPlayer* player);
-
+	void OnDamage(int damage);
 public:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = FSMComponent)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)
@@ -48,6 +48,16 @@ public:
 	int32 DActorCount = 5;
 	int32 DActorindex = 0;
 
+	class AController* myController;
 	class AEnemyManager* enemyManager;
 	class ATPSPlayer* locallyPlayer;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		class UWidgetComponent* HpBarWgComp;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UEnemyHpBar> HpBarWg;
+	class UEnemyHpBar* HpBar;
+
 };

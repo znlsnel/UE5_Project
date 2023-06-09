@@ -52,20 +52,7 @@ void AEnemyManager::StartGame()
 	FindSpawnPoints();
 }
 
-void AEnemyManager::SpawnMonster_Implementation()
-{
-	int spawnIndex = FMath::RandRange(0, spawnPoints.Num() - 1);
-	FVector spawnPos = spawnPoints[spawnIndex]->GetActorLocation();
-	CreateMonster(spawnPos);
-}
 
-
-
-void AEnemyManager::CreateMonster_Implementation(FVector location)
-{
-	AMonster* monster = Cast<AMonster>(GetWorld()->SpawnActor<AActor>(monsterFactory, location, FRotator(0, 0, 0)));
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Spawn"));
-}
 
 // Called every frame
 void AEnemyManager::Tick(float DeltaTime)
@@ -113,40 +100,31 @@ void AEnemyManager::SpawnEnemy_Implementation()
 
 void AEnemyManager::CreateEnemy_Implementation(FVector location)
 {
-	
-	//AEnemy* enemy = Cast<AEnemy>(GetWorld()->SpawnActor<AActor>(enemyFactory, location, FRotator(0, 0, 0)));
-	AEnemy* enemy = nullptr;
+	if (GetNetMode() != NM_DedicatedServer) return;
 
-	enemy = Cast<AEnemy>(GetWorld()->SpawnActor<AActor>(enemyFactory, location, FRotator(0, 0, 0)));
-	
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("SpawnEnemy"), true, true, FLinearColor::Green, 20.f);
+	AEnemy* enemy = GetWorld()->SpawnActor<AEnemy>(enemyFactory, location, FRotator(0, 0, 0));
 
 	if (IsValid(enemy))
 	{
 		if (locallyPlayer)
 			enemy->locallyPlayer = this->locallyPlayer;
 
-		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Yeeeeeeeeeeeeeeeeeeee"));
-		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Location : %f, %f, %f"), location.X, location.Y, location.Z));
-
-		if (enemy->fsm == nullptr) {
-			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No FSM"), true, true, FLinearColor::Green, 20.f);
-
+		if (IsValid(enemy->fsm) == false) {
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No fsm"));
 			return;
+			
 		}
-
-
 
 		enemy->fsm->InitializeEnemy(location);
 		enemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp);
 		enemyPool.Add(enemy);
 		enemy->enemyManager = this;
 	}
-
 }
 
 void AEnemyManager::RecycleEnemy_Implementation(AEnemy* enemy, FVector location)
 {
+	if (enemy == nullptr) return;  
 	enemy->fsm->InitializeEnemy(location);
 	enemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp);
 }

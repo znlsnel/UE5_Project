@@ -78,7 +78,6 @@ void ADamageUIActor::SetRot_M_Implementation()
 	}
 	else
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Player"));
 
 	}
 }

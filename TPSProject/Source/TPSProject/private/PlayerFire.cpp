@@ -206,7 +206,6 @@ void UPlayerFire::SetWeapon(AWeapon* weapon, bool equipWeapon)
 {
 	if (weapon == nullptr)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Weapon"));
 		return;
 	}
 	switch (weapon->weaponType)

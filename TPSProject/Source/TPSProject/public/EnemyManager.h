@@ -30,14 +30,6 @@ public:
 		void ATVUI();
 	// Called every frame
 
-	UFUNCTION(Server, Reliable)
-		void SpawnMonster();
-		void SpawnMonster_Implementation();
-
-	UFUNCTION(NetMulticast, Reliable)
-		void CreateMonster(FVector location);
-		void CreateMonster_Implementation(FVector location);
-
 	virtual void Tick(float DeltaTime) override;
 
 	class ATPSPlayer* locallyPlayer;
@@ -46,11 +38,11 @@ public:
 		void SpawnEnemy();
 		void SpawnEnemy_Implementation();
 
-	UFUNCTION(Client, Reliable)
-		void CreateEnemy(FVector location);
+	UFUNCTION(NetMulticast, Reliable)
+		void CreateEnemy( FVector location);
 		void CreateEnemy_Implementation(FVector location);
 
-		UFUNCTION(client, Reliable)
+		UFUNCTION(NetMulticast, Reliable)
 			void RecycleEnemy(AEnemy* enemy, FVector location);
 			void RecycleEnemy_Implementation(AEnemy* enemy, FVector location);
 
@@ -88,15 +80,8 @@ public:
 	// AEnemy 타입의 블루프린트 할당받을 변수
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
 		TSubclassOf<class AEnemy> enemyFactory;
-
-	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		TSubclassOf<class AMonster> monsterFactory;
-
-		TArray<class AEnemy*> enemyPool;
-
-
-
-		int32 monsterSpawnLimit = 15;
+	TArray<class AEnemy*> enemyPool;
+	int32 monsterSpawnLimit = 15;
 
 	float enemyBonusAttackPower = 0.f;
 	float enemyBonusHp = 1.f;

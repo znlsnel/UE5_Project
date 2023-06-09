@@ -8,7 +8,9 @@
 #include "DamageUIActor.h"
 #include "RoundUI.h"
 #include "TPSPlayer.h"
+#include "EnemyHpBar.h"
 
+#include <Components/WidgetComponent.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Net/UnrealNetwork.h>
 #include <Kismet/GameplayStatics.h>
@@ -30,6 +32,7 @@ AEnemy::AEnemy()
 		GetMesh()->SetRelativeScale3D(FVector(0.88));
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -88), FRotator(0, -90, 0));
 	}
+
 	fsm = CreateDefaultSubobject<UEnemyFSM>(TEXT("FSM"));
 
 	// 월드에 배치되거나 스폰될 때 자동으로
@@ -37,15 +40,22 @@ AEnemy::AEnemy()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 
-	
+	myController = GetController();
 
+
+
+
+
+
+
+
+	HpBarWgComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HpBar"));
 }
 
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
 	while (damageActorArr.Num() < DActorCount)
 	{
 		ADamageUIActor* tempUIActor = GetWorld()->SpawnActor<ADamageUIActor>(damageActorFactory);
@@ -56,13 +66,22 @@ void AEnemy::BeginPlay()
 			tempUIActor->myPlayer = locallyPlayer;
 		}
 	}
-}
 
+
+	HpBar = CreateWidget<UEnemyHpBar>(GetWorld(), HpBarWg);
+	HpBar->enemyFsm = fsm;
+	HpBarWgComp->SetWidget(HpBar);
+
+}
+#include <Kismet/KismetMathLibrary.h>
 // Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if (fsm && fsm->isActive && locallyPlayer)
+	{
+		HpBarWgComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), locallyPlayer->GetActorLocation()));
+	}
 }
 
 // Called to bind functionality to input
@@ -104,5 +123,9 @@ void AEnemy::AddWorldDamageUI_M_Implementation(FRotator genRot, int Damage)
 void AEnemy::DieEvent(ATPSPlayer* player)
 {
 
+}
+
+void AEnemy::OnDamage(int damage)
+{
 }
 

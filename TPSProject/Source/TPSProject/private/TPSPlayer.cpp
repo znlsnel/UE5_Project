@@ -379,10 +379,6 @@ UInventory* ATPSPlayer::GetInventory()
 	return playerUI->screenUI->inventory;
 }
 
-void ATPSPlayer::GetMoney(int money)
-{
-	myController->storeActor->storeUI->Money += money;
-}
 
 
 
@@ -563,16 +559,23 @@ void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int It
 				isBought = true;
 			}
 				break;
+
+				// ≈Õ∑ø
+			case 1101: {
+				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Turret)));
+				isBought = true;
 			}
+				 break;
+			}
+
+
+			
 		}
 		GetWorldTimerManager().ClearTimer(addItemTimer);
 		GetWorld()->GetTimerManager().SetTimer(addItemTimer, FTimerDelegate::CreateLambda([&]() {
 				while (ItemArr.Num() > 0)
 				{
 					auto item = ItemArr.Pop();
-
-						
-
 					item->myPlayer = this;
 					if (GetNetMode() != NM_DedicatedServer && GetLocalRole() == ROLE_AutonomousProxy) {
 						GetInventory()->AddItemToInventory(item);
@@ -580,7 +583,6 @@ void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int It
 					}
 				}
 			}), 1.f, false);
-		
 	}
 
 	if (isBought) {
