@@ -22,7 +22,7 @@
 #include <NavigationSystem.h>
 #include <Net/UnrealNetwork.h>
 // Sets default values for this component's properties
-UEnemyFSM::UEnemyFSM()
+UEnemyFSM::UEnemyFSM() : Super()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -94,6 +94,10 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 	isActive = true;
 	hp = maxHp;
 	me->SetActorHiddenInGame(false);
+
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("spawnPoint : %f, %f, %f"),  spawnPoint.X, spawnPoint.Y, spawnPoint.Z));
+
+
 	me->SetActorLocation(spawnPoint);
 	me->SetActorRotation(FRotator(0, 0, 0));
 	mState = EEnemyState::Idle;
@@ -102,6 +106,8 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 	anim->InitializeEnemy();
 	ai = Cast<AAIController>(me->GetController());
 	UpdageTargetTick();
+
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Init Enemy"));
 }
 
 
@@ -114,22 +120,15 @@ void UEnemyFSM::IdleState()
 		anim->animState = mState;
 		return;
 	}
-	// 시간이 흘렀으니까 
-	currentTime += GetWorld()->DeltaTimeSeconds;
 
-	// 만약 경과 시간이 대기 시간을 초과했다면
-	if (currentTime > idleDelayTime)
+	if (currentTime == 0.f)
+		currentTime = GetWorld()->GetTimeSeconds();
+
+	if (GetWorld()->GetTimeSeconds() - currentTime > idleDelayTime)
 	{
-
-		// 3. 이동 상태로 전환하고 싶다.
 		mState = EEnemyState::Move;
-		// 경과 시간 초기화
-		currentTime = 0;
-
 		anim->animState = mState;
-		
-
-		GetRandomPositionInNavMesh(me->GetActorLocation(), 500, randomPos);
+		currentTime = 0.f;
 	}
 }
 
@@ -171,18 +170,12 @@ void UEnemyFSM::MoveEnemy(FVector destination, FVector dir)
 {
 	//if (GetNetMode() == NM_DedicatedServer) return;
 
-	if (anim->isWin)
-	{
-		mState = EEnemyState::Bictory;
-		anim->animState = mState;
-		return;
-	}
 	//me->AddMovementInput(dir.GetSafeNormal());
 	//ai->MoveToLocation(destination);
 
 	// NavigationSystem 객체 얻어오기
 	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
-
+	 
 	if (ns == nullptr) return;
 
 	// 목적지 길 찾기 경로 데이터 검색
@@ -195,12 +188,7 @@ void UEnemyFSM::MoveEnemy(FVector destination, FVector dir)
 	// 목적지에서 인지할 수 있는 거리
 	req.SetAcceptanceRadius(10);
 
-	req.SetGoalActor(target);
-
-	if (ai == nullptr) {
-		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Cont"));
-		return;
-	}
+	req.SetGoalLocation(destination);
 
 
 	// 길 찾기를 위한 쿼리 생성
@@ -219,6 +207,7 @@ void UEnemyFSM::MoveEnemy(FVector destination, FVector dir)
 	}
 	else
 	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Find"));
 		ai->StopMovement();
 		mState = EEnemyState::Idle;
 		anim->animState = mState;
@@ -365,6 +354,8 @@ void UEnemyFSM::OnDamageProcess(int damage, ATPSPlayer* player)
 		int32 index = FMath::RandRange(0, 1);
 		FString sectionName = FString::FString::Printf(TEXT("Damege%d"), index);
 		anim->PlayDamageAnim(FName(*sectionName));
+		
+		// hpbar - null
 		me->HpBar->UpdateHpBar(this);
 	}
 	else
@@ -382,17 +373,6 @@ void UEnemyFSM::RoundInitEnemy(float bonusAtt, float bonusHp)
 	anim->AttackDamage = anim->initAttackDamage + bonusAtt;
 }
 
-void UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest)
-{
-	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
-	FNavLocation loc;
-
-	bool result = ns->GetRandomReachablePointInRadius(centerLocation, radius, loc);
-
-	dest = loc.Location;
-	return;
-}
-
 
 
 void UEnemyFSM::SetTarget(AActor* targetActor)
@@ -401,6 +381,7 @@ void UEnemyFSM::SetTarget(AActor* targetActor)
 		if ((me->GetActorLocation() - targetActor->GetActorLocation()).Length() > 500) return;
 	}
 	target = targetActor;
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Set Target!"));
 }
 
 void UEnemyFSM::UpdageTargetTick()

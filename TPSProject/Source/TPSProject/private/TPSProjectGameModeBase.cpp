@@ -17,7 +17,6 @@
 
 ATPSProjectGameModeBase::ATPSProjectGameModeBase()
 {
-	SetReplicates(true);
 	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
 
 }

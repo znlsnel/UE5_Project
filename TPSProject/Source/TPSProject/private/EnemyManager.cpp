@@ -103,24 +103,31 @@ void AEnemyManager::SpawnEnemy()
 void AEnemyManager::CreateEnemy(FVector location)
 {
 
+	tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(enemyFactory));
+	GetWorld()->GetTimerManager().SetTimer(SpawnWaitTimer, FTimerDelegate::CreateLambda(
+		[&, location]() {
+			AddEnemy(location);
+		}
+	), 1.f, false);
+}
 
-	AEnemy* enemy = GetWorld()->SpawnActor<AEnemy>(enemyFactory, location, FRotator(0, 0, 0));
-
-	if (IsValid(enemy))
+void AEnemyManager::AddEnemy(FVector location)
+{
+	if (IsValid(tempEnemy))
 	{
 		if (locallyPlayer)
-			enemy->locallyPlayer = this->locallyPlayer;
+			tempEnemy->locallyPlayer = this->locallyPlayer;
 
-		if (IsValid(enemy->fsm) == false) {
-			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No fsm"));
+		if (tempEnemy->fsm == nullptr) {
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No FSM"));
 			return;
-			
 		}
 
-		enemy->fsm->InitializeEnemy(location);
-		enemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp);
-		enemyPool.Add(enemy);
-		enemy->enemyManager = this;
+
+		tempEnemy->fsm->InitializeEnemy(location);
+		tempEnemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp);
+		enemyPool.Add(tempEnemy);
+		tempEnemy->enemyManager = this;
 	}
 }
 

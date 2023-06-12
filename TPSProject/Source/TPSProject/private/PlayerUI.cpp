@@ -153,7 +153,7 @@ void UPlayerUI::InitializeWidgets()
 	screenUI->Initialization(me);
 
 	crosshair = Cast<UCrosshair>(CreateWidget(GetWorld(), crosshairFactory));
-	if (crosshair->IsValidLowLevel()) crosshair->Initialization(me);
+	if (crosshair) crosshair->Initialization(me);
 	weaponSelectUI = Cast<UWeaponUI>(CreateWidget(GetWorld(), weaponUIFactory));
 
 }

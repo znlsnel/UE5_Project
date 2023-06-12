@@ -16,6 +16,5 @@ void UCrosshair::Initialization(ATPSPlayer* player)
 void UCrosshair::ATVWidget()
 {
 	if (IsInViewport()) return;
-	if (myPlayer->GetNetMode() == NM_Client && myPlayer->GetLocalRole() == ROLE_AutonomousProxy)
-		AddToScreen(GetOwningLocalPlayer(), 0);
+	AddToViewport();
 }

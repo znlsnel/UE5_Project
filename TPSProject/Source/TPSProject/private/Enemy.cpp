@@ -24,6 +24,8 @@ AEnemy::AEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 	Tags.Add(TEXT("Enemy"));
 
+	fsm = CreateDefaultSubobject<UEnemyFSM>(TEXT("FSM"));
+
 	// 1. 스켈레탈메시 데이터 로드
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("SkeletalMesh'/Game/Assets/ParagonRiktor/Characters/Heroes/Riktor/Meshes/Riktor.Riktor'"));
 	if (tempMesh.Succeeded())
@@ -33,16 +35,11 @@ AEnemy::AEnemy()
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -88), FRotator(0, -90, 0));
 	}
 
-	fsm = CreateDefaultSubobject<UEnemyFSM>(TEXT("FSM"));
 
 	// 월드에 배치되거나 스폰될 때 자동으로
 	// AIController부터 Possess될 수 있도록 설정
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
-
 	myController = GetController();
-
-
 
 	HpBarWgComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HpBar"));
 }
@@ -75,8 +72,9 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (fsm && fsm->isActive && locallyPlayer)
 	{
-		HpBarWgComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), locallyPlayer->GetActorLocation()));
+		//HpBarWgComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), locallyPlayer->GetActorLocation()));
 	}
+
 }
 
 // Called to bind functionality to input

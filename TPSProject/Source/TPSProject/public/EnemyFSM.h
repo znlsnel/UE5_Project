@@ -65,9 +65,6 @@ public:
 #pragma endregion
 	void RoundInitEnemy(float bonusAtt, float bonusHp);
 
-	// 랜덤 위치 가져오기
-	void GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
-
 	void SetTarget(AActor* targetActor);
 	void UpdageTargetTick();
 

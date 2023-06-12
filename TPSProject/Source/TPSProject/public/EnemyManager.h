@@ -36,7 +36,7 @@ public:
 	
 		void SpawnEnemy();
 		void CreateEnemy( FVector location);
-
+		void AddEnemy(FVector location);
 	//UFUNCTION(Client, Reliable)
 		void FindSpawnPoints();
 		//void FindSpawnPoints_Implementation();
@@ -50,6 +50,7 @@ public:
 public:
 	// 스폰을 위한 알람 타이머
 	FTimerHandle spawnTimerHandle;
+	FTimerHandle SpawnWaitTimer;
 	bool isbreakTime = true;
 	int currRound = 0;
 
@@ -69,6 +70,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
 		TSubclassOf<class AEnemy> enemyFactory;
 	TArray<class AEnemy*> enemyPool;
+	AEnemy* tempEnemy;
 	int32 monsterSpawnLimit = 15;
 
 	float enemyBonusAttackPower = 0.f;

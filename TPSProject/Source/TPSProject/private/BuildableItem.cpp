@@ -13,8 +13,8 @@
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/BoxComponent.h>
-#include <Net/UnrealNetwork.h>
 #include <Components/ArrowComponent.h>
+#include <NavigationSystem.h>
 
 ABuildableItem::ABuildableItem()
 {
@@ -208,8 +208,7 @@ void ABuildableItem::SyncTranceform()
 		}
 	}
 	
-
-
+	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 }
 
 void ABuildableItem::DamageProcess(int Damage)
