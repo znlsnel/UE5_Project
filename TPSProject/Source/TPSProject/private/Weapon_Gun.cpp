@@ -23,7 +23,7 @@ void AWeapon_Gun::FireWeapon()
 
 	for (auto HitResult : pHitResultArr)
 	{
-		myPlayer->createNiagara(HitResult);
+		createNiagara(HitResult);
 
 
 	}

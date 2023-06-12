@@ -81,12 +81,13 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	}
 }
 
-void UEnemyFSM::InitializeEnemy_Implementation(FVector spawnPoint)
+void UEnemyFSM::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	InitializeEnemyMulticast(spawnPoint);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-void UEnemyFSM::InitializeEnemyMulticast_Implementation(FVector spawnPoint)
+
+void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 {
 	spawnPoint.Z += 100;
 	anim->isDead = false;
@@ -101,16 +102,9 @@ void UEnemyFSM::InitializeEnemyMulticast_Implementation(FVector spawnPoint)
 	anim->InitializeEnemy();
 	ai = Cast<AAIController>(me->GetController());
 	UpdageTargetTick();
-	
 }
 
 
-void UEnemyFSM::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UEnemyFSM, randomPos);
-}
 
 void UEnemyFSM::IdleState()
 {
@@ -136,8 +130,6 @@ void UEnemyFSM::IdleState()
 		
 
 		GetRandomPositionInNavMesh(me->GetActorLocation(), 500, randomPos);
-
-		BroadcastPos(randomPos);
 	}
 }
 
@@ -149,15 +141,10 @@ void UEnemyFSM::Bictory()
 
 
 
-//void UEnemyFSM::MoveState_Implementation()
-//{
-//	MoveStateMulticast();
-//
-//}
-//
 
 
-void UEnemyFSM::MoveState_Implementation()
+
+void UEnemyFSM::MoveState()
 {
 	if (anim->isWin)
 	{
@@ -174,13 +161,13 @@ void UEnemyFSM::MoveState_Implementation()
 
 	AAIController* cont = Cast<AAIController>(me->GetController());
 
-	MoveStateMulticast(destination, dir);
+	MoveEnemy(destination, dir);
 }
 
 
 
 
-void UEnemyFSM::MoveStateMulticast(FVector destination, FVector dir)
+void UEnemyFSM::MoveEnemy(FVector destination, FVector dir)
 {
 	//if (GetNetMode() == NM_DedicatedServer) return;
 
@@ -256,26 +243,8 @@ void UEnemyFSM::MoveStateMulticast(FVector destination, FVector dir)
 
 }
 
-void UEnemyFSM::AttackState_Implementation()
+void UEnemyFSM::AttackState()
 {
-	if (anim->isWin)
-	{
-		mState = EEnemyState::Bictory;
-		anim->animState = mState;
-		return;
-	}
-	else
-		mState = EEnemyState::Attack;
-	anim->animState = mState;
-
-	if (target)
-		AttackMulticast(target);
-}
-
-void UEnemyFSM::AttackMulticast_Implementation(AActor* targetActor)
-{
-
-
 	if (anim->isWin)
 	{
 		mState = EEnemyState::Bictory;
@@ -286,6 +255,8 @@ void UEnemyFSM::AttackMulticast_Implementation(AActor* targetActor)
 		mState = EEnemyState::Attack;
 		anim->animState = mState;
 	}
+
+	if (target == nullptr) return;
 
 
 	// 목표 : 일정 시간에 한 번씩 공격하고 싶다.
@@ -301,14 +272,14 @@ void UEnemyFSM::AttackMulticast_Implementation(AActor* targetActor)
 	anim->bAttackPlay = true;
 
 	// 타깃과의 거리 체크
-	float distance = FVector::Distance(targetActor->GetActorLocation(), me->GetActorLocation());
+	float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
 
 	float tempRange = attackRange;
 	// 타깃과 가까워지면 공격 상태로 전환
 	if (target->ActorHasTag("DoomStone"))
 		tempRange += 250;
 
-		anim->target = targetActor;
+	anim->target = target;
 
 	// 타깃과의 거리가 공격 범위를 벗어낫는지
 	if (distance > tempRange)
@@ -317,42 +288,35 @@ void UEnemyFSM::AttackMulticast_Implementation(AActor* targetActor)
 		anim->animState = mState;
 	}
 }
-void UEnemyFSM::DamageState_Implementation()
+
+void UEnemyFSM::DamageState()
 {
 	ai->StopMovement();
 	mState = EEnemyState::Idle;
 	anim->animState = mState;
-	DamageMulti();
-}
-
-void UEnemyFSM::DamageMulti_Implementation()
-{
-	//currentTime += GetWorld()->DeltaTimeSeconds;
-	//if (currentTime > damageDelayTime)
-	//{
-	//	mState = EEnemyState::Idle;
-	//	currentTime = 0;
-	//	anim->animState = mState;
-	//}
-	mState = EEnemyState::Idle;
 	currentTime = 0;
-	anim->animState = mState;
 }
 
-void UEnemyFSM::DeadEneny_Implementation(class ATPSPlayer* player)
-{
-	DeadEnemyMulti(player);
-}
 
-void UEnemyFSM::DieState_Implementation()
+
+void UEnemyFSM::DeadEneny(class ATPSPlayer* player)
 {
-	anim->isDead = true;
 	mState = EEnemyState::Die;
-	anim->animState = mState;
-	DieStateMulticast();
+	anim->PlayDamageAnim(TEXT("Die"));
+	currentTime = 0;
+	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	int money = 10;
+	player->Mineral += 20;
+	player->Grace += 50;
+
+	me->DieEvent(player);
+	//me->IncreaseKillCount();
+	deadLocation = me->GetActorLocation();
+	GetWorld()->GetTimerManager().ClearTimer(UpdateTargetTimer);
 }
 
-void UEnemyFSM::DieStateMulticast_Implementation()
+void UEnemyFSM::DieState()
 {
 	if (anim->isDead)
 	{
@@ -375,15 +339,12 @@ void UEnemyFSM::DieStateMulticast_Implementation()
 	anim->animState = mState;
 }
 
-void UEnemyFSM::OnDamageProcess_Implementation(int damage, ATPSPlayer* player)
-{
-	int randDamage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));
 
-	OnDamageProcessMulticast(randDamage, player);
-}
-
-void UEnemyFSM::OnDamageProcessMulticast_Implementation(int damage, ATPSPlayer* player)
+void UEnemyFSM::OnDamageProcess(int damage, ATPSPlayer* player)
 {
+	damage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));
+
+
 	if (mState == EEnemyState::Die) return;
 
 
@@ -414,58 +375,35 @@ void UEnemyFSM::OnDamageProcessMulticast_Implementation(int damage, ATPSPlayer* 
 
 }
 
-void UEnemyFSM::DeadEnemyMulti_Implementation(class ATPSPlayer* player)
+
+void UEnemyFSM::RoundInitEnemy(float bonusAtt, float bonusHp)
 {
-	mState = EEnemyState::Die;
-	anim->PlayDamageAnim(TEXT("Die"));
-	currentTime = 0;
-	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	int money = 10;
-	player->Mineral += 20;
-	player->Grace += 50;
-
-	me->DieEvent(player);
-	//me->IncreaseKillCount();
-	deadLocation = me->GetActorLocation();
-	GetWorld()->GetTimerManager().ClearTimer(UpdateTargetTimer);
-}
-
-void UEnemyFSM::RoundInitEnemy_Implementation(float bonusAtt, float bonusHp)
-{
-
 	hp = maxHp * bonusHp;
 	anim->AttackDamage = anim->initAttackDamage + bonusAtt;
 }
 
 void UEnemyFSM::GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest)
 {
-	if (GetNetMode() != NM_DedicatedServer)return;
 	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 	FNavLocation loc;
 
 	bool result = ns->GetRandomReachablePointInRadius(centerLocation, radius, loc);
 
 	dest = loc.Location;
-
-
 	return;
 }
 
-void UEnemyFSM::BroadcastPos_Implementation(FVector Pos)
-{
-	this->randomPos = Pos;
-}
 
-void UEnemyFSM::SetTarget_Implementation(AActor* targetActor)
+
+void UEnemyFSM::SetTarget(AActor* targetActor)
 {
 	if (targetActor->ActorHasTag("Player")){
 		if ((me->GetActorLocation() - targetActor->GetActorLocation()).Length() > 500) return;
 	}
-	SetTargetMultil(targetActor);
+	target = targetActor;
 }
 
-void UEnemyFSM::UpdageTargetTick_Implementation()
+void UEnemyFSM::UpdageTargetTick()
 {
 	if (target != nullptr) return;
 
@@ -481,29 +419,13 @@ void UEnemyFSM::UpdageTargetTick_Implementation()
 			return;
 	}
 
-	SetTargetMultil(stoneStatue);
+	target = stoneStatue;
 
 	GetWorld()->GetTimerManager().ClearTimer(UpdateTargetTimer);
 	GetWorld()->GetTimerManager().SetTimer(UpdateTargetTimer, this, &UEnemyFSM::UpdageTargetTick, 1.f, true);
 }
 
-void UEnemyFSM::SetTargetMultil_Implementation(AActor* targetActor)
-{
-	target = targetActor;
-}
 
 
 
 
-
-
-
-//void UEnemyFSM::GetLifeTimeReplicatedProps(TArray< FLifetimeProperty>& OutLifetimeProps) const
-//{
-//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-//
-//	DOREPLIFETIME(UEnemyFSM, randomPos);
-//
-//	DOREPLIFETIME_CONDITION(UEnemyFSM, randomPos, COND_SkipOwner);
-//}
-//

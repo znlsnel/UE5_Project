@@ -21,8 +21,6 @@ class TPSPROJECT_API UPlayerFire : public UPlayerBaseComponent
 	virtual void SetupInputBinding(class UInputComponent* PlayerInputComponent) override;
 	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
-	virtual void GetLifetimeReplicatedProps
-	(TArray<FLifetimeProperty>& OutLifetimeProps)const;
 
 
 public:
@@ -32,14 +30,7 @@ public:
 
 	void LoopFire();
 
-
-	UFUNCTION(Server, Reliable)
-		void EquipWeapon(WeaponType weaponType);
-	void EquipWeapon_Implementation(WeaponType weaponType);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void EquipWeaponMulticast(WeaponType weaponType);
-	void EquipWeaponMulticast_Implementation(WeaponType weaponType);
+	void EquipWeapon(WeaponType weaponType);
 
 
 	template<bool b>
@@ -61,6 +52,7 @@ public:
 	bool isFire = false;
 
 	FTimerHandle fireTimerHandle;
+	FTimerHandle BeginPlayTimer;
 
 	class UPlayerAnim* anim;
 

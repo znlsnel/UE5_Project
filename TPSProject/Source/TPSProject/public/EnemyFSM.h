@@ -33,17 +33,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
-	UFUNCTION(Server, Reliable)
-		void InitializeEnemy(FVector spawnPoint);
-		void InitializeEnemy_Implementation(FVector spawnPoint);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void InitializeEnemyMulticast(FVector spawnPoint);
-		void InitializeEnemyMulticast_Implementation(FVector spawnPoint);
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& arr)const override;
-
+	void InitializeEnemy(FVector spawnPoint);
 
 public:
 
@@ -53,88 +45,31 @@ public:
 
 #pragma region MoveState
 
-	UFUNCTION(Server, Reliable)
 	void MoveState();
-	void MoveState_Implementation();
-
-	//UFUNCTION(NetMulticast, Reliable)
-	void MoveStateMulticast(FVector desination, FVector dir);
-	//void MoveStateMulticast_Implementation(FVector desination, FVector dir);
-
+	void MoveEnemy(FVector desination, FVector dir);
 
 #pragma endregion
 
-	UFUNCTION(Server, Reliable)
-		void AttackState();
-		void AttackState_Implementation();
-		UFUNCTION(NetMulticast, Reliable)
-			void AttackMulticast(AActor* targetActor);
-			void AttackMulticast_Implementation( AActor* targetActor);
-
-	// 피격 상태
-	UFUNCTION(Server, Reliable)
+	void AttackState();
 	void DamageState();
-	void DamageState_Implementation();
-
-	UFUNCTION(NetMulticast, Reliable)
-		void DamageMulti();
-		void DamageMulti_Implementation();
-
-		// 죽음 상태
-	UFUNCTION(Server, Reliable)
-		void DeadEneny(class ATPSPlayer* player);
-		void DeadEneny_Implementation(class ATPSPlayer* player);
-
-		UFUNCTION(NetMulticast, Reliable)
-			void DeadEnemyMulti(class ATPSPlayer* player);
-			void DeadEnemyMulti_Implementation(class ATPSPlayer* player);
-
-
-	UFUNCTION(Server, Reliable)
+	void DeadEneny(class ATPSPlayer* player);
 	void DieState();
-	void DieState_Implementation();
 
-	UFUNCTION(NetMulticast, Reliable)
-		void DieStateMulticast();
-		void DieStateMulticast_Implementation();
+
 	// 피격 알림 이벤트 함수
 
 #pragma region OnDamageProcess
 
-	UFUNCTION(Server, Reliable)
 	void OnDamageProcess(int damage, ATPSPlayer* player);
-	void OnDamageProcess_Implementation(int damage, ATPSPlayer* player);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void OnDamageProcessMulticast(int damage, ATPSPlayer* player);
-	void OnDamageProcessMulticast_Implementation(int damage, ATPSPlayer* player);
 
 #pragma endregion
-
-	UFUNCTION(Client, Reliable)
 	void RoundInitEnemy(float bonusAtt, float bonusHp);
-	void RoundInitEnemy_Implementation(float bonusAtt, float bonusHp);
 
 	// 랜덤 위치 가져오기
 	void GetRandomPositionInNavMesh(FVector centerLocation, float radius, FVector& dest);
 
-	UFUNCTION(NetMulticast, Reliable)
-		void BroadcastPos(FVector Pos);
-		void BroadcastPos_Implementation(FVector Pos);
-
-		//
-	UFUNCTION(Server, Reliable)
-		void SetTarget(AActor* targetActor);
-		void SetTarget_Implementation(AActor* targetActor);
-
-	UFUNCTION(Server, Reliable)
-		void UpdageTargetTick();
-		void UpdageTargetTick_Implementation();
-
-	UFUNCTION(NetMulticast, Reliable)
-		void SetTargetMultil(AActor* targetActor);
-		void SetTargetMultil_Implementation(AActor* targetActor);
-		//
+	void SetTarget(AActor* targetActor);
+	void UpdageTargetTick();
 
 	// 길 찾기 수행시 랜덤 위치
 	UPROPERTY(Replicated)

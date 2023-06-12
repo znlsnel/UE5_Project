@@ -45,81 +45,15 @@ public:
 
 	// MULTICAST
 		// 피격 달했을 때 처리
-	UFUNCTION(BlueprintCallable, Server, Reliable, Category = Health)
+	UFUNCTION(BlueprintCallable, Category = Health)
 		void OnHitEvent(int damage);
-	void OnHitEvent_Implementation(int damage);
-
-	UFUNCTION(Server, Reliable)
-		void OnDamage(int damage);
-	void OnDamage_Implementation(int damage);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void OnDamageMulti(int damage);
-	void OnDamageMulti_Implementation(int damage);
-
-	UFUNCTION(Server, Reliable)
-		void PlayMontageInServer(class UAnimMontage* AM, FName section = "");
-		void PlayMontageInServer_Implementation(class UAnimMontage* AM, FName section = "");
-
-	UFUNCTION(NetMulticast, Reliable)
-		void MulticastAnimMontage(class UAnimMontage* AM, FName section = "");
-		void MulticastAnimMontage_Implementation(class UAnimMontage* AM, FName section = "");
-
-	UFUNCTION(Server, Reliable)
-			void createNiagara(FHitResult pHitResult);
-		void createNiagara_Implementation(FHitResult pHitResult);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void MulticastNiaga(FHitResult pHitResult);
-	void MulticastNiaga_Implementation(FHitResult pHitResult);
-
-	UFUNCTION(Server, Reliable)
-		void DoubleClickInServer(DashType dashType);
-	void DoubleClickInServer_Implementation(DashType dashType);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void DoubleClickMulticast(DashType dashType);
-	void DoubleClickMulticast_Implementation(DashType dashType);
-
-	UFUNCTION(Server, Reliable)
-		void AddItemInServer(class AItem* item);
-	void AddItemInServer_Implementation(class  AItem* item);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void AddItemMulticast(class  AItem* item);
-	void AddItemMulticast_Implementation(class  AItem* item);
 
 
-	UFUNCTION(Server, Reliable)
-		void DropItemInServer(class AItem* item);
-	void DropItemInServer_Implementation(class AItem* item);
+	void PlayMontage(class UAnimMontage* AM, FName section = "");
 
-	UFUNCTION(NetMulticast, Reliable)
-		void DropItemMulticast(class AItem* item);
-	void DropItemMulticast_Implementation(class AItem* item);
+	void AddItemInServer(class AItem* item);
 
-	UFUNCTION(Server, Reliable)
-		void SyncWeaponInServer(class AWeapon* weapon);
-		void SyncWeaponInServer_Implementation(class AWeapon* weapon);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void SyncWeaponMulticast(class AWeapon* weapon);
-		void SyncWeaponMulticast_Implementation(class AWeapon* weapon);
-
-	UFUNCTION(Server, Reliable)
-		void ClickWidget(bool isFire);
-		void ClickWidget_Implementation(bool isFire);
-	UFUNCTION(NetMulticast, Reliable)
-		void ClickWidgetMulti(bool isFire);
-		void ClickWidgetMulti_Implementation(bool isFire);
-	
-		UFUNCTION(Server, Reliable)
-			void UpdateAttackAndHp(bool updateAttack, float value);
-			void UpdateAttackAndHp_Implementation(bool updateAttack, float value);
-
-			UFUNCTION(NetMulticast, Reliable)
-				void UpdateAttackAndHpMT(bool updateAttack, float value);
-				void UpdateAttackAndHpMT_Implementation(bool updateAttack, float value);
+	void UpdateAttackAndHp(bool updateAttack, float value);
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void ClickBPWidget(bool isPressed);
@@ -128,40 +62,7 @@ public:
 		void InitWidgetInteraction();
 	class UStoreUI* GetStore();
 
-
-	UFUNCTION(Server, Reliable)
-		void SetArrow();
-		void SetArrow_Implementation();
-
-	UFUNCTION(NetMulticast, Reliable)
-		void SetArrowMulti();
-		void SetArrowMulti_Implementation();
-
-	UFUNCTION(Server, Reliable)
-		void ShootArrow(float power);
-		void ShootArrow_Implementation(float power);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void ShootArrowMulti(float power);
-		void ShootArrowMulti_Implementation(float power);
-
-	UFUNCTION(Server, Reliable)
-		void PlayBowAnim(bool DrawBack);
-		void PlayBowAnim_Implementation(bool DrawBack);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void PlayBowAnimMulti(bool DrawBack);
-		void PlayBowAnimMulti_Implementation(bool DrawBack);
-
-	UFUNCTION(Server, Reliable)
-		void SetTranceformBuildableItem(class ABuildableItem* item, FVector lot, FRotator rot);
-		void SetTranceformBuildableItem_Implementation(class ABuildableItem* item, FVector lot, FRotator rot);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void SetTranceformBuildableItemMulti(class ABuildableItem* item, FVector lot, FRotator rot);
-		void SetTranceformBuildableItemMulti_Implementation(class ABuildableItem* item, FVector lot, FRotator rot);
-
-		FTimerHandle SetTranceformBuildableTimer;
+	FTimerHandle SetTranceformBuildableTimer;
 #pragma endregion
 
 	static int playerId;
@@ -175,7 +76,7 @@ public:
 	class ATPSPlayerController* myController;
 	FTimerHandle TickIdTimerHandle;
 
-// COMP=====================================================================
+// 
 	// 스프링암 Comp
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 		class USpringArmComponent* springArmComp;		// Spring Arm
@@ -249,29 +150,21 @@ public:
 	UPROPERTY(Replicated)
 	class ABuildableItem* buildableItem;
 	TArray<class ABuildableItem*> ItemArr;
-	class UInventorySlot* currInventorySlot;
 
 
 // 함수========================================================================
 	UFUNCTION(BlueprintCallable)
 		void BuyItem(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
 
-	UFUNCTION(Server, Reliable)
-		void BuyItemServer(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
-		void BuyItemServer_Implementation(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void BuyItemMulti(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
-		void BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Health)
 		void OnGameOver();
 		void OnGameOver_Implementation();
 
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = Initialization)
+	UFUNCTION(BlueprintImplementableEvent, Category = Initialization)
 		void OnInitialization();
 	FTimerHandle addItemTimer;
 	class UInventory* GetInventory();
 
-	//
+
 };

@@ -128,7 +128,6 @@ void ATPSPlayer::BeginPlay()
 		playerUI->screenUI->UpdateScreenUI();
 
 	playerAnim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
-
 }
 
 void ATPSPlayer::StartGame()
@@ -159,8 +158,6 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 void ATPSPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ATPSPlayer, buildableItem);
-	//DOREPLIFETIME(ATPSPlayer, initialHp);
 
 }
 
@@ -170,13 +167,11 @@ void ATPSPlayer::SetPlayerMouse(bool Active)
 }
 
 
-void ATPSPlayer::PlayMontageInServer_Implementation(UAnimMontage* AM, FName section)
+void ATPSPlayer::PlayMontage(UAnimMontage* AM, FName section)
 {
-	MulticastAnimMontage(AM, section);
-}
+	if (playerAnim == nullptr)
+		playerAnim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
 
-void ATPSPlayer::MulticastAnimMontage_Implementation(UAnimMontage* AM, FName section)
-{
 	if (playerAnim)
 	{
 		if (section != "")
@@ -191,95 +186,17 @@ void ATPSPlayer::MulticastAnimMontage_Implementation(UAnimMontage* AM, FName sec
 
 }
 
-void ATPSPlayer::createNiagara_Implementation(FHitResult pHitResult)
+void ATPSPlayer::AddItemInServer(AItem* item)
 {
-	MulticastNiaga(pHitResult);
-}
-
-void ATPSPlayer::MulticastNiaga_Implementation(FHitResult pHitResult)
-{
-	if (playerFire == nullptr)
+	if (IsValid(item))
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No PlayerFire"));
+		item->myPlayer = this;
+		GetInventory()->AddItemToInventory(item);
 	}
-	else if (playerFire->currWeapon == nullptr)
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Weapon;"));
-	}
-	else
-		Cast<AWeapon_Gun>(playerFire->currWeapon)->createNiagara(pHitResult);
 }
 
-void ATPSPlayer::DoubleClickInServer_Implementation(DashType dashType)
+void ATPSPlayer::UpdateAttackAndHp(bool updateAttack, float value)
 {
-	DoubleClickMulticast(dashType);
-}
-
-void ATPSPlayer::DoubleClickMulticast_Implementation(DashType dashType)
-{
-	Cast<UPlayerMove>(playerMove)->Dash(dashType);
-}
-
-void ATPSPlayer::AddItemInServer_Implementation(AItem* item)
-{
-	AddItemMulticast(item);
-}
-
-void ATPSPlayer::AddItemMulticast_Implementation(AItem* item)
-{
-	if (IsValid(item) == false)
-	{
-		return;
-	}
-
-	item->myPlayer = this;
-	GetInventory()->AddItemToInventory(item);
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Add In Inventory"));
-	//item->SetActorHiddenInGame(true);
-}
-
-void ATPSPlayer::DropItemInServer_Implementation(class AItem* item)
-{
-	DropItemMulticast(item);
-}
-
-void ATPSPlayer::DropItemMulticast_Implementation(class AItem* item)
-{
-	item->DropItemOnGround();
-}
-
-void ATPSPlayer::SyncWeaponInServer_Implementation(AWeapon* weapon)
-{
-	SyncWeaponMulticast(weapon);
-}
-
-void ATPSPlayer::SyncWeaponMulticast_Implementation(AWeapon* weapon)
-{
-	weapon->SynchronizeWhitPlayer(this);
-}
-
-void ATPSPlayer::ClickWidget_Implementation(bool isFire)
-{
-	//myController->ClickBPWidget(isFire);
-
-	ClickWidgetMulti(isFire);
-	//playerFire->GetWeapon()->ClickWorldWidget(isFire);
-}
-
-void ATPSPlayer::ClickWidgetMulti_Implementation(bool isFire)
-{
-	//playerFire->GetWeapon()->ClickWorldWidget(isFire);
-	ClickBPWidget(isFire);
-}
-
-void ATPSPlayer::UpdateAttackAndHp_Implementation(bool updateAttack, float value)
-{
-	UpdateAttackAndHpMT(updateAttack, value);
-}
-
-void ATPSPlayer::UpdateAttackAndHpMT_Implementation(bool updateAttack, float value)
-{
-
 	if (updateAttack)
 	{
 		AdditionalAttackPower = value;
@@ -300,60 +217,6 @@ UStoreUI* ATPSPlayer::GetStore()
 	return myController->storeActor->storeUI;
 }
 
-void ATPSPlayer::SetArrow_Implementation()
-{
-	SetArrowMulti();
-}
-
-void ATPSPlayer::SetArrowMulti_Implementation()
-{
-	AWeapon_Bow* bow = Cast<AWeapon_Bow>(playerFire->weapon_Bow);
-	if (IsValid(bow))
-		bow->SetArrow();
-
-}
-
-void ATPSPlayer::ShootArrow_Implementation(float power)
-{
-	ShootArrowMulti(power);
-}
-
-void ATPSPlayer::ShootArrowMulti_Implementation(float power)
-{
-	AWeapon_Bow* bow = Cast<AWeapon_Bow>(playerFire->weapon_Bow);
-	if (IsValid(bow))
-		bow->ShootArrow(power);
-}
-
-void ATPSPlayer::PlayBowAnim_Implementation(bool DrawBack)
-{
-	PlayBowAnimMulti(DrawBack);
-}
-
-void ATPSPlayer::PlayBowAnimMulti_Implementation(bool DrawBack)
-{
-	Cast<AWeapon_Bow>(playerFire->weapon_Bow)->PlayBowAnim(DrawBack);
-}
-
-void ATPSPlayer::SetTranceformBuildableItem_Implementation(ABuildableItem* item, FVector lot, FRotator rot)
-{
-	if (IsValid(item)) {
-		SetTranceformBuildableItemMulti(item, lot, rot);
-	}
-}
-
-void ATPSPlayer::SetTranceformBuildableItemMulti_Implementation(ABuildableItem* item, FVector lot, FRotator rot)
-{
-	if (IsValid(item)) {
-		item->SyncTranceform(lot, rot);
-	}
-	else
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Item"));
-	}
-
-
-}
 
 int ATPSPlayer::playerId = 0;
 const int ATPSPlayer::GetPlayerId()
@@ -386,26 +249,15 @@ UInventory* ATPSPlayer::GetInventory()
 
 
 
-void ATPSPlayer::OnHitEvent_Implementation(int damage)
-{
-
-	OnDamage(damage);
-}
-
-void ATPSPlayer::OnDamage_Implementation(int damage)
+void ATPSPlayer::OnHitEvent(int damage)
 {
 	int randDamage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));
 
-	OnDamageMulti(randDamage);
-}
-
-void ATPSPlayer::OnDamageMulti_Implementation(int damage)
-{
 	if (hp <= 0) return;
 
 
 
-	int temphp = hp - damage;
+	int temphp = hp - randDamage;
 	hp = FMath::Max(temphp, 0);
 	if (playerUI->screenUI)
 		playerUI->screenUI->UpdateScreenUI();
@@ -418,19 +270,11 @@ void ATPSPlayer::OnDamageMulti_Implementation(int damage)
 		isDie = true;
 
 	}
+
 }
+
 
 void ATPSPlayer::BuyItem(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount)
-{
-	BuyItemServer(itemId, ItemGrace, ItemMineral, ItemCount);
-}
-
-void ATPSPlayer::BuyItemServer_Implementation(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount)
-{
-	BuyItemMulti(itemId, ItemGrace, ItemMineral, ItemCount);
-}
-
-void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount)
 {
 	isBought = false;
 
@@ -524,7 +368,7 @@ void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int It
 		}
 	}
 
-	
+
 	else if (itemId < 10000)
 	{
 		for (int i = 0; i < ItemCount; i++)
@@ -537,50 +381,45 @@ void ATPSPlayer::BuyItemMulti_Implementation(int32 itemId, int ItemGrace, int It
 				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->StoneWall)));
 				isBought = true;
 			}
-				break;
+				 break;
 
-				// 바리케이드
+				 // 바리케이드
 			case 1001: {
 				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Barricade)));
 				isBought = true;
 			}
-				break;
+				 break;
 
-				// 부서진담
+				 // 부서진담
 			case 1002: {
 				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->BrokenWalll)));
 				isBought = true;
 			}
-				break;
+				 break;
 
-				// 모래주머니 담
+				 // 모래주머니 담
 			case 1003: {
 				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Sandbag)));
 				isBought = true;
 			}
-				break;
+				 break;
 
-				// 터렛
+				 // 터렛
 			case 1101: {
+
 				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Turret)));
 				isBought = true;
 			}
 				 break;
 			}
-
-
-			
 		}
 		GetWorldTimerManager().ClearTimer(addItemTimer);
 		GetWorld()->GetTimerManager().SetTimer(addItemTimer, FTimerDelegate::CreateLambda([&]() {
 				while (ItemArr.Num() > 0)
 				{
 					auto item = ItemArr.Pop();
-					item->myPlayer = this;
-					if (GetNetMode() != NM_DedicatedServer && GetLocalRole() == ROLE_AutonomousProxy) {
-						GetInventory()->AddItemToInventory(item);
-						UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Add In Inventory"));
-					}
+					item->myPlayer = this; 
+					GetInventory()->AddItemToInventory(item);
 				}
 			}), 1.f, false);
 	}

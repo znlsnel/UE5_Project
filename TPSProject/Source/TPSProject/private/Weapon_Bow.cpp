@@ -65,8 +65,8 @@ void AWeapon_Bow::Attack(bool isPress)
 			section = ReDraw;
 		else
 			section =  DrawBow;
-		myPlayer->PlayBowAnim(true);
-		myPlayer->SetArrow();
+		PlayBowAnim(true);
+		SetArrow();
 		
 	}
 	else
@@ -79,10 +79,10 @@ void AWeapon_Bow::Attack(bool isPress)
 			section = Fire;
 		else
 			section = DrawCancel;
-		myPlayer->PlayBowAnim(false);
-		myPlayer->ShootArrow(pow);
+		PlayBowAnim(false);
+		ShootArrow(pow);
 	}
-	myPlayer->PlayMontageInServer(BowActiveAM, section);
+	myPlayer->PlayMontage(BowActiveAM, section);
 	
 }
 

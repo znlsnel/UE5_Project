@@ -27,18 +27,10 @@ public:
 	void ATVWeaponSelectUI() { ATVWeaponSelectUI(b); }
 	void ATVWeaponSelectUI(bool addToView);
 
-	UFUNCTION(Client, Reliable)
 	void ATVWidgets();
-	void ATVWidgets_Implementation();
 
 	void InitializeWidgets();
-	UFUNCTION(Client, Reliable)
-		void InitializeWidgets_Client();
-		void InitializeWidgets_Client_Implementation();
 
-	UFUNCTION(Server, Reliable)
-		void InitializeWidgets_Server();
-		void InitializeWidgets_Server_Implementation();
 
 public:
 	UPROPERTY(EditDefaultsOnly)

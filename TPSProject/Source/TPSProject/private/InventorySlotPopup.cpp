@@ -45,7 +45,7 @@ void UInventorySlotPopup::EquipOrUseItem()
 		myInventorySlot->RemoveItemFromInventory();
 
 		//weapon->SynchronizeWhitPlayer(myInventorySlot->Inventory->myPlayer);
-		GetPlayer()->SyncWeaponInServer(weapon);
+		weapon->SynchronizeWhitPlayer(GetPlayer());
 	}
 		break;
 	case ItemType::Ammo:
@@ -64,6 +64,8 @@ void UInventorySlotPopup::EquipOrUseItem()
 		{
 			item->UseItem(myInventorySlot);
 		}
+		else
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("IsBuild"));
 	}
 	}
 	RemoveFromParent();
@@ -73,11 +75,10 @@ void UInventorySlotPopup::ThrowingItem()
 {
 	AItem* item = myInventorySlot->Items.Last();
 
-	myInventorySlot->Inventory->myPlayer->DropItemInServer(item);
+	item->DropItemOnGround();
 
 	myInventorySlot->RemoveItemFromInventory();
 	RemoveFromParent();
-
 }
 
 ATPSPlayer* UInventorySlotPopup::GetPlayer()

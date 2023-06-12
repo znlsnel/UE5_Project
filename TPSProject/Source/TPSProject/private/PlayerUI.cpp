@@ -147,20 +147,18 @@ void UPlayerUI::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 
 void UPlayerUI::InitializeWidgets()
 {
-	// Client
-	if (me->GetRemoteRole() == ROLE_Authority)
-	{
-		InitializeWidgets_Client();
-	}
-	// Server
-	else if (me->GetLocalRole() == ROLE_Authority)
-	{
-		InitializeWidgets_Server();
-	}
-	
+
+	screenUI = Cast<UScreenUI>(CreateWidget(GetWorld(), ScreenUIFactory));
+
+	screenUI->Initialization(me);
+
+	crosshair = Cast<UCrosshair>(CreateWidget(GetWorld(), crosshairFactory));
+	if (crosshair->IsValidLowLevel()) crosshair->Initialization(me);
+	weaponSelectUI = Cast<UWeaponUI>(CreateWidget(GetWorld(), weaponUIFactory));
+
 }
 
-void UPlayerUI::ATVWidgets_Implementation()
+void UPlayerUI::ATVWidgets()
 {
 	if (screenUI)	{
 		screenUI->ATVWidget();
@@ -175,41 +173,7 @@ void UPlayerUI::ATVWidgets_Implementation()
 
 }
 
-void UPlayerUI::InitializeWidgets_Client_Implementation()
-{
-	APlayerController* tempPctrl = nullptr;
-	for (FConstPlayerControllerIterator Iterator =  GetWorld()->GetPlayerControllerIterator(); Iterator; Iterator++)
-	{
-		
-		if (Iterator->Get()->IsLocalPlayerController())
-		{
-			tempPctrl = Iterator->Get();
-			break;
-		}
-	}
 
-
-	screenUI = Cast<UScreenUI>(CreateWidget(tempPctrl, ScreenUIFactory));
-
-	screenUI->Initialization(me);
-
-	crosshair = Cast<UCrosshair>(CreateWidget(GetWorld(), crosshairFactory));
-	if (crosshair->IsValidLowLevel()) crosshair->Initialization(me);
-
-	weaponSelectUI = Cast<UWeaponUI>(CreateWidget(GetWorld(), weaponUIFactory));
-
-}
-
-void UPlayerUI::InitializeWidgets_Server_Implementation()
-{
-	screenUI = Cast<UScreenUI>(CreateWidget(GetWorld(), ScreenUIFactory));
-
-	screenUI->Initialization(me);
-
-	crosshair = Cast<UCrosshair>(CreateWidget(GetWorld(), crosshairFactory));
-	if (crosshair->IsValidLowLevel()) crosshair->Initialization(me);
-
-}
 
 void UPlayerUI::ToggleInventory()
 {

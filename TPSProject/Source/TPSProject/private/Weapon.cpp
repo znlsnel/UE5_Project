@@ -36,9 +36,8 @@ void AWeapon::UnSynchronizeWhitPlayer()
 	bool bItemAdded = true;
 	inventory->AddItemToInventory(this);
 
-
 	if (bItemAdded == false)
-		myPlayer->DropItemInServer(this);
+		DropItemOnGround();
 
 	SetSync(false);
 }
@@ -59,7 +58,7 @@ void AWeapon::Attack()
 	//	anim->currMontage = CharacterFireAM;
 	//	anim->PlayMontage(CharacterFireAM);
 	//}
-	myPlayer->PlayMontageInServer(CharacterFireAM);
+	myPlayer->PlayMontage(CharacterFireAM);
 
 
 	GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(FireCamShakeClass);
@@ -159,7 +158,7 @@ void AWeapon::Reload()
 
 	//if (anim)
 	//	anim->PlayMontage(CharacterReloadAM);
-	myPlayer->PlayMontageInServer(CharacterReloadAM);
+	myPlayer->PlayMontage(CharacterReloadAM);
 
 	weaponMeshComp->PlayAnimation(WeaponReloadAnim, false);
 

@@ -19,7 +19,7 @@ protected:
 	~ABuildableItem();
 	virtual void Tick(float DeltaTime) override;
 	virtual void BeginPlay() override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 
 public:
 	void UseItem(class UInventorySlot* inventorySlot);
@@ -45,7 +45,7 @@ public:
 		bool isDestroy = false;
 	
 	//UFUNCTION(Server, Reliable)
-		void SyncTranceform(FVector lot, FRotator rot);
+		void SyncTranceform();
 		//void SyncTranceform_Implementation();
 
 /*		UFUNCTION(NetMulticast, Reliable)

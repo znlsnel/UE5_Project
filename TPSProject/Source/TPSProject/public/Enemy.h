@@ -25,14 +25,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-
-	UFUNCTION(Server, Reliable)
 	void AddWorldDamageUI(FRotator genRot, int Damage);
-	void AddWorldDamageUI_Implementation(FRotator genRot, int Damage);
-
-	UFUNCTION(NetMulticast, Reliable)
-		void AddWorldDamageUI_M(FRotator genRot, int Damage);
-		void AddWorldDamageUI_M_Implementation(FRotator genRot, int Damage);
 
 	void DieEvent(class ATPSPlayer* player);
 	void OnDamage(int damage);

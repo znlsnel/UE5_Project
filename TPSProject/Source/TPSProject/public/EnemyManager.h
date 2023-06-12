@@ -22,7 +22,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 public:	
-	virtual void GetLifeTimeReplicatedProps(TArray< class FLifetimeProperty>& OutLifetimeProps) const;
+
 
 	//UFUNCTION(client, Reliable)
 		void StartGame();
@@ -34,26 +34,14 @@ public:
 
 	class ATPSPlayer* locallyPlayer;
 	
-	UFUNCTION(Server, Reliable)
 		void SpawnEnemy();
-		void SpawnEnemy_Implementation();
-
-	UFUNCTION(NetMulticast, Reliable)
 		void CreateEnemy( FVector location);
-		void CreateEnemy_Implementation(FVector location);
-
-		UFUNCTION(NetMulticast, Reliable)
-			void RecycleEnemy(AEnemy* enemy, FVector location);
-			void RecycleEnemy_Implementation(AEnemy* enemy, FVector location);
 
 	//UFUNCTION(Client, Reliable)
 		void FindSpawnPoints();
 		//void FindSpawnPoints_Implementation();
 
-	UFUNCTION(Server, Reliable)
-		void StartRound(bool roundStart);
-		void StartRound_Implementation(bool roundStart);
-	
+
 	UFUNCTION(BlueprintCallable)
 		void RoundEvent(bool start);
 	

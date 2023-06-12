@@ -69,8 +69,6 @@ void UPlayerAnim::PlayMontage(UAnimMontage* animMontage)
 void UPlayerAnim::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UPlayerAnim, currMontage);
 	//DOREPLIFETIME(UPlayerAnim, speed);
 }
 

@@ -32,9 +32,10 @@ public:
 
 public:
 	bool isFire = false;
+	FRotator FireRot = FRotator(0);
 
 	UPROPERTY(EditAnywhere)
-		float bulletSpeed = 1000.f;
+		float bulletSpeed = 200.f;
 
 	UPROPERTY(EditAnywhere)
 		float attackPower = 30.f;

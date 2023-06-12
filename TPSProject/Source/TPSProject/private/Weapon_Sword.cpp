@@ -81,5 +81,5 @@ void AWeapon_Sword::Attack()
 	UKismetSystemLibrary::PrintString(GetWorld(), attackSection.ToString());
 
 
-	myPlayer->PlayMontageInServer(CharacterFireAM, attackSection);
+	myPlayer->PlayMontage(CharacterFireAM, attackSection);
 }

@@ -44,11 +44,6 @@ AEnemy::AEnemy()
 
 
 
-
-
-
-
-
 	HpBarWgComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HpBar"));
 }
 
@@ -91,14 +86,9 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AEnemy::AddWorldDamageUI_Implementation(FRotator genRot, int Damage)
+void AEnemy::AddWorldDamageUI(FRotator genRot, int Damage)
 {
 
-	AddWorldDamageUI_M(genRot, Damage);
-}
-
-void AEnemy::AddWorldDamageUI_M_Implementation(FRotator genRot, int Damage)
-{
 	FVector genPos = GetActorLocation();
 	FRotator GenRotate = genRot;
 	genPos.Z += 120.f;
@@ -119,6 +109,7 @@ void AEnemy::AddWorldDamageUI_M_Implementation(FRotator genRot, int Damage)
 
 	DActorindex++;
 }
+
 
 void AEnemy::DieEvent(ATPSPlayer* player)
 {

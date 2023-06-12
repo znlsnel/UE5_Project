@@ -62,22 +62,24 @@ void AEnemyManager::Tick(float DeltaTime)
 }
 
 
-void AEnemyManager::SpawnEnemy_Implementation()
+void AEnemyManager::SpawnEnemy()
 {
 
 	int spawnIndex = FMath::RandRange(0, spawnPoints.Num() - 1);
 	if (enemyPool.Num() >= monsterSpawnLimit)
 	{
-		for (auto monster : enemyPool)
+		for (auto enemy : enemyPool)
 		{
-			if (IsValid(monster) == false) return;
+			if (IsValid(enemy) == false) return;
 
-			if (monster->fsm->isActive == false)
+			if (enemy->fsm->isActive == false)
 			{
 				FVector genPos = spawnPoints[spawnIndex]->GetActorLocation();
 				genPos.Z += 150;
 
-				RecycleEnemy(monster, genPos);
+				enemy->fsm->InitializeEnemy(genPos);
+				enemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp);
+
 				break;
 			}
 		}
@@ -98,9 +100,9 @@ void AEnemyManager::SpawnEnemy_Implementation()
 	GetWorld()->GetTimerManager().SetTimer(spawnTimerHandle, this, &AEnemyManager::SpawnEnemy, createTime);
 }
 
-void AEnemyManager::CreateEnemy_Implementation(FVector location)
+void AEnemyManager::CreateEnemy(FVector location)
 {
-	if (GetNetMode() != NM_DedicatedServer) return;
+
 
 	AEnemy* enemy = GetWorld()->SpawnActor<AEnemy>(enemyFactory, location, FRotator(0, 0, 0));
 
@@ -122,12 +124,6 @@ void AEnemyManager::CreateEnemy_Implementation(FVector location)
 	}
 }
 
-void AEnemyManager::RecycleEnemy_Implementation(AEnemy* enemy, FVector location)
-{
-	if (enemy == nullptr) return;  
-	enemy->fsm->InitializeEnemy(location);
-	enemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp);
-}
 
 void AEnemyManager::FindSpawnPoints()
 {
@@ -149,12 +145,11 @@ void AEnemyManager::FindSpawnPoints()
 	}
 }
 
-void AEnemyManager::StartRound_Implementation(bool roundStart)
+
+void AEnemyManager::RoundEvent(bool start)
 {
-	if (GetNetMode() != NM_DedicatedServer) return;
 
-
-	if (roundStart) 
+	if (start)
 	{
 		currRound++;
 		isbreakTime = false;
@@ -165,29 +160,12 @@ void AEnemyManager::StartRound_Implementation(bool roundStart)
 		float createTime = FMath::RandRange(minTime, maxTime);
 		GetWorld()->GetTimerManager().SetTimer(spawnTimerHandle, this, &AEnemyManager::SpawnEnemy, createTime);
 	}
-	else 
+	else
 	{
 		isbreakTime = true;
 		GetWorld()->GetTimerManager().ClearTimer(spawnTimerHandle);
 	}
-
 }
 
-void AEnemyManager::RoundEvent(bool start)
-{
-	StartRound(start);
-}
-
-
-
-void AEnemyManager::GetLifeTimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AEnemyManager, enemyPool);
-	DOREPLIFETIME(AEnemyManager, spawnPoints);
-	//DOREPLIFETIME(AEnemyManager, roundTimerHandle);
-	//DOREPLIFETIME(AEnemyManager, spawnTimerHandle);
-	//DOREPLIFETIME(AEnemyManager, startTimerHandle);
-}
 
 

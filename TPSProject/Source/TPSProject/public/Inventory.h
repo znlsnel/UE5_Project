@@ -22,8 +22,6 @@ public: // ÇÔ¼ö
 	void Initialization(class ATPSPlayer* player);
 
 	bool AddItemToInventory(class AItem* Item);
-	virtual void GetLifetimeReplicatedProps
-	(TArray<FLifetimeProperty>& OutLifetimeProps)const;
 
 	void DisablePopup();
 	class UInventorySlot* FindFirstEmptySlot(class AItem* item);

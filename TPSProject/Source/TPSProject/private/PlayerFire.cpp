@@ -60,16 +60,11 @@ void UPlayerFire::BeginPlay()
 	me->OnInitialization();
 	anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
 
-	SetWeapon(WeaponType::Pistol);
-	//SetWeapon(WeaponType::Rifle, false);
-	//SetWeapon(WeaponType::Shotgun, false);
-	//SetWeapon(WeaponType::Sword, false);
-	//SetWeapon(WeaponType::Bow, false);
-}
+	GetWorld()->GetTimerManager().SetTimer(BeginPlayTimer, FTimerDelegate::CreateLambda(
+		[&]() {SetWeapon(WeaponType::Pistol); }
+	),  1.f, false);
 
-void UPlayerFire::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//	SetWeapon(WeaponType::Pistol);
 }
 
 void UPlayerFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -87,7 +82,6 @@ void UPlayerFire::InputFire(bool isPressed)
 		return;
 	}
 		
-	//me->ClickWidget(isFire);
 	me->ClickBPWidget(isFire);
 	if (!isFire)
 	{
@@ -145,26 +139,19 @@ void UPlayerFire::SniperAim(bool isPressed)
 }
 
 
-
-
-void UPlayerFire::EquipWeapon_Implementation(WeaponType weaponType)
-{
-
-	EquipWeaponMulticast(weaponType);
-}
-
-void UPlayerFire::EquipWeaponMulticast_Implementation(WeaponType weaponType)
+void UPlayerFire::EquipWeapon(WeaponType weaponType)
 {
 	nextWeapon = GetWeapon(weaponType);
-	if (IsValid(nextWeapon) == false) {
-		// TODO 무기가 없습니다.  UI 표시
-		return;
+	if (IsValid(nextWeapon)) {
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("PlayMontage"));
+		me->PlayMontage(nextWeapon->CharacterEquipAM);
 	}
-	me->PlayMontageInServer(nextWeapon->CharacterEquipAM);
+	
 }
 
 void UPlayerFire::ChangeWeapon()
 {
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ChangeWeapon"));
 	if (currWeapon)
 		currWeapon->HideWeapon();
 	if (nextWeapon == nullptr) return;
@@ -188,7 +175,7 @@ AWeapon* UPlayerFire::GetWeapon(WeaponType weaponType)
 	case WeaponType::Shotgun:
 		return weapon_Shotgun;
 		break;
-	case WeaponType::Pistol:
+	case WeaponType::Pistol: 
 		return weapon_Pistol;
 		break;
 	case WeaponType::Bow:
@@ -205,9 +192,8 @@ AWeapon* UPlayerFire::GetWeapon(WeaponType weaponType)
 void UPlayerFire::SetWeapon(AWeapon* weapon, bool equipWeapon)
 {
 	if (weapon == nullptr)
-	{
 		return;
-	}
+	
 	switch (weapon->weaponType)
 	{
 	case WeaponType::Pistol:
@@ -229,8 +215,9 @@ void UPlayerFire::SetWeapon(AWeapon* weapon, bool equipWeapon)
 
 	weapon->SynchronizeWhitPlayer(me);
 	weapon->HideWeapon();
-	if (equipWeapon)
+	if (equipWeapon) 
 		EquipWeapon(weapon->weaponType);
+	
 
 }
 
@@ -258,10 +245,11 @@ void UPlayerFire::SetWeapon(WeaponType weaponType, bool equipWeapon)
 
 	case WeaponType::Sword:
 		weapon = GetWorld()->SpawnActor<AWeapon_Sword>(Sword);
-
 		break;
 	}
 
-	if (weapon != nullptr)
+	if (IsValid(weapon))
 		SetWeapon(weapon, equipWeapon);
+	
+
 }

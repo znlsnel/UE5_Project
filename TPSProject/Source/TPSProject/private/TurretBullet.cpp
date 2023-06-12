@@ -32,8 +32,8 @@ void ATurretBullet::Tick(float DeltaTime)
 
 void ATurretBullet::FireBullet(float DeltaTime)
 {
-	FVector fv = GetActorForwardVector();
-	AddActorLocalOffset(fv * bulletSpeed);
+	
+	AddActorWorldOffset(FireRot.Vector() * bulletSpeed * DeltaTime);
 }
 
 void ATurretBullet::InitBullet(FVector pos, FRotator rot)
@@ -41,6 +41,7 @@ void ATurretBullet::InitBullet(FVector pos, FRotator rot)
 	SetActorHiddenInGame(false);
 	SetActorLocation(pos);
 	SetActorRotation(rot);
+	FireRot = rot;
 
 	isFire = true;
 }

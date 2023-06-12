@@ -34,8 +34,6 @@ void ATPSProjectGameModeBase::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ATPSProjectGameModeBase, EnemyManager);
-	//DOREPLIFETIME(ATPSProjectGameModeBase, managedActors);
 }
 
 void ATPSProjectGameModeBase::BeginPlay()
@@ -43,33 +41,6 @@ void ATPSProjectGameModeBase::BeginPlay()
 	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
 	Super::BeginPlay();
 
-	StartGameInServer();
-}
-
-void ATPSProjectGameModeBase::RegisterActor(AActor* actorTpRegister)
-{
-	managedActors.Add(actorTpRegister);
-}
-
-void ATPSProjectGameModeBase::RegisterActorServer_Implementation()
-{
-	RegisterActorMulti();
-}
-
-void ATPSProjectGameModeBase::RegisterActorMulti_Implementation()
-{
-	if (tempActor)
-		managedActors.Add(tempActor);
-}
-
-
-void ATPSProjectGameModeBase::StartGameInServer_Implementation()
-{
-	StartGame();
-}
-
-void ATPSProjectGameModeBase::StartGame_Implementation()
-{
 	EnemyManager = Cast<AEnemyManager>(GetWorld()->SpawnActor(enemyManagerFactory));
 }
 

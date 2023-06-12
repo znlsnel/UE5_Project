@@ -56,7 +56,6 @@ bool UInventory::AddItemToInventory(AItem* Item)
 	if (Item->itemType == ItemType::Weapon)
 	{
 		AWeapon* weapon = Cast<AWeapon>(Item);
-
 		if (myPlayer->playerFire->GetWeapon(weapon->weaponType) == nullptr)
 			isEquipable = true;
 
@@ -70,34 +69,25 @@ bool UInventory::AddItemToInventory(AItem* Item)
 	}
 	else
 	{
-
 		UInventorySlot* tempSlot = FindFirstEmptySlot(Item);
 		Item->SetActorHiddenInGame(true);
 		Item->SetActorEnableCollision(false);
-		if (tempSlot == nullptr) {
-			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Failed Add!"));
+
+		if (tempSlot == nullptr) {	
 			return false;
 		}
+
 		tempSlot->Items.Push(Item);
 		tempSlot->itemType = Item->itemType;
 		tempSlot->ItemIcon = Item->ItemIcon;
 		tempSlot->isInUse = true;
 		tempSlot->itemCount++;
 		tempSlot->UpdateInventory();
-
 	}
-
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Add!"));
-
 	return true;
 
 }
 
-void UInventory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UInventory, InventorySlotArray);
-}
 
 void UInventory::DisablePopup()
 {

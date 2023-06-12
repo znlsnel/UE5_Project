@@ -44,15 +44,9 @@ void ABuildableItem::BeginPlay()
 	initItem();
 }
 
-void ABuildableItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-}
 
 void ABuildableItem::UseItem(UInventorySlot* inventorySlot)
 {
-
 	SetActorHiddenInGame(false);
 
 	boxCollision->SetCollisionResponseToChannel
@@ -61,8 +55,8 @@ void ABuildableItem::UseItem(UInventorySlot* inventorySlot)
 	//boxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera,
 	//	ECollisionResponse::ECR_Ignore);
 	RootComponent = boxCollision;
-	myPlayer->currInventorySlot = inventorySlot;
 
+	myInventorySlot = inventorySlot;
 	isSetLocation = true;
 	myPlayer->buildableItem = this;
 	isBuild = true;
@@ -163,8 +157,7 @@ void ABuildableItem::completeBuilding(bool decide)
 		//boxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera,
 		//	ECollisionResponse::ECR_Ignore);
 		myPlayer->buildableItem = this;
-		myPlayer->SetTranceformBuildableItem(this, GetActorLocation(), GetActorRotation());
-
+		SyncTranceform();
 	}
 	else
 	{
@@ -189,10 +182,8 @@ void ABuildableItem::CancelBuilding()
 //	SyncTranceformMulti();
 //}
 
-void ABuildableItem::SyncTranceform(FVector lot, FRotator rot)
+void ABuildableItem::SyncTranceform()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("loc : %f, %f, %f \n rot : %f, %f, %f"), lot.X, lot.Y, lot.Z, rot.Roll, rot.Yaw, rot.Pitch));
-
 	myPlayer->buildableItem = nullptr;
 	isBuild = false;
 
@@ -205,21 +196,19 @@ void ABuildableItem::SyncTranceform(FVector lot, FRotator rot)
 
 	isBuild = false;
 
-	SetActorLocation(lot);
-	SetActorRotation(rot);
+	if (IsValid(myInventorySlot) == false)
+		myInventorySlot = myPlayer->GetInventory()->FindSameItemSlot(this);
 
-	
-
-	if (IsValid(myPlayer->currInventorySlot) || myPlayer->GetInventory()->FindSameItemSlot(this) ) {
-
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Valid Slot"));
-		myPlayer->currInventorySlot->RemoveItemFromInventory();
-		if (myPlayer->currInventorySlot->itemCount > 0 && myPlayer->currInventorySlot->Items.IsEmpty() == false) {
-			Cast<ABuildableItem>(myPlayer->currInventorySlot->Items.Last())->UseItem(myPlayer->currInventorySlot);
+	if (IsValid(myInventorySlot))
+	{
+		myInventorySlot->RemoveItemFromInventory();
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Remove InventorySlot"));
+		if (myInventorySlot->itemCount > 0 && myInventorySlot->Items.IsEmpty() == false) {
+			Cast<ABuildableItem>(myInventorySlot->Items.Last())->UseItem(myInventorySlot);
 		}
 	}
-	else
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Slot"));
+	
+
 
 }
 

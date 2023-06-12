@@ -134,9 +134,7 @@ void UPlayerMove::InputRun()
 
 void UPlayerMove::DoubleClick(DashType dashDirection)
 {
-	me->DoubleClickInServer(dashDirection);
-
-
+	Dash(dashDirection);
 }
 
 void UPlayerMove::Dash(DashType dashDirection)
