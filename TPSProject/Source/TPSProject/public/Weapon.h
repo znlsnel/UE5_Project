@@ -48,7 +48,7 @@ public:
 	void HideWeapon();
 	void UncoverWeapon();
 	void DiscardWeaponIfAlreadyExists();
-	void Reload();
+	virtual void Reload();
 	
 
 	//void createNiagara_Implementation( FHitResult pHitResult);

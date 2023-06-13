@@ -55,6 +55,11 @@ void AWeapon_Bow::Attack()
 
 }
 
+void AWeapon_Bow::Reload()
+{
+
+}
+
 void AWeapon_Bow::Attack(bool isPress)
 {
 	FName section = "";
@@ -122,6 +127,8 @@ void AWeapon_Bow::ShootArrow(float power)
 {
 
 	if (IsValid(arrow) == false) return;
+	if (currAmmo <= 0) return;
+
 
 	FVector TraceStartPoint;
 	FRotator TraceStartRotation;
@@ -130,8 +137,9 @@ void AWeapon_Bow::ShootArrow(float power)
 	FVector camLocation = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraLocation();
 	FVector ShootDir = camLocation.ForwardVector * 10000;
 
-	arrow->ShootArrow(TraceStartPoint + TraceStartRotation.Vector() * 10000, power);
-	currAmmo = FMath::Max(currAmmo-1, 0);
+	bool isSuccess = arrow->ShootArrow(TraceStartPoint + TraceStartRotation.Vector() * 10000, power);
+	if (isSuccess)
+		currAmmo = FMath::Max(currAmmo-1, 0);
 }
 
 void AWeapon_Bow::PlayBowAnim(bool DrawBack)

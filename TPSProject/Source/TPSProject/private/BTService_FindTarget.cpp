@@ -126,11 +126,10 @@ FVector UBTService_FindTarget::GetMovementLocation(APawn* me, AActor* Target)
 	if (r.Result == ENavigationQueryResult::Success)
 	{
 		Cast<AAIController>(me->GetController())->MoveToLocation(Target->GetActorLocation());
-		UKismetSystemLibrary::PrintString(me->GetWorld(), TEXT("Success!"));
+
 	}
 	else
 	{
-		UKismetSystemLibrary::PrintString(me->GetWorld(), TEXT("Failed!"));
 
 	}
 	return FVector();

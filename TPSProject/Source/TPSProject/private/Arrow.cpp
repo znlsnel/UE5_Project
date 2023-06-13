@@ -2,7 +2,7 @@
 
 
 #include "Arrow.h"
-
+#include "Enemy.h"
 #include <Kismet/KismetMathLibrary.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/GameplayStatics.h>
@@ -52,8 +52,11 @@ void AArrow::BeginPlay()
 
 void AArrow::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (bIsUsed == false) return;
+
 	if (OtherActor->ActorHasTag(FName("Enemy")))
 	{
+		Cast<AEnemy>(OtherActor)->OnDamage(attackDamage);
 		// TODO µ¥¹ÌÁö
 		// Blood Effect
 	}
@@ -67,17 +70,16 @@ void AArrow::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimi
 	FHitResult k = Hit;
 	CreateDecal(tempImpact, k);
 
-
-	ReturnObject(5.0f);
+	ReturnObject(0.f);
 }
 
 void AArrow::ReturnObject(float returnTime)
 {
 	GetWorld()->GetTimerManager().ClearTimer(returnObjectTimer);
 
-	GetWorld()->GetTimerManager().SetTimer(returnObjectTimer, FTimerDelegate::CreateLambda([this]()
+	GetWorld()->GetTimerManager().SetTimer(returnObjectTimer, FTimerDelegate::CreateLambda([&]()
 		{
-			this->CancelArrow();
+			CancelArrow();
 		}), returnTime, false);
 }
 
@@ -95,11 +97,11 @@ void AArrow::InitArrow(FVector ArrowHeadSocketPos)
 
 }
 
-void AArrow::ShootArrow(FVector target, float power)
+bool AArrow::ShootArrow(FVector target, float power)
 {
 	if (power < 0.4f){
 		CancelArrow();
-		return;
+		return false;
 	}
 	FVector pos = GetActorLocation();
 	FRotator rot = UKismetMathLibrary::FindLookAtRotation(pos, target);
@@ -126,6 +128,7 @@ void AArrow::ShootArrow(FVector target, float power)
 
 
 	ReturnObject(10.0f);
+	return true;
 }
 
 void AArrow::CreateDecal(UNiagaraComponent* tempDecal, FHitResult& pHitResult)

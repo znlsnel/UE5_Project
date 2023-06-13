@@ -11,9 +11,6 @@
 
 void UEnemyAnim::OnEndAttackAnimation()
 {
-
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("AttackDamage : %d"), AttackDamage));
-
 	if (target->ActorHasTag("Player"))
 		Cast<ATPSPlayer>(target)->OnHitEvent(AttackDamage);
 

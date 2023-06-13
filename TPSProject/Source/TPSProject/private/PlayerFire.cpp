@@ -143,7 +143,6 @@ void UPlayerFire::EquipWeapon(WeaponType weaponType)
 {
 	nextWeapon = GetWeapon(weaponType);
 	if (IsValid(nextWeapon)) {
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("PlayMontage"));
 		me->PlayMontage(nextWeapon->CharacterEquipAM);
 	}
 	
@@ -151,7 +150,6 @@ void UPlayerFire::EquipWeapon(WeaponType weaponType)
 
 void UPlayerFire::ChangeWeapon()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("ChangeWeapon"));
 	if (currWeapon)
 		currWeapon->HideWeapon();
 	if (nextWeapon == nullptr) return;

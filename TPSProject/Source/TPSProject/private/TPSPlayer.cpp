@@ -183,8 +183,21 @@ void ATPSPlayer::PlayMontage(UAnimMontage* AM, FName section)
 		else
 			playerAnim->Montage_Play(AM);
 	}
-
 }
+
+bool ATPSPlayer::IsPlayingMontage(UAnimMontage* AM)
+{
+	if (playerAnim == nullptr)
+		playerAnim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+
+	if (playerAnim)
+	{
+		return playerAnim->Montage_IsPlaying(AM);
+	}
+	return false;
+}
+
+
 
 void ATPSPlayer::AddItemInServer(AItem* item)
 {

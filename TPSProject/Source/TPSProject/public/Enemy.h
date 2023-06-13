@@ -29,6 +29,8 @@ public:
 
 	void DieEvent(class ATPSPlayer* player);
 	void OnDamage(int damage);
+	void SetTarget(AActor* target);
+	bool isActive();
 public:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = FSMComponent)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)

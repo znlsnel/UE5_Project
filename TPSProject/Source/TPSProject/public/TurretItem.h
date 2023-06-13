@@ -17,11 +17,11 @@ protected:
 	ATurretItem();
 
 public:
-	UFUNCTION(BlueprintCallable)
-		void FireWeapon(class AEnemy* target, bool bOverlapStart);
+	virtual void Tick(float DeltaSecond)override;
 
 	void FireLoop();
-
+	class AEnemy* FindEnemy();
+	bool isShootingPossible(class AEnemy* enemy);
 	UFUNCTION(Blueprintpure)
 		bool isTargetsEmpty();
 
@@ -37,8 +37,12 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 		class AEnemy* currTarget;
-	TMap<class AEnemy*, INT> Targets;
+
 	int targetId = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		class USphereComponent* enemySensorComp;
+	float sensorRange = 1200.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		float fireSpeed = 1.f;

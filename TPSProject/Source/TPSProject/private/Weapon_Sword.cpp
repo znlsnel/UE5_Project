@@ -2,6 +2,7 @@
 
 
 #include "Weapon_Sword.h"
+#include "Enemy.h"
 
 AWeapon_Sword::AWeapon_Sword()
 {
@@ -25,7 +26,15 @@ AWeapon_Sword::AWeapon_Sword()
 	pickupCollision->SetupAttachment(RootComponent);
 	weaponType = WeaponType::Sword;
 	attachCharacterSocketName = FName("RightHandSocket");
+
+	enemySensor = CreateDefaultSubobject<UBoxComponent>(TEXT("EnemySensor"));
 }
+
+void AWeapon_Sword::BeginPlay()
+{
+	enemySensor->OnComponentBeginOverlap.AddDynamic(this, &AWeapon_Sword::OnOverlapBegin);
+}
+
 
 void AWeapon_Sword::SynchronizeWhitPlayer(ATPSPlayer* player)
 {
@@ -83,3 +92,17 @@ void AWeapon_Sword::Attack()
 
 	myPlayer->PlayMontage(CharacterFireAM, attackSection);
 }
+
+void AWeapon_Sword::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->ActorHasTag(TEXT("Enemy")) == false)
+		return;
+
+	if (myPlayer->IsPlayingMontage(CharacterFireAM) == false)
+		return;
+
+	AEnemy* enemy = Cast<AEnemy>(OtherActor);
+
+	enemy->OnDamage(20);
+}
+

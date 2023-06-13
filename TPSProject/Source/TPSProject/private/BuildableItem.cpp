@@ -47,6 +47,7 @@ void ABuildableItem::BeginPlay()
 
 void ABuildableItem::UseItem(UInventorySlot* inventorySlot)
 {
+
 	SetActorHiddenInGame(false);
 
 	boxCollision->SetCollisionResponseToChannel
@@ -101,6 +102,7 @@ void ABuildableItem::GetMouseInput(bool isPressed)
 
 void ABuildableItem::SetLocation()
 {
+
 	FHitResult fHit = LineTrace();
 	FVector pos = fHit.ImpactPoint;
 
@@ -117,14 +119,23 @@ void ABuildableItem::SetRotation()
 }
 
 
-FHitResult ABuildableItem::LineTrace()
+FHitResult ABuildableItem::LineTrace(FVector StartPoint, FVector EndPoint)
 {
 	FVector TraceStartPoint;
-	FRotator TraceStartRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT TraceStartPoint, OUT TraceStartRotation);
+	FVector LineTraceEnd;
 
-	float traceLength = 10000.f;
-	FVector LineTraceEnd = TraceStartPoint + TraceStartRotation.Vector() * traceLength;
+	if (StartPoint == FVector(0) && EndPoint == FVector(0)) {
+		FRotator TraceStartRotation;
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT TraceStartPoint, OUT TraceStartRotation);
+
+		float traceLength = 10000.f;
+		LineTraceEnd = TraceStartPoint + TraceStartRotation.Vector() * traceLength;
+	} 
+	else {
+		TraceStartPoint = StartPoint;
+		LineTraceEnd = EndPoint;
+	}
+
 
 	FHitResult pHitResult;
 	TArray<AActor*> pIgnore;
@@ -138,7 +149,7 @@ FHitResult ABuildableItem::LineTrace()
 
 void ABuildableItem::UpdateTranceform()
 {
-	
+
 	if (isBuild)
 	{
 
@@ -149,13 +160,11 @@ void ABuildableItem::UpdateTranceform()
 	}
 }
 
+
 void ABuildableItem::completeBuilding(bool decide)
 {
 	if (decide)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("GetMouse"));
-		//boxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera,
-		//	ECollisionResponse::ECR_Ignore);
 		myPlayer->buildableItem = this;
 		SyncTranceform();
 	}
@@ -168,19 +177,15 @@ void ABuildableItem::completeBuilding(bool decide)
 
 }
 
+
 void ABuildableItem::CancelBuilding()
 {
 	SetActorHiddenInGame(true);
 	myPlayer->buildableItem = nullptr;
 	isBuild = false;
 	myPlayer->playerUI->ToggleMouse(false);
-
 }
-//
-//void ABuildableItem::SyncTranceform_Implementation()
-//{
-//	SyncTranceformMulti();
-//}
+
 
 void ABuildableItem::SyncTranceform()
 {
@@ -202,7 +207,7 @@ void ABuildableItem::SyncTranceform()
 	if (IsValid(myInventorySlot))
 	{
 		myInventorySlot->RemoveItemFromInventory();
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Remove InventorySlot"));
+
 		if (myInventorySlot->itemCount > 0 && myInventorySlot->Items.IsEmpty() == false) {
 			Cast<ABuildableItem>(myInventorySlot->Items.Last())->UseItem(myInventorySlot);
 		}
@@ -211,13 +216,14 @@ void ABuildableItem::SyncTranceform()
 	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 }
 
+
 void ABuildableItem::DamageProcess(int Damage)
 {
 	if (isDestroy) return;
-	shield--;
+	shield -= 5;
 	if (shield == 0)
 	{
-		
+		boxCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		DestroyActor();
 	}
 }
-

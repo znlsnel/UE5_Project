@@ -116,5 +116,16 @@ void AEnemy::DieEvent(ATPSPlayer* player)
 
 void AEnemy::OnDamage(int damage)
 {
+	fsm->OnDamageProcess(damage, nullptr);
+}
+
+void AEnemy::SetTarget(AActor* target)
+{
+	fsm->SetTarget(target);
+}
+
+bool AEnemy::isActive()
+{
+	return fsm->isActive;
 }
 

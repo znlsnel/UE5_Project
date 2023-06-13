@@ -26,7 +26,7 @@ public:
 	void GetMouseInput(bool isPressed);
 	void SetLocation();
 	void SetRotation();
-	FHitResult LineTrace();
+	FHitResult LineTrace(FVector StartPoint = FVector(0), FVector EndPoint = FVector(0));
 
 	void UpdateTranceform();
 
@@ -44,17 +44,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 		bool isDestroy = false;
 	
-	//UFUNCTION(Server, Reliable)
-		void SyncTranceform();
-		//void SyncTranceform_Implementation();
+	void SyncTranceform();
 
-/*		UFUNCTION(NetMulticast, Reliable)
-			void SyncTranceformMulti();
-			void SyncTranceformMulti_Implementation()*/;
-
-
-
-	void DamageProcess(int Damage);
+	virtual void DamageProcess(int Damage);
 
 
 public:
@@ -80,11 +72,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* boxCollision;
 
-
-
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int shield = 10;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int MaxShield = 10;
 
 	float lastClickTime = 0.f;

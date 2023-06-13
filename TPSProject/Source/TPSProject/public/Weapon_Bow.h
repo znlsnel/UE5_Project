@@ -19,6 +19,7 @@ public:
 	AWeapon_Bow();
 	virtual void SynchronizeWhitPlayer(class ATPSPlayer* player)override;
 	virtual void Attack()override;
+	virtual void Reload()override;
 	void Attack(bool isPress);
 
 	void InitArrow();

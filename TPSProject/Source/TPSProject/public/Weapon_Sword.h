@@ -16,11 +16,18 @@ class TPSPROJECT_API AWeapon_Sword : public AWeapon
 	
 public:
 	AWeapon_Sword();
+	virtual void BeginPlay()override;
 	virtual void SynchronizeWhitPlayer(class ATPSPlayer* player)override;
 	virtual void Attack()override;
 
+	UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 
 public:
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* enemySensor;
+	
 	float lastAttackTime = 0.f;
 	float nextComboDelay = 2.5f;
 	int32 currCombo = 0;

@@ -24,11 +24,8 @@
 // Sets default values for this component's properties
 UEnemyFSM::UEnemyFSM() : Super()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	//SetIsReplicated(true);
-	// ...
+
 }
 
 
@@ -95,9 +92,6 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 	hp = maxHp;
 	me->SetActorHiddenInGame(false);
 
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("spawnPoint : %f, %f, %f"),  spawnPoint.X, spawnPoint.Y, spawnPoint.Z));
-
-
 	me->SetActorLocation(spawnPoint);
 	me->SetActorRotation(FRotator(0, 0, 0));
 	mState = EEnemyState::Idle;
@@ -107,7 +101,6 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 	ai = Cast<AAIController>(me->GetController());
 	UpdageTargetTick();
 
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Init Enemy"));
 }
 
 
@@ -186,7 +179,7 @@ void UEnemyFSM::MoveEnemy(FVector destination, FVector dir)
 	FAIMoveRequest req;
 
 	// 목적지에서 인지할 수 있는 거리
-	req.SetAcceptanceRadius(10);
+	req.SetAcceptanceRadius(3);
 
 	req.SetGoalLocation(destination);
 
@@ -197,6 +190,7 @@ void UEnemyFSM::MoveEnemy(FVector destination, FVector dir)
 	// 길 찾기 결과 가져오기
 	FPathFindingResult r = ns->FindPathSync(query);
 
+	
 	// 목적지 까지의 길찾기 성공 여부 확인
 	if (r.Result == ENavigationQueryResult::Success)
 	{
@@ -207,7 +201,6 @@ void UEnemyFSM::MoveEnemy(FVector destination, FVector dir)
 	}
 	else
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Find"));
 		ai->StopMovement();
 		mState = EEnemyState::Idle;
 		anim->animState = mState;
@@ -247,7 +240,7 @@ void UEnemyFSM::AttackState()
 
 	if (target == nullptr) return;
 
-
+	
 	// 목표 : 일정 시간에 한 번씩 공격하고 싶다.
 	// 1. 시간이 흘러야 한다.
 	currentTime += GetWorld()->DeltaTimeSeconds;
@@ -271,7 +264,7 @@ void UEnemyFSM::AttackState()
 	anim->target = target;
 
 	// 타깃과의 거리가 공격 범위를 벗어낫는지
-	if (distance > tempRange)
+	if (target->ActorHasTag("Barricade") == false && distance > tempRange)
 	{
 		mState = EEnemyState::Move;
 		anim->animState = mState;
@@ -296,10 +289,12 @@ void UEnemyFSM::DeadEneny(class ATPSPlayer* player)
 	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	int money = 10;
-	player->Mineral += 20;
-	player->Grace += 50;
+	if (player) {
+		player->Mineral += 20;
+		player->Grace += 50;
+		me->DieEvent(player);
+	}
 
-	me->DieEvent(player);
 	//me->IncreaseKillCount();
 	deadLocation = me->GetActorLocation();
 	GetWorld()->GetTimerManager().ClearTimer(UpdateTargetTimer);
@@ -336,12 +331,7 @@ void UEnemyFSM::OnDamageProcess(int damage, ATPSPlayer* player)
 
 	if (mState == EEnemyState::Die) return;
 
-
-	FRotator tempRot = player->GetActorRotation();
-	tempRot.Yaw *= -1;
-	tempRot.Pitch = 0;
-
-	me->AddWorldDamageUI(tempRot, damage);
+	me->AddWorldDamageUI(FRotator(0), damage);
 	hp -= damage;
 	hp = FMath::Max(hp, 0);
 
@@ -380,13 +370,23 @@ void UEnemyFSM::SetTarget(AActor* targetActor)
 	if (targetActor->ActorHasTag("Player")){
 		if ((me->GetActorLocation() - targetActor->GetActorLocation()).Length() > 500) return;
 	}
+	else if (targetActor->ActorHasTag("Barricade")) {
+		if (Cast<ABuildableItem>(targetActor)->isDestroy) {
+			mState = EEnemyState::Attack;
+			anim->animState = EEnemyState::Attack;
+			return;
+		}
+
+
+	}
+
 	target = targetActor;
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Set Target!"));
 }
 
 void UEnemyFSM::UpdageTargetTick()
 {
-	if (target != nullptr) return;
+	if (target == nullptr) return;
+
 
 	if (target->ActorHasTag("Player")) {
 		if (Cast<ATPSPlayer>(target)->isDie == false &&
@@ -396,13 +396,13 @@ void UEnemyFSM::UpdageTargetTick()
 	}
 
 	if (target->ActorHasTag("BuildableItem")) {
-		if (Cast<ABuildableItem>(target)->isDestroy == false)
+		if (Cast<ABuildableItem>(target)->isDestroy == false && target->IsHidden() == false)
 			return;
 	}
 
 	target = stoneStatue;
 
-	GetWorld()->GetTimerManager().ClearTimer(UpdateTargetTimer);
+	//GetWorld()->GetTimerManager().ClearTimer(UpdateTargetTimer);
 	GetWorld()->GetTimerManager().SetTimer(UpdateTargetTimer, this, &UEnemyFSM::UpdageTargetTick, 1.f, true);
 }
 

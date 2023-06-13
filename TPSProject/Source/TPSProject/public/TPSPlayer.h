@@ -50,6 +50,7 @@ public:
 
 
 	void PlayMontage(class UAnimMontage* AM, FName section = "");
+	bool IsPlayingMontage(class UAnimMontage* AM);
 
 	void AddItemInServer(class AItem* item);
 

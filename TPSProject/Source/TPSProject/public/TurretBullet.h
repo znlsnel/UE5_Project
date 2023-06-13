@@ -26,20 +26,37 @@ public:
 	void InitBullet(FVector pos, FRotator rot);
 
 	UFUNCTION(BlueprintCallable)
-		void HitBullet(AActor* HitTarget);
+		void HitBullet(FHitResult hit);
 
-	void DamageProcess(class AEnemy* target);
+	void DamageProcess();
+	FTimerHandle damageTimer;
+
+	UFUNCTION()
+		void BegineOverlapEvent(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+		void EndOverlapEvent(class UPrimitiveComponent* HitComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 
 public:
 	bool isFire = false;
 	FRotator FireRot = FRotator(0);
 
 	UPROPERTY(EditAnywhere)
-		float bulletSpeed = 200.f;
+		float bulletSpeed = 2000.f;
 
 	UPROPERTY(EditAnywhere)
-		float attackPower = 30.f;
+		float attackPower = 300.f;
+
+	UPROPERTY(EditAnywhere)
+		float damageRange = 1500;
+
+	UPROPERTY(EditAnywhere)
+		class USphereComponent* enemySensorComp;
 
 	UPROPERTY(EditAnywhere)
 		class UNiagaraSystem* explosionParticle;
+
+	int enemyId = 0;
+	float lastFireTime = 0.f;
 };

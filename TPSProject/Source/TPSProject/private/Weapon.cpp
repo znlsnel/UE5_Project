@@ -126,7 +126,6 @@ void AWeapon::HideWeapon()
 {
 	//weaponMeshComp->SetVisibility(false);
 	SetActorHiddenInGame(true);
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Hidden!"));
 }
 
 void AWeapon::UncoverWeapon()

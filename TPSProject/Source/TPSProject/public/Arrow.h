@@ -25,7 +25,7 @@ protected:
 public:
 	void ReturnObject(float returnTime);
 	void InitArrow(FVector LookVec);
-	void ShootArrow(FVector target, float power);
+	bool ShootArrow(FVector target, float power);
 	void CreateDecal(class UNiagaraComponent* tempDecal, FHitResult& pHitResult);
 	void CancelArrow();
 
@@ -40,7 +40,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Niagara)
 		class UNiagaraSystem* ImpactEffect;
 
-
+	int attackDamage = 50;
 
 
 	bool bIsUsed = false;
