@@ -27,8 +27,8 @@ public:
 
 	void AddWorldDamageUI(FRotator genRot, int Damage);
 
-	void DieEvent(class ATPSPlayer* player);
-	void OnDamage(int damage);
+	void DieEvent(class ATPSPlayer* AttackPlayer);
+	void OnDamage(int damage, class ATPSPlayer* AttackPlayer = nullptr);
 	void SetTarget(AActor* target);
 	bool isActive();
 public:
@@ -45,7 +45,7 @@ public:
 
 	class AController* myController;
 	class AEnemyManager* enemyManager;
-	class ATPSPlayer* locallyPlayer;
+	class ATPSPlayer* player;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -55,4 +55,6 @@ public:
 		TSubclassOf<class UEnemyHpBar> HpBarWg;
 	class UEnemyHpBar* HpBar;
 
+	UPROPERTY(EditAnywhere)
+		TArray<class USkeletalMesh*> Meshs;
 };

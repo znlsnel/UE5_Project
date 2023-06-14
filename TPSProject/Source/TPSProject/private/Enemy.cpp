@@ -42,20 +42,22 @@ AEnemy::AEnemy()
 	myController = GetController();
 
 	HpBarWgComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HpBar"));
+	HpBarWgComp->SetupAttachment(GetMesh());
+	HpBarWgComp->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	while (damageActorArr.Num() < DActorCount)
+	for (int i = 0; i < DActorCount; i++)
 	{
 		ADamageUIActor* tempUIActor = GetWorld()->SpawnActor<ADamageUIActor>(damageActorFactory);
 
 		if (tempUIActor)
 		{
 			damageActorArr.Add(tempUIActor);
-			tempUIActor->myPlayer = locallyPlayer;
+			tempUIActor->myPlayer = player;
 		}
 	}
 
@@ -70,9 +72,9 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (fsm && fsm->isActive && locallyPlayer)
+	if (fsm && fsm->isActive && player)
 	{
-		//HpBarWgComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), locallyPlayer->GetActorLocation()));
+		HpBarWgComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), player->GetActorLocation()));
 	}
 
 }
@@ -93,9 +95,9 @@ void AEnemy::AddWorldDamageUI(FRotator genRot, int Damage)
 
 	if (DActorindex >= 5) DActorindex = 0;
 
-	if (locallyPlayer)
+	if (player)
 	{
-		FRotator a = locallyPlayer->GetActorRotation();
+		FRotator a = player->GetActorRotation();
 		a.Yaw *= -1;
 		a.Pitch = 0;
 		GenRotate = a;
@@ -109,14 +111,14 @@ void AEnemy::AddWorldDamageUI(FRotator genRot, int Damage)
 }
 
 
-void AEnemy::DieEvent(ATPSPlayer* player)
+void AEnemy::DieEvent(ATPSPlayer* AttackPlayer)
 {
 
 }
 
-void AEnemy::OnDamage(int damage)
+void AEnemy::OnDamage(int damage, ATPSPlayer* AttackPlayer)
 {
-	fsm->OnDamageProcess(damage, nullptr);
+	fsm->OnDamageProcess(damage, AttackPlayer);
 }
 
 void AEnemy::SetTarget(AActor* target)

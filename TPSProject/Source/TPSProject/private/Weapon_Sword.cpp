@@ -28,6 +28,8 @@ AWeapon_Sword::AWeapon_Sword()
 	attachCharacterSocketName = FName("RightHandSocket");
 
 	enemySensor = CreateDefaultSubobject<UBoxComponent>(TEXT("EnemySensor"));
+	enemySensor->SetupAttachment(weaponMeshComp);
+	enemySensor->AttachToComponent(weaponMeshComp, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 void AWeapon_Sword::BeginPlay()
@@ -95,10 +97,11 @@ void AWeapon_Sword::Attack()
 
 void AWeapon_Sword::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+
 	if (OtherActor->ActorHasTag(TEXT("Enemy")) == false)
 		return;
 
-	if (myPlayer->IsPlayingMontage(CharacterFireAM) == false)
+	if (myPlayer && myPlayer->IsPlayingMontage(CharacterFireAM) == false)
 		return;
 
 	AEnemy* enemy = Cast<AEnemy>(OtherActor);

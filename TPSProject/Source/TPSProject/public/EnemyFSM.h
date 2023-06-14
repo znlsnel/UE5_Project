@@ -36,7 +36,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 	void InitializeEnemy(FVector spawnPoint);
-
+	void SetEnemySize();
 public:
 
 	void IdleState();
@@ -63,8 +63,8 @@ public:
 	void OnDamageProcess(int damage, ATPSPlayer* player);
 
 #pragma endregion
-	void RoundInitEnemy(float bonusAtt, float bonusHp);
-
+	void RoundInitEnemy(int  bonusAtt, int bonusHp, int round);
+	int currRound = 0;
 	void SetTarget(AActor* targetActor);
 	void UpdageTargetTick();
 
@@ -99,6 +99,7 @@ public:
 	// 공격 범위
 	UPROPERTY(EditAnywhere, Category = FSM)
 		float attackRange = 150.f;
+		float InitAttackRange = 150.f;
 	
 	// 공격 대기 시간
 	UPROPERTY(EditAnywhere, Category = FSM)
@@ -107,10 +108,22 @@ public:
 	// 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
 		int32 hp = 10;
-
 	// 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
 		int32 maxHp = 10;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+		int32 InitHp = 10;
+
+	// 체력
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+		int32 MaxMineral = 20;
+		int32 mineral = 20;
+	// 체력
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+		int32 MaxGrace = 50;
+		int32 grace = 50;
+
 
 	UPROPERTY(EditAnywhere, Category = FSM)
 		float damageDelayTime = 0.5f;

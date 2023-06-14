@@ -11,6 +11,7 @@
 #include <NiagaraFunctionLibrary.h>
 #include <Components/SphereComponent.h>
 #include <GameFramework/ProjectileMovementComponent.h>
+#include <Components/PointLightComponent.h>
 #include <NiagaraDataInterfaceArrayFunctionLibrary.h>
 
 // Sets default values
@@ -18,7 +19,6 @@ AArrow::AArrow()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 
 
 	ArrowMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ArrowMesh"));
@@ -40,12 +40,17 @@ AArrow::AArrow()
 	ArrowEffect->SetupAttachment(ArrowMesh);
 
 	ArrowMesh->SetSimulatePhysics(false);
+
+	Light = CreateDefaultSubobject<UPointLightComponent>(TEXT("Light"));
+	Light->SetupAttachment(ArrowMesh);
+	Light->AttachToComponent(ArrowMesh, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts or when spawned
 void AArrow::BeginPlay()
 {
 	Super::BeginPlay();
+	Light->SetVisibility(false);
 
 
 }
@@ -70,7 +75,7 @@ void AArrow::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimi
 	FHitResult k = Hit;
 	CreateDecal(tempImpact, k);
 
-	ReturnObject(0.f);
+	ReturnObject(0.1f);
 }
 
 void AArrow::ReturnObject(float returnTime)
@@ -94,6 +99,9 @@ void AArrow::InitArrow(FVector ArrowHeadSocketPos)
 	AddActorLocalRotation(FRotator(-90, 0, 0));
 	ArrowEffect->SetHiddenInGame(true);
 	ArrowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ArrowEffect->ResetSystem();
+	Light->SetVisibility(true);
+
 
 }
 
@@ -127,7 +135,7 @@ bool AArrow::ShootArrow(FVector target, float power)
 	ArrowMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 
-	ReturnObject(10.0f);
+	ReturnObject(5.0f);
 	return true;
 }
 
@@ -170,6 +178,7 @@ void AArrow::CancelArrow()
 	SetActorHiddenInGame(true);
 	ProjectileMovementComp->SetUpdatedComponent(NULL);
 	ArrowEffect->SetHiddenInGame(true);
+	Light->SetVisibility(false);
 }
 
 // Called every frame

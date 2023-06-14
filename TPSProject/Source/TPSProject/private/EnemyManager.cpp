@@ -38,16 +38,8 @@ void AEnemyManager::BeginPlay()
 void AEnemyManager::StartGame()
 {
 
-	TArray<class AActor*, FDefaultAllocator> playerArr;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATPSPlayer::StaticClass(), playerArr);
+	player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-	for (auto p : playerArr)
-	{
-		if (Cast<ATPSPlayer>(p)->isMyPlayer == true)
-		{
-			locallyPlayer = Cast<ATPSPlayer>(p);
-		}
-	}
 
 	FindSpawnPoints();
 }
@@ -77,8 +69,8 @@ void AEnemyManager::SpawnEnemy()
 				FVector genPos = spawnPoints[spawnIndex]->GetActorLocation();
 				genPos.Z += 150;
 
+				enemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp, currRound);
 				enemy->fsm->InitializeEnemy(genPos);
-				enemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp);
 
 				break;
 			}
@@ -104,6 +96,11 @@ void AEnemyManager::CreateEnemy(FVector location)
 {
 
 	tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(enemyFactory));
+	if (tempEnemy)
+		tempEnemy->SetActorHiddenInGame(true);
+	else
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Enemy"));
+
 	GetWorld()->GetTimerManager().SetTimer(SpawnWaitTimer, FTimerDelegate::CreateLambda(
 		[&, location]() {
 			AddEnemy(location);
@@ -115,8 +112,11 @@ void AEnemyManager::AddEnemy(FVector location)
 {
 	if (IsValid(tempEnemy))
 	{
-		if (locallyPlayer)
-			tempEnemy->locallyPlayer = this->locallyPlayer;
+		if (player == nullptr)
+			player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+		if (player)
+			tempEnemy->player = player;
 
 		if (tempEnemy->fsm == nullptr) {
 			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No FSM"));
@@ -124,8 +124,8 @@ void AEnemyManager::AddEnemy(FVector location)
 		}
 
 
+		tempEnemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp, currRound);
 		tempEnemy->fsm->InitializeEnemy(location);
-		tempEnemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp);
 		enemyPool.Add(tempEnemy);
 		tempEnemy->enemyManager = this;
 	}
@@ -158,11 +158,16 @@ void AEnemyManager::RoundEvent(bool start)
 
 	if (start)
 	{
-		currRound++;
 		isbreakTime = false;
 
-		enemyBonusAttackPower = (currRound - 1) * 5;
-		enemyBonusHp *= 1.5f;
+		if (currRound > 0) {
+			enemyBonusAttackPower += 3;
+			enemyBonusHp += 3;
+		}
+
+		currRound++;
+
+		// All Enemy Die
 
 		float createTime = FMath::RandRange(minTime, maxTime);
 		GetWorld()->GetTimerManager().SetTimer(spawnTimerHandle, this, &AEnemyManager::SpawnEnemy, createTime);
@@ -171,6 +176,11 @@ void AEnemyManager::RoundEvent(bool start)
 	{
 		isbreakTime = true;
 		GetWorld()->GetTimerManager().ClearTimer(spawnTimerHandle);
+
+		for (auto enemy : enemyPool)
+			enemy->OnDamage(enemy->fsm->maxHp * 100);
+		
+
 	}
 }
 

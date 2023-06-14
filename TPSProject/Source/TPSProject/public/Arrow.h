@@ -33,12 +33,15 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UStaticMeshComponent* ArrowMesh;
 	UPROPERTY(EditAnywhere)
+		class UPointLightComponent* Light;
+	UPROPERTY(EditAnywhere)
 		class UProjectileMovementComponent* ProjectileMovementComp;
 	UPROPERTY(EditAnywhere)
 		class UNiagaraComponent* ArrowEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Niagara)
 		class UNiagaraSystem* ImpactEffect;
+
 
 	int attackDamage = 50;
 

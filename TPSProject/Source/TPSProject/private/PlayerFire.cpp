@@ -76,6 +76,7 @@ void UPlayerFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 void UPlayerFire::InputFire(bool isPressed)
 {
 	isFire = isPressed;
+	if (currWeapon == nullptr)return;
 	if (IsValid(me->buildableItem) && me->buildableItem->isBuild)
 	{
 		me->buildableItem->GetMouseInput(isPressed);

@@ -23,7 +23,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void FireBullet(float DeltaTime);
-	void InitBullet(FVector pos, FRotator rot);
+	void InitBullet(FVector pos, FRotator rot, class ATPSPlayer* player);
 
 	UFUNCTION(BlueprintCallable)
 		void HitBullet(FHitResult hit);
@@ -57,6 +57,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UNiagaraSystem* explosionParticle;
 
+	class ATPSPlayer* myPlayer;
 	int enemyId = 0;
 	float lastFireTime = 0.f;
 };

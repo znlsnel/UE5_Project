@@ -51,7 +51,7 @@ void ATurretItem::FireLoop()
 		ATurretBullet* bullet = GetBullet();
 
 		if (IsValid(bullet))
-			bullet->InitBullet(muzzlePos, tempRot);
+			bullet->InitBullet(muzzlePos, tempRot, myPlayer);
 	}
 
 	GetWorld()->GetTimerManager().SetTimer(fireLoopTimer, this, &ATurretItem::FireLoop, fireSpeed, false);

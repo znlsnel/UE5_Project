@@ -17,6 +17,7 @@
 #include <Components/CapsuleComponent.h>
 #include <GameFramework/PawnMovementComponent.h>
 #include <GameFramework/Pawn.h>
+#include <GameFramework/CharacterMovementComponent.h>
 
 
 #include <NavigationSystem.h>
@@ -100,7 +101,65 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 	anim->InitializeEnemy();
 	ai = Cast<AAIController>(me->GetController());
 	UpdageTargetTick();
+	
+	me->HpBar->UpdateHpBar(this);
+	SetEnemySize();
+}
 
+void UEnemyFSM::SetEnemySize()
+{
+	int32 a = FMath::RandRange(0, 9);
+
+	if (a < 1)
+	{
+		me->SetActorScale3D(FVector(0.7f));
+		attackRange = InitAttackRange * 1.f;
+		hp = InitHp;
+		maxHp = hp;
+		mineral = MaxMineral;
+		grace = MaxGrace;
+		me->GetCharacterMovement()->MaxWalkSpeed = 400.f;
+		anim->AttackDamage = anim->initAttackDamage * 1;
+		me->GetMesh()->SetSkeletalMesh(me->Meshs[2]);
+	}
+	else if (a < 6)
+	{
+		me->SetActorScale3D(FVector(1.f));
+		attackRange = InitAttackRange * 1.f;
+		hp = InitHp;
+		maxHp = hp;
+		mineral = MaxMineral;
+		grace = MaxGrace;
+		me->GetCharacterMovement()->MaxWalkSpeed = 200.f;
+		anim->AttackDamage = anim->initAttackDamage * 1;
+		me->GetMesh()->SetSkeletalMesh(me->Meshs[1]);
+	}
+	else if (a < 9)
+	{
+		me->SetActorScale3D(FVector(2.f));
+		attackRange = InitAttackRange * 2.f;
+
+		me->GetCharacterMovement()->MaxWalkSpeed = 130.f;
+		hp = InitHp * 5; 
+		maxHp = hp;
+		mineral = MaxMineral * 2;
+		grace = MaxGrace * 2;
+		anim->AttackDamage = anim->initAttackDamage * 3;
+		me->GetMesh()->SetSkeletalMesh(me->Meshs[0]);
+	}
+	else if  ( a == 9)
+	{
+		me->SetActorScale3D(FVector(3.f));
+		attackRange = InitAttackRange * 3.f;
+		me->GetCharacterMovement()->MaxWalkSpeed = 50.f;
+		hp = InitHp * 4;
+		maxHp = hp;
+		mineral = MaxMineral * 3;
+		grace = MaxGrace * 3;
+		anim->AttackDamage = anim->initAttackDamage * 2;
+		me->GetMesh()->SetSkeletalMesh(me->Meshs[2]);
+	}
+	anim->speed = me->GetCharacterMovement()->MaxWalkSpeed;
 }
 
 
@@ -138,12 +197,14 @@ void UEnemyFSM::Bictory()
 
 void UEnemyFSM::MoveState()
 {
+
 	if (anim->isWin)
 	{
 		mState = EEnemyState::Bictory;
 		anim->animState = mState;
 		return;
 	}
+
 	if (target == nullptr) {
 		target = stoneStatue;
 	}
@@ -201,6 +262,8 @@ void UEnemyFSM::MoveEnemy(FVector destination, FVector dir)
 	}
 	else
 	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("failed"));
+
 		ai->StopMovement();
 		mState = EEnemyState::Idle;
 		anim->animState = mState;
@@ -290,8 +353,8 @@ void UEnemyFSM::DeadEneny(class ATPSPlayer* player)
 
 	int money = 10;
 	if (player) {
-		player->Mineral += 20;
-		player->Grace += 50;
+		player->Mineral += mineral;
+		player->Grace += grace;
 		me->DieEvent(player);
 	}
 
@@ -334,7 +397,9 @@ void UEnemyFSM::OnDamageProcess(int damage, ATPSPlayer* player)
 	me->AddWorldDamageUI(FRotator(0), damage);
 	hp -= damage;
 	hp = FMath::Max(hp, 0);
+	me->HpBar->UpdateHpBar(this);
 
+	anim->playHitSound(hp == 0);
 	if (hp > 0)
 	{
 		mState = EEnemyState::Damage;
@@ -345,8 +410,6 @@ void UEnemyFSM::OnDamageProcess(int damage, ATPSPlayer* player)
 		FString sectionName = FString::FString::Printf(TEXT("Damege%d"), index);
 		anim->PlayDamageAnim(FName(*sectionName));
 		
-		// hpbar - null
-		me->HpBar->UpdateHpBar(this);
 	}
 	else
 	{
@@ -357,10 +420,15 @@ void UEnemyFSM::OnDamageProcess(int damage, ATPSPlayer* player)
 }
 
 
-void UEnemyFSM::RoundInitEnemy(float bonusAtt, float bonusHp)
+void UEnemyFSM::RoundInitEnemy(int bonusAtt, int bonusHp, int round)
 {
-	hp = maxHp * bonusHp;
-	anim->AttackDamage = anim->initAttackDamage + bonusAtt;
+	if (round == currRound)
+		return;
+
+	InitHp += bonusHp;
+	anim->initAttackDamage += bonusAtt;
+
+	currRound = round;
 }
 
 

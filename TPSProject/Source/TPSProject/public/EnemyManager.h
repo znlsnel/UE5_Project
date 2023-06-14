@@ -27,12 +27,11 @@ public:
 	//UFUNCTION(client, Reliable)
 		void StartGame();
 	//	void StartGame_Implementation();
-		void ATVUI();
 	// Called every frame
 
 	virtual void Tick(float DeltaTime) override;
 
-	class ATPSPlayer* locallyPlayer;
+	class ATPSPlayer* player;
 	
 		void SpawnEnemy();
 		void CreateEnemy( FVector location);
@@ -73,6 +72,6 @@ public:
 	AEnemy* tempEnemy;
 	int32 monsterSpawnLimit = 15;
 
-	float enemyBonusAttackPower = 0.f;
-	float enemyBonusHp = 1.f;
+	int enemyBonusAttackPower = 0;
+	int enemyBonusHp = 0;
 };

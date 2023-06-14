@@ -3,6 +3,7 @@
 
 #include "TurretBullet.h"
 #include "Enemy.h"
+#include "TPSPlayer.h"
 
 #include <NiagaraComponent.h>
 #include <Components/SphereComponent.h>
@@ -51,12 +52,12 @@ void ATurretBullet::FireBullet(float DeltaTime)
 
 }
 
-void ATurretBullet::InitBullet(FVector pos, FRotator rot)
+void ATurretBullet::InitBullet(FVector pos, FRotator rot, ATPSPlayer* player)
 {
 	SetActorHiddenInGame(false);
 	SetActorLocation(pos);
 	SetActorRotation(rot);
-
+	myPlayer = player;
 	FireRot = rot;
 	isFire = true;
 }
@@ -106,7 +107,7 @@ void ATurretBullet::DamageProcess()
 				else
 					damage *= 0.4;
 					
-				enemy->OnDamage(damage);
+				enemy->OnDamage(damage, myPlayer);
 			}
 		}
 	), 0.2f, false);

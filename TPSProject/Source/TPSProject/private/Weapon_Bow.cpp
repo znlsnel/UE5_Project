@@ -160,10 +160,15 @@ void AWeapon_Bow::PlayBowAnim(bool DrawBack)
 
 AArrow* AWeapon_Bow::GetArrow()
 {
+	if (currAmmo <= 0) return nullptr;
+
 	for (auto arw : arrows)
 	{
 		if (arw->bIsUsed == false)
 			return arw;
 	}
+	
+	
+
 	return nullptr;
 }
