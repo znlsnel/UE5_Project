@@ -43,7 +43,7 @@ public:
 	FRotator FireRot = FRotator(0);
 
 	UPROPERTY(EditAnywhere)
-		float bulletSpeed = 2000.f;
+		float bulletSpeed = 4000.f;
 
 	UPROPERTY(EditAnywhere)
 		float attackPower = 300.f;
@@ -56,6 +56,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		class UNiagaraSystem* explosionParticle;
+
+	UPROPERTY(EditAnywhere)
+		USoundBase* explosionSound;
 
 	class ATPSPlayer* myPlayer;
 	int enemyId = 0;

@@ -10,16 +10,23 @@
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/GameplayStatics.h>
 
-void UEnemyAnim::OnEndAttackAnimation()
+void UEnemyAnim::OnEndAttackAnimation(int Damage)
 {
+	int damage = 0;
+
+	if (Damage != -1)
+		damage = Damage;
+	else
+		damage = AttackDamage;
+
 	if (target->ActorHasTag("Player"))
-		Cast<ATPSPlayer>(target)->OnHitEvent(AttackDamage);
+		Cast<ATPSPlayer>(target)->OnHitEvent(damage);
 
 	else if (target->ActorHasTag("DoomStone"))
-		Cast<ADoomstone>(target)->OnHitEvent(AttackDamage);
+		Cast<ADoomstone>(target)->OnHitEvent(damage);
 
 	else if (target->ActorHasTag("BuildableItem"))
-		Cast <ABuildableItem>(target)->DamageProcess(AttackDamage);
+		Cast <ABuildableItem>(target)->DamageProcess(damage);
 
 	bAttackPlay = false;
 }
@@ -42,10 +49,11 @@ void UEnemyAnim::AnimNotify_DieENd()
 
 void UEnemyAnim::playHitSound(bool IsDeath)
 {
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, me->GetActorLocation());
+	FVector pos = me->GetActorLocation();
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, pos);
 
 	if (IsDeath) {
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, me->GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, pos);
 	}
 }
 

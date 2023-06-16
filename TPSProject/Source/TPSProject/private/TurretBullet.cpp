@@ -9,6 +9,7 @@
 #include <Components/SphereComponent.h>
 #include <NiagaraFunctionLibrary.h>
 #include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/GameplayStatics.h>
 // Sets default values
 ATurretBullet::ATurretBullet()
 {
@@ -72,6 +73,7 @@ void ATurretBullet::HitBullet(FHitResult hit)
 
 	lastFireTime = 0.f;
 	isFire = false;
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), explosionSound, GetActorLocation());
 	SetActorHiddenInGame(true);
 }
 

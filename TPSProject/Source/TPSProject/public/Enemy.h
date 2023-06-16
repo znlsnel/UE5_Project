@@ -26,7 +26,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void AddWorldDamageUI(FRotator genRot, int Damage);
-
+	
 	void DieEvent(class ATPSPlayer* AttackPlayer);
 	void OnDamage(int damage, class ATPSPlayer* AttackPlayer = nullptr);
 	void SetTarget(AActor* target);
@@ -54,7 +54,4 @@ public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UEnemyHpBar> HpBarWg;
 	class UEnemyHpBar* HpBar;
-
-	UPROPERTY(EditAnywhere)
-		TArray<class USkeletalMesh*> Meshs;
 };

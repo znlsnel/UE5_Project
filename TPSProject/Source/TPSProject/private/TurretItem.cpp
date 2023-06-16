@@ -11,6 +11,7 @@
 #include <Components/BoxComponent.h>
 #include <Kismet/KismetMathLibrary.h>
 #include <Kismet/KismetSystemLibrary.h>
+#include <Kismet/GameplayStatics.h>
 
 ATurretItem::ATurretItem() : Super()
 {
@@ -52,6 +53,8 @@ void ATurretItem::FireLoop()
 
 		if (IsValid(bullet))
 			bullet->InitBullet(muzzlePos, tempRot, myPlayer);
+
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), fireSound, GetActorLocation());
 	}
 
 	GetWorld()->GetTimerManager().SetTimer(fireLoopTimer, this, &ATurretItem::FireLoop, fireSpeed, false);

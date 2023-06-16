@@ -51,6 +51,9 @@
     <ClCompile Include="..\..\Source\TPSProject\private\BarricadeItem.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\BomberMan.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\BTService_FindTarget.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -220,6 +223,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\BarricadeItem.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\BomberMan.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\BTService_FindTarget.h">

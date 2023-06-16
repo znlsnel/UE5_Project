@@ -35,7 +35,6 @@ AEnemy::AEnemy()
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -88), FRotator(0, -90, 0));
 	}
 
-
 	// 월드에 배치되거나 스폰될 때 자동으로
 	// AIController부터 Possess될 수 있도록 설정
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -72,6 +71,10 @@ void AEnemy::BeginPlay()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (fsm == nullptr)
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("no fsm"));
+
 	if (fsm && fsm->isActive && player)
 	{
 		HpBarWgComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), player->GetActorLocation()));
@@ -91,7 +94,7 @@ void AEnemy::AddWorldDamageUI(FRotator genRot, int Damage)
 
 	FVector genPos = GetActorLocation();
 	FRotator GenRotate = genRot;
-	genPos.Z += 120.f;
+	genPos.Z = HpBarWgComp->GetComponentLocation().Z + 20.f;
 
 	if (DActorindex >= 5) DActorindex = 0;
 
@@ -109,6 +112,8 @@ void AEnemy::AddWorldDamageUI(FRotator genRot, int Damage)
 
 	DActorindex++;
 }
+
+
 
 
 void AEnemy::DieEvent(ATPSPlayer* AttackPlayer)

@@ -29,7 +29,7 @@ public:
 		bool isWin = false;
 	// 공격 애니메이션 끝나는 이벤트 함수
 	UFUNCTION(BlueprintCallable, Category = FSMEvent)
-		void OnEndAttackAnimation();
+		void OnEndAttackAnimation(int Damage = -1);
 
 	// 피격 애니메이션 재생 함수
 	void PlayDamageAnim(FName sectionName);

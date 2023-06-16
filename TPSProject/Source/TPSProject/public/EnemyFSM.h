@@ -36,7 +36,6 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const override;
 
 	void InitializeEnemy(FVector spawnPoint);
-	void SetEnemySize();
 public:
 
 	void IdleState();
@@ -54,7 +53,7 @@ public:
 	void DamageState();
 	void DeadEneny(class ATPSPlayer* player);
 	void DieState();
-
+	float deadTime = 0.f;
 
 	// 피격 알림 이벤트 함수
 
@@ -95,6 +94,10 @@ public:
 	// 소유 액터
 	UPROPERTY()
 		class AEnemy* me;
+
+	// 공격력
+	UPROPERTY(EditAnywhere, Category = FSM)
+		int attackPower = 5;
 
 	// 공격 범위
 	UPROPERTY(EditAnywhere, Category = FSM)

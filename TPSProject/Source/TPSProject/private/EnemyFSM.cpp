@@ -103,69 +103,18 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 	UpdageTargetTick();
 	
 	me->HpBar->UpdateHpBar(this);
-	SetEnemySize();
-}
-
-void UEnemyFSM::SetEnemySize()
-{
-	int32 a = FMath::RandRange(0, 9);
-
-	if (a < 1)
-	{
-		me->SetActorScale3D(FVector(0.7f));
-		attackRange = InitAttackRange * 1.f;
-		hp = InitHp;
-		maxHp = hp;
-		mineral = MaxMineral;
-		grace = MaxGrace;
-		me->GetCharacterMovement()->MaxWalkSpeed = 400.f;
-		anim->AttackDamage = anim->initAttackDamage * 1;
-		me->GetMesh()->SetSkeletalMesh(me->Meshs[2]);
-	}
-	else if (a < 6)
-	{
-		me->SetActorScale3D(FVector(1.f));
-		attackRange = InitAttackRange * 1.f;
-		hp = InitHp;
-		maxHp = hp;
-		mineral = MaxMineral;
-		grace = MaxGrace;
-		me->GetCharacterMovement()->MaxWalkSpeed = 200.f;
-		anim->AttackDamage = anim->initAttackDamage * 1;
-		me->GetMesh()->SetSkeletalMesh(me->Meshs[1]);
-	}
-	else if (a < 9)
-	{
-		me->SetActorScale3D(FVector(2.f));
-		attackRange = InitAttackRange * 2.f;
-
-		me->GetCharacterMovement()->MaxWalkSpeed = 130.f;
-		hp = InitHp * 5; 
-		maxHp = hp;
-		mineral = MaxMineral * 2;
-		grace = MaxGrace * 2;
-		anim->AttackDamage = anim->initAttackDamage * 3;
-		me->GetMesh()->SetSkeletalMesh(me->Meshs[0]);
-	}
-	else if  ( a == 9)
-	{
-		me->SetActorScale3D(FVector(3.f));
-		attackRange = InitAttackRange * 3.f;
-		me->GetCharacterMovement()->MaxWalkSpeed = 50.f;
-		hp = InitHp * 4;
-		maxHp = hp;
-		mineral = MaxMineral * 3;
-		grace = MaxGrace * 3;
-		anim->AttackDamage = anim->initAttackDamage * 2;
-		me->GetMesh()->SetSkeletalMesh(me->Meshs[2]);
-	}
 	anim->speed = me->GetCharacterMovement()->MaxWalkSpeed;
+	if (anim->Montage_IsPlaying(anim->AM_Damaged))
+		anim->Montage_Stop(0, anim->AM_Damaged);
+
 }
+
 
 
 
 void UEnemyFSM::IdleState()
 {
+
 	if (anim->isWin)
 	{
 		mState = EEnemyState::Bictory;
@@ -197,7 +146,6 @@ void UEnemyFSM::Bictory()
 
 void UEnemyFSM::MoveState()
 {
-
 	if (anim->isWin)
 	{
 		mState = EEnemyState::Bictory;
@@ -240,10 +188,9 @@ void UEnemyFSM::MoveEnemy(FVector destination, FVector dir)
 	FAIMoveRequest req;
 
 	// 목적지에서 인지할 수 있는 거리
-	req.SetAcceptanceRadius(3);
+	req.SetAcceptanceRadius(100);
 
 	req.SetGoalLocation(destination);
-
 
 	// 길 찾기를 위한 쿼리 생성
 	ai->BuildPathfindingQuery(req, query);
@@ -284,8 +231,6 @@ void UEnemyFSM::MoveEnemy(FVector destination, FVector dir)
 		anim->bAttackPlay = true;
 		currentTime = attackDelayTime;
 	}
-
-
 }
 
 void UEnemyFSM::AttackState()
@@ -346,7 +291,10 @@ void UEnemyFSM::DamageState()
 
 void UEnemyFSM::DeadEneny(class ATPSPlayer* player)
 {
+	anim->isDead = true;
 	mState = EEnemyState::Die;
+	anim->animState = mState;
+
 	anim->PlayDamageAnim(TEXT("Die"));
 	currentTime = 0;
 	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -371,19 +319,25 @@ void UEnemyFSM::DieState()
 		FVector vt = FVector::DownVector * dieSpeed * GetWorld()->DeltaTimeSeconds;
 		FVector P = P0 + vt;
 		me->SetActorLocation(P);
+		if (deadTime == 0.f)
+			deadTime = GetWorld()->GetTimeSeconds();
+
+
 	}
 
 
-	if (me->GetActorLocation().Z < deadLocation.Z - 200.0f)
+	if (GetWorld()->GetTimeSeconds() - deadTime > 3.f)
 	{
-		if (isActive == false) return;
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("time %f"), GetWorld()->GetTimeSeconds() - deadTime));
+;		if (isActive == false) return;
 		isActive = false;
 		me->SetActorHiddenInGame(true);
+		deadTime = 0.f;
 
+		mState = EEnemyState::Idle;
+		anim->animState = mState;
 	}
-	anim->isDead = true;
-	mState = EEnemyState::Die;
-	anim->animState = mState;
+
 }
 
 
@@ -426,7 +380,7 @@ void UEnemyFSM::RoundInitEnemy(int bonusAtt, int bonusHp, int round)
 		return;
 
 	InitHp += bonusHp;
-	anim->initAttackDamage += bonusAtt;
+	anim->initAttackDamage = attackPower + bonusAtt;
 
 	currRound = round;
 }

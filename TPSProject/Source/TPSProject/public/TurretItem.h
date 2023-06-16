@@ -53,6 +53,10 @@ public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf <class ATurretBullet> bulletFactory;
 	TArray<class ATurretBullet*> bullets;
+
+	UPROPERTY(EditAnywhere)
+		class USoundBase* fireSound;
+
 	int bulletCount = 10;
 
 	FTimerHandle fireLoopTimer;
