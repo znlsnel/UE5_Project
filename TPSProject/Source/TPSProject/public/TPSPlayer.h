@@ -75,9 +75,17 @@ public:
 
 	void InteractionObject();
 	void AbilityWidget();
+	class UDamageWidget* GetDamageWidget();
+
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UAbilityUpgradeWidget> abilityWidgetFactory;
 	class UAbilityUpgradeWidget* myAbilityWidget;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UDamageWidget> damageWidgetFactory;
+	TArray<class UDamageWidget*> damageWidgets;
+	int damageWidgetCount = 15;
+
 
 public:
 	class ATPSPlayerController* myController;

@@ -9,6 +9,7 @@
 #include "RoundUI.h"
 #include "TPSPlayer.h"
 #include "EnemyHpBar.h"
+#include "DamageWidget.h"
 
 #include <Components/WidgetComponent.h>
 #include <Kismet/KismetSystemLibrary.h>
@@ -49,17 +50,6 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	for (int i = 0; i < DActorCount; i++)
-	{
-		ADamageUIActor* tempUIActor = GetWorld()->SpawnActor<ADamageUIActor>(damageActorFactory);
-
-		if (tempUIActor)
-		{
-			damageActorArr.Add(tempUIActor);
-			tempUIActor->myPlayer = player;
-		}
-	}
-
 
 	HpBar = CreateWidget<UEnemyHpBar>(GetWorld(), HpBarWg);
 	HpBar->enemyFsm = fsm;
@@ -89,28 +79,19 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AEnemy::AddWorldDamageUI(FRotator genRot, int Damage)
+void AEnemy::AddWorldDamageUI(int Damage)
 {
 
-	FVector genPos = GetActorLocation();
-	FRotator GenRotate = genRot;
-	genPos.Z = HpBarWgComp->GetComponentLocation().Z + 20.f;
+	if (player == nullptr)
+		player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-	if (DActorindex >= 5) DActorindex = 0;
+	FVector pos = HpBarWgComp->GetComponentLocation();
+	pos.Z += 15;
 
-	if (player)
-	{
-		FRotator a = player->GetActorRotation();
-		a.Yaw *= -1;
-		a.Pitch = 0;
-		GenRotate = a;
+	UDamageWidget* tempWidget = player->GetDamageWidget();
+	if (IsValid(tempWidget)) {
+		tempWidget->InitDamageWidget(pos, Damage);
 	}
-
-	ATPSPlayer* tempPlayer = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-
-	damageActorArr[DActorindex]->InitializeDamageActor(genPos, GenRotate, Damage, tempPlayer);
-
-	DActorindex++;
 }
 
 
@@ -121,9 +102,9 @@ void AEnemy::DieEvent(ATPSPlayer* AttackPlayer)
 
 }
 
-void AEnemy::OnDamage(int damage, ATPSPlayer* AttackPlayer)
+void AEnemy::OnDamage(int damage, FName boneName, class ATPSPlayer* AttackPlayer)
 {
-	fsm->OnDamageProcess(damage, AttackPlayer);
+	fsm->OnDamageProcess(damage, AttackPlayer, boneName);
 }
 
 void AEnemy::SetTarget(AActor* target)

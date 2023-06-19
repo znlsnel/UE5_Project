@@ -85,7 +85,6 @@ void ATurretBullet::DamageProcess()
 			enemySensorComp->GetOverlappingActors(OutOverlappingActors);
 
 			if (OutOverlappingActors.IsEmpty()) {
-				UKismetSystemLibrary::PrintString(GetWorld(), TEXT("OutOverlappingActors Empty!!"));
 				return;
 			}
 			
@@ -94,7 +93,6 @@ void ATurretBullet::DamageProcess()
 			for (auto overlappingActor : OutOverlappingActors)
 			{
 				if (overlappingActor->ActorHasTag(TEXT("Enemy")) == false) {
-					UKismetSystemLibrary::PrintString(GetWorld(), TEXT(" No Enemy !!"));
 
 					return;
 				}
@@ -109,7 +107,7 @@ void ATurretBullet::DamageProcess()
 				else
 					damage *= 0.4;
 					
-				enemy->OnDamage(damage, myPlayer);
+				enemy->OnDamage(damage,"", myPlayer);
 			}
 		}
 	), 0.2f, false);

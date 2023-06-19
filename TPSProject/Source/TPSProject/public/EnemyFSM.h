@@ -59,7 +59,7 @@ public:
 
 #pragma region OnDamageProcess
 
-	void OnDamageProcess(int damage, ATPSPlayer* player);
+	void OnDamageProcess(int damage, ATPSPlayer* player, FName boneName);
 
 #pragma endregion
 	void RoundInitEnemy(int  bonusAtt, int bonusHp, int round);

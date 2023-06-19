@@ -340,14 +340,23 @@ void UEnemyFSM::DieState()
 }
 
 
-void UEnemyFSM::OnDamageProcess(int damage, ATPSPlayer* player)
+void UEnemyFSM::OnDamageProcess(int damage, ATPSPlayer* player,  FName boneName)
 {
+	if (boneName == FName("head"))
+		damage *= 2;
+
+	else if (boneName == FName("spine_03"))
+		damage *= 1;
+
+	else
+		damage = damage - (damage / 4);
+
 	damage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));
 
 
 	if (mState == EEnemyState::Die) return;
 
-	me->AddWorldDamageUI(FRotator(0), damage);
+	me->AddWorldDamageUI(damage);
 	hp -= damage;
 	hp = FMath::Max(hp, 0);
 	me->HpBar->UpdateHpBar(this);

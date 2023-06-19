@@ -58,7 +58,7 @@ void ABomberMan::TriggerBomber(UPrimitiveComponent* OverlappedComponent, AActor*
 
 void ABomberMan::Explosion()
 {
-	fsm->OnDamageProcess(fsm->maxHp * 10, nullptr);
+	fsm->OnDamageProcess(fsm->maxHp * 10, nullptr, "");
 
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), explosionSound, GetActorLocation());
 

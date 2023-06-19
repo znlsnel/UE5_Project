@@ -109,7 +109,7 @@ void AWeapon_Sword::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 
 
 	int finalDamage = 20 + myPlayer->abilityComp->swordProficiencyPoint.powerValue;
-	tempEnemy->OnDamage(finalDamage);
+	tempEnemy->OnDamage(finalDamage, SweepResult.BoneName);
 
 
 	int randInt = FMath::RandRange(1, 100);
@@ -121,7 +121,7 @@ void AWeapon_Sword::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 		GetWorldTimerManager().SetTimer(doubleAttackTimer, FTimerDelegate::CreateLambda([&]() {
 			if (tempEnemy) {
 				int finalDamage = 20 + myPlayer->abilityComp->swordProficiencyPoint.powerValue;
-				tempEnemy->OnDamage(finalDamage);
+				tempEnemy->OnDamage(finalDamage, SweepResult.BoneName);
 				tempEnemy = nullptr;
 			}
 			}), 0.1f, false);

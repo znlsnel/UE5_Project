@@ -23,6 +23,7 @@
 #include "ItemFactoryComp.h"
 #include "PlayerAbilityComp.h"
 #include "AbilityUpgradeWidget.h"
+#include "DamageWidget.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -133,6 +134,20 @@ void ATPSPlayer::BeginPlay()
 	playerAnim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
 	HpRecoveryLoop();
 	myAbilityWidget = CreateWidget<UAbilityUpgradeWidget>(GetWorld(), abilityWidgetFactory);
+
+	for (int i = 0; i < damageWidgetCount; i++)
+	{
+		UDamageWidget* tempDamageWidget = CreateWidget<UDamageWidget>(GetWorld(), damageWidgetFactory);
+
+		if (tempDamageWidget) {
+			tempDamageWidget->AddToViewport();
+			damageWidgets.Add(tempDamageWidget);
+		}
+
+
+			
+	}
+
 }
 
 void ATPSPlayer::StartGame()
@@ -300,6 +315,16 @@ void ATPSPlayer::AbilityWidget()
 	{
 		myAbilityWidget->OpenWidget();
 	}
+}
+
+UDamageWidget* ATPSPlayer::GetDamageWidget()
+{
+	for (auto damageWidget : damageWidgets) {
+		if (damageWidget->isInView == false)
+			return damageWidget;
+	}
+
+	return nullptr;
 }
 
 

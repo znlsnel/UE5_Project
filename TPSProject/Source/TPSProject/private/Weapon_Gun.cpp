@@ -71,18 +71,8 @@ void AWeapon_Gun::createNiagara(FHitResult pHitResult)
 
 		int damage = weapDamage + myPlayer->abilityComp->gunProficiencyPoint.powerValue;
 
-		FName tempName = pHitResult.BoneName;
-		if (tempName == FName("head"))
-			damage *= 2;
-
-		else if (tempName == FName("spine_03"))
-			damage *= 1;
-
-		else
-			damage = damage - (damage / 4);
-
 		tempEnemy->fsm->SetTarget(myPlayer);
-		tempEnemy->fsm->OnDamageProcess(damage, myPlayer);
+		tempEnemy->fsm->OnDamageProcess(damage, myPlayer, pHitResult.BoneName);
 
 
 		bool isDoubleAttack = false;
@@ -95,18 +85,8 @@ void AWeapon_Gun::createNiagara(FHitResult pHitResult)
 				if (tempEnemy) {
 					int damage = weapDamage + myPlayer->abilityComp->gunProficiencyPoint.powerValue;
 
-					FName tempName = pHitResult.BoneName;
-					if (tempName == FName("head"))
-						damage *= 2;
-
-					else if (tempName == FName("spine_03"))
-						damage *= 1;
-
-					else
-						damage = damage - (damage / 4);
-
 					tempEnemy->fsm->SetTarget(myPlayer);
-					tempEnemy->fsm->OnDamageProcess(damage, myPlayer);
+					tempEnemy->fsm->OnDamageProcess(damage, myPlayer, pHitResult.BoneName);
 					tempEnemy = nullptr;
 				}
 				}), 0.1f, false);

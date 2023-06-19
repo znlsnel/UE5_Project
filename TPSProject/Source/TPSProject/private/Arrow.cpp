@@ -65,7 +65,7 @@ void AArrow::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimi
 	if (OtherActor->ActorHasTag(FName("Enemy")))
 	{
 		tempEnemy = Cast<AEnemy>(OtherActor);
-		tempEnemy->OnDamage(attackDamage + addDamage);
+		tempEnemy->OnDamage(attackDamage + addDamage, Hit.BoneName);
 		// TODO µ¥¹ÌÁö
 		// Blood Effect
 
@@ -77,7 +77,7 @@ void AArrow::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimi
 		if (isDoubleAttack) {
 			GetWorldTimerManager().SetTimer(doubleAttackTimer, FTimerDelegate::CreateLambda([&]() {
 				if (tempEnemy) {
-					Cast<AEnemy>(OtherActor)->OnDamage(attackDamage + addDamage);
+					Cast<AEnemy>(OtherActor)->OnDamage(attackDamage + addDamage, Hit.BoneName);
 
 					tempEnemy->fsm->SetTarget(myPlayer);
 					tempEnemy = nullptr;
