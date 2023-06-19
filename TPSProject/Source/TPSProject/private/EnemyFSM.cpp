@@ -301,8 +301,7 @@ void UEnemyFSM::DeadEneny(class ATPSPlayer* player)
 
 	int money = 10;
 	if (player) {
-		player->Mineral += mineral;
-		player->Grace += grace;
+		player->GetMineralGrace(mineral, grace);
 		me->DieEvent(player);
 	}
 
@@ -329,13 +328,13 @@ void UEnemyFSM::DieState()
 	if (GetWorld()->GetTimeSeconds() - deadTime > 3.f)
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("time %f"), GetWorld()->GetTimeSeconds() - deadTime));
-;		if (isActive == false) return;
-		isActive = false;
 		me->SetActorHiddenInGame(true);
 		deadTime = 0.f;
 
 		mState = EEnemyState::Idle;
 		anim->animState = mState;
+;		if (isActive == false) return;
+		isActive = false;
 	}
 
 }

@@ -28,7 +28,11 @@ void AWeapon_Gun::FireWeapon()
 
 	}
 
-	if (currAmmo) currAmmo--;
+	if (currAmmo) {
+		int randInt = FMath::RandRange(0, 100);
+		if (randInt > myPlayer->abilityComp->LuckyShotPoint.powerValue)
+			currAmmo--;
+	}
 }
 
 void AWeapon_Gun::createNiagara(FHitResult pHitResult)
@@ -63,9 +67,9 @@ void AWeapon_Gun::createNiagara(FHitResult pHitResult)
 
 	if (IsValid(pHitResult.GetActor()) && pHitResult.GetActor()->ActorHasTag(TEXT("Enemy")))
 	{
-		AEnemy* enemy = Cast<AEnemy>(pHitResult.GetActor());
+		tempEnemy = Cast<AEnemy>(pHitResult.GetActor());
 
-		int damage = weapDamage * (myPlayer->AdditionalAttackPower + 1);
+		int damage = weapDamage + myPlayer->abilityComp->gunProficiencyPoint.powerValue;
 
 		FName tempName = pHitResult.BoneName;
 		if (tempName == FName("head"))
@@ -77,8 +81,36 @@ void AWeapon_Gun::createNiagara(FHitResult pHitResult)
 		else
 			damage = damage - (damage / 4);
 
-		enemy->fsm->SetTarget(myPlayer);
-		enemy->fsm->OnDamageProcess(damage, myPlayer);
+		tempEnemy->fsm->SetTarget(myPlayer);
+		tempEnemy->fsm->OnDamageProcess(damage, myPlayer);
+
+
+		bool isDoubleAttack = false;
+		int randInt = FMath::RandRange(1, 100);
+		if (randInt < myPlayer->abilityComp->DoubleAttackPoint.powerValue)
+			isDoubleAttack = true;
+
+		if (isDoubleAttack) {
+			GetWorldTimerManager().SetTimer(doubleAttackTimer, FTimerDelegate::CreateLambda([&]() {
+				if (tempEnemy) {
+					int damage = weapDamage + myPlayer->abilityComp->gunProficiencyPoint.powerValue;
+
+					FName tempName = pHitResult.BoneName;
+					if (tempName == FName("head"))
+						damage *= 2;
+
+					else if (tempName == FName("spine_03"))
+						damage *= 1;
+
+					else
+						damage = damage - (damage / 4);
+
+					tempEnemy->fsm->SetTarget(myPlayer);
+					tempEnemy->fsm->OnDamageProcess(damage, myPlayer);
+					tempEnemy = nullptr;
+				}
+				}), 0.1f, false);
+		}
 	}
 
 }

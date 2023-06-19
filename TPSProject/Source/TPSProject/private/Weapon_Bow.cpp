@@ -99,8 +99,10 @@ void AWeapon_Bow::InitArrow()
 	{
 		AArrow* tempArrow = Cast<AArrow>(GetWorld()->SpawnActor(arrowFactory));
 
-		if (IsValid(tempArrow))
+		if (IsValid(tempArrow)) {
+			tempArrow->myPlayer = myPlayer;
 			arrows.Add(tempArrow);
+		}
 	}
 }
 
@@ -137,9 +139,15 @@ void AWeapon_Bow::ShootArrow(float power)
 	FVector camLocation = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraLocation();
 	FVector ShootDir = camLocation.ForwardVector * 10000;
 
+	arrow->addDamage = myPlayer->abilityComp->bowProficiencyPoint.powerValue;
+	arrow->doubleAttackRate = myPlayer->abilityComp->DoubleAttackPoint.powerValue;
+
 	bool isSuccess = arrow->ShootArrow(TraceStartPoint + TraceStartRotation.Vector() * 10000, power);
-	if (isSuccess)
-		currAmmo = FMath::Max(currAmmo-1, 0);
+	if (isSuccess) {
+		int randInt = FMath::RandRange(0, 100);
+		if (randInt > myPlayer->abilityComp->LuckyShotPoint.powerValue)
+			currAmmo = FMath::Max(currAmmo-1, 0);
+	}
 }
 
 void AWeapon_Bow::PlayBowAnim(bool DrawBack)

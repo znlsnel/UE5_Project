@@ -3,6 +3,9 @@
 
 #include "Arrow.h"
 #include "Enemy.h"
+#include "EnemyFSM.h"
+#include "TPSPlayer.h"
+
 #include <Kismet/KismetMathLibrary.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/GameplayStatics.h>
@@ -61,9 +64,27 @@ void AArrow::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimi
 
 	if (OtherActor->ActorHasTag(FName("Enemy")))
 	{
-		Cast<AEnemy>(OtherActor)->OnDamage(attackDamage);
+		tempEnemy = Cast<AEnemy>(OtherActor);
+		tempEnemy->OnDamage(attackDamage + addDamage);
 		// TODO 데미지
 		// Blood Effect
+
+		bool isDoubleAttack = false;
+		int randInt = FMath::RandRange(1, 100);
+		if (randInt < doubleAttackRate)
+			isDoubleAttack = true;
+
+		if (isDoubleAttack) {
+			GetWorldTimerManager().SetTimer(doubleAttackTimer, FTimerDelegate::CreateLambda([&]() {
+				if (tempEnemy) {
+					Cast<AEnemy>(OtherActor)->OnDamage(attackDamage + addDamage);
+
+					tempEnemy->fsm->SetTarget(myPlayer);
+					tempEnemy = nullptr;
+				}
+				}), 0.1f, false);
+		}
+
 	}
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("OnHit!"));
 	// Actor에 SetAttack~~ 해버리기 

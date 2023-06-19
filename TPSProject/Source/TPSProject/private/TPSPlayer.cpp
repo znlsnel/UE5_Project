@@ -21,6 +21,8 @@
 #include "BuildableItem.h"
 #include "TPSProjectGameModeBase.h"
 #include "ItemFactoryComp.h"
+#include "PlayerAbilityComp.h"
+#include "AbilityUpgradeWidget.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -108,6 +110,7 @@ ATPSPlayer::ATPSPlayer()
 	myController = Cast<ATPSPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	itemFactory = CreateDefaultSubobject<UItemFactoryComp>(TEXT("itemFactory"));
+	abilityComp = CreateDefaultSubobject<UPlayerAbilityComp>(TEXT("Abilitys"));
 }
 
 ATPSPlayer::~ATPSPlayer()
@@ -123,17 +126,39 @@ void ATPSPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
-	hp = initialHp;
+	hp = maxHp;
 	if (playerUI->screenUI)
 		playerUI->screenUI->UpdateScreenUI();
 
 	playerAnim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
+	HpRecoveryLoop();
+	myAbilityWidget = CreateWidget<UAbilityUpgradeWidget>(GetWorld(), abilityWidgetFactory);
 }
 
 void ATPSPlayer::StartGame()
 {
 	if (playerFire->currWeapon == nullptr) return;
 	playerFire->EquipWeapon(playerFire->currWeapon->weaponType);
+}
+
+void ATPSPlayer::GetMineralGrace(int mineral, int grace)
+{
+	int additionalValue = abilityComp->CoinBoostPoint.powerValue;
+	if (additionalValue > 0) {
+		mineral *= additionalValue / 100;
+		grace *= additionalValue / 100;
+	}
+	this->Mineral += mineral;
+	this->Grace += grace;
+}
+
+void ATPSPlayer::UpgradeHp(int addHp)
+{
+	int RecoveryHp = maxHp;
+	maxHp = initHp + addHp;
+	RecoveryHp = maxHp - RecoveryHp;
+	hp += RecoveryHp;
+	playerUI->screenUI->UpdateScreenUI();
 }
 
 
@@ -145,6 +170,19 @@ void ATPSPlayer::Tick(float DeltaTime)
 
 }
 
+void ATPSPlayer::HpRecoveryLoop()
+{
+	GetWorldTimerManager().ClearTimer(hpRecoveryTimer);
+
+	if (hp < maxHp && abilityComp->HpNaturalHealingPoint.point > 0) {
+		hp += abilityComp->HpNaturalHealingPoint.powerValue;
+		if (hp > maxHp) hp = maxHp;
+		playerUI->screenUI->UpdateScreenUI();
+	}
+
+	GetWorldTimerManager().SetTimer(hpRecoveryTimer, this, &ATPSPlayer::HpRecoveryLoop, 5.f, false);
+}
+
 // Called to bind functionality to input
 void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -152,6 +190,8 @@ void ATPSPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 	onInputBindingDelegate.Broadcast(PlayerInputComponent);
 	PlayerInputComponent->BindAction(TEXT("InteractionObject"), EInputEvent::IE_Pressed, this, &ATPSPlayer::InteractionObject);
+
+	PlayerInputComponent->BindAction(TEXT("AbilityWidget"), EInputEvent::IE_Pressed, this, &ATPSPlayer::AbilityWidget);
 
 }
 
@@ -217,7 +257,7 @@ void ATPSPlayer::UpdateAttackAndHp(bool updateAttack, float value)
 	else
 	{
 		hp += 10;
-		initialHp += 10;
+		maxHp += 10;
 		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("HP : %d"), hp));
 
 		playerUI->screenUI->UpdateScreenUI();
@@ -243,6 +283,22 @@ void ATPSPlayer::InteractionObject()
 	{
 
 		InteractionDelegate.Execute();
+	}
+}
+
+void ATPSPlayer::AbilityWidget()
+{
+	if (myAbilityWidget == nullptr) {
+		myAbilityWidget = CreateWidget<UAbilityUpgradeWidget>(GetWorld(), abilityWidgetFactory);
+	}
+
+	if (myAbilityWidget->IsInViewport())
+	{
+		myAbilityWidget->CloseWidget();
+	}
+	else
+	{
+		myAbilityWidget->OpenWidget();
 	}
 }
 

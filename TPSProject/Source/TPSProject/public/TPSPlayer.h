@@ -31,7 +31,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	void HpRecoveryLoop();
+	FTimerHandle hpRecoveryTimer;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const;
@@ -39,7 +40,8 @@ public:
 		void SetPlayerMouse(bool Active);
 
 	void StartGame();
-
+	void GetMineralGrace(int mineral, int grace);
+	void UpgradeHp(int addHp);
 #pragma region ServerFunctions
 
 
@@ -72,6 +74,10 @@ public:
 
 
 	void InteractionObject();
+	void AbilityWidget();
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UAbilityUpgradeWidget> abilityWidgetFactory;
+	class UAbilityUpgradeWidget* myAbilityWidget;
 
 public:
 	class ATPSPlayerController* myController;
@@ -107,16 +113,20 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UItemFactoryComp* itemFactory;
 
+	UPROPERTY(EditAnywhere, blueprintReadOnly)
+		class UPlayerAbilityComp* abilityComp;
+
 //======================================================================
 
 // Detail =====================================================================
 	// 현재 체력
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Health)
-		int32 hp;
+		int hp;
 
 	// 초기 hp값
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Health)
-		int32 initialHp = 100;
+		int maxHp = 100;
+	int initHp = 100;
 	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
 		class UAnimMontage* DieAnimMontage;
 

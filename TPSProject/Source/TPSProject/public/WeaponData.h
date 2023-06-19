@@ -87,6 +87,7 @@ enum class WeaponSlotType : uint8
 };
 
 
+
 USTRUCT(BlueprintType)
 struct TPSPROJECT_API FItemInfoinInventory
 {

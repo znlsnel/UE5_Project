@@ -23,4 +23,5 @@ public:
 
 	//UFUNCTION(Server, Reliable)
 	void createNiagara(FHitResult pHitResult);
+
 };

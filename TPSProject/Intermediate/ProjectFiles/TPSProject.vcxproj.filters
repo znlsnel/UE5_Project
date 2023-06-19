@@ -42,6 +42,9 @@
     <Filter Include="Source\TPSProject\private">
       <UniqueIdentifier>{F2BBD063-EC9E-3AEE-AB39-F88568F04848}</UniqueIdentifier>
     </Filter>
+    <ClCompile Include="..\..\Source\TPSProject\private\AbilityUpgradeWidget.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\AmmoBox.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -138,6 +141,9 @@
     <ClCompile Include="..\..\Source\TPSProject\private\PickUpPB.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\PlayerAbilityComp.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\PlayerAnim.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -157,6 +163,9 @@
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\ScreenUI.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\SkillManager.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\StoreActor.cpp">
@@ -216,6 +225,9 @@
     <Filter Include="Source\TPSProject\public">
       <UniqueIdentifier>{68A94EF8-D612-391B-AA07-FA4C4DBF9FA4}</UniqueIdentifier>
     </Filter>
+    <ClInclude Include="..\..\Source\TPSProject\public\AbilityUpgradeWidget.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\AmmoBox.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
@@ -312,6 +324,9 @@
     <ClInclude Include="..\..\Source\TPSProject\public\PickUpPB.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\PlayerAbilityComp.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\PlayerAnim.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
@@ -331,6 +346,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\ScreenUI.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\SkillManager.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\StoreActor.h">

@@ -17,8 +17,8 @@
 
 void UScreenUI::UpdateScreenUI()
 {
-	hpRatio = static_cast<float>(myPlayer->hp) / static_cast<float>(myPlayer->initialHp);
-	hpInfo = FString::Printf(TEXT("%d / %d"), myPlayer->hp, myPlayer->initialHp);
+	hpRatio = static_cast<float>(myPlayer->hp) / static_cast<float>(myPlayer->maxHp);
+	hpInfo = FString::Printf(TEXT("%d / %d"), myPlayer->hp, myPlayer->maxHp);
 }
 
 void UScreenUI::ATVWidget()

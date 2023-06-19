@@ -10,6 +10,7 @@
 #include "playerFire.h"
 #include "PlayerAnim.h"
 #include "TPSPlayer.h"
+#include "PlayerAbilityComp.h"
 #include "WeaponData.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
@@ -74,6 +75,10 @@ public:
 
 	void CreateDecal(UNiagaraComponent* tempDecal, FHitResult& pHitResult);
 public:
+	class AEnemy* tempEnemy;
+	FTimerHandle doubleAttackTimer;
+
+
 	UPlayerAnim* anim;
 	bool isSynchronized = false;
 

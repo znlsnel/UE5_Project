@@ -22,6 +22,7 @@ protected:
 	virtual void BeginPlay() override;
 	UFUNCTION()
 		void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+	class AEnemy* tempEnemy;
 public:
 	void ReturnObject(float returnTime);
 	void InitArrow(FVector LookVec);
@@ -30,6 +31,7 @@ public:
 	void CancelArrow();
 
 public:	
+	class ATPSPlayer* myPlayer;
 	UPROPERTY(EditAnywhere)
 		class UStaticMeshComponent* ArrowMesh;
 	UPROPERTY(EditAnywhere)
@@ -44,9 +46,11 @@ public:
 
 
 	int attackDamage = 50;
-
+	int addDamage = 0;
+	int doubleAttackRate = 0;
 
 	bool bIsUsed = false;
 	FTimerHandle returnObjectTimer;
+	FTimerHandle doubleAttackTimer;
 
 };

@@ -98,14 +98,33 @@ void AWeapon_Sword::Attack()
 void AWeapon_Sword::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
+
 	if (OtherActor->ActorHasTag(TEXT("Enemy")) == false)
 		return;
 
 	if (myPlayer && myPlayer->IsPlayingMontage(CharacterFireAM) == false)
 		return;
 
-	AEnemy* enemy = Cast<AEnemy>(OtherActor);
+	tempEnemy = Cast<AEnemy>(OtherActor);
 
-	enemy->OnDamage(20);
+
+	int finalDamage = 20 + myPlayer->abilityComp->swordProficiencyPoint.powerValue;
+	tempEnemy->OnDamage(finalDamage);
+
+
+	int randInt = FMath::RandRange(1, 100);
+	bool isDoubleAttack = false;
+	if (randInt < myPlayer->abilityComp->DoubleAttackPoint.powerValue)
+		isDoubleAttack = true;
+	
+	if (isDoubleAttack) {
+		GetWorldTimerManager().SetTimer(doubleAttackTimer, FTimerDelegate::CreateLambda([&]() {
+			if (tempEnemy) {
+				int finalDamage = 20 + myPlayer->abilityComp->swordProficiencyPoint.powerValue;
+				tempEnemy->OnDamage(finalDamage);
+				tempEnemy = nullptr;
+			}
+			}), 0.1f, false);
+	}
 }
 
