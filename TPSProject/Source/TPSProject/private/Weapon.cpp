@@ -117,7 +117,7 @@ TArray<FHitResult> AWeapon::LineTrace()
 		isHit = UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStartPoint, LineTraceEnd, UEngineTypes::ConvertToTraceType(ECC_Visibility), true, pIgnore, EDrawDebugTrace::None, pHitResult, true);
 
 		hitArr.Add(pHitResult);
-
+		
 	}
 	return hitArr;
 }

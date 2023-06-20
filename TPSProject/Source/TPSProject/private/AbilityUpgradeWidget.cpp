@@ -4,14 +4,19 @@
 #include "AbilityUpgradeWidget.h"
 #include "TPSPlayer.h"
 #include "PlayerAbilityComp.h"
+#include "AbilityInfo.h"
 
 #include <Kismet/GameplayStatics.h>
 
-UAbilityUpgradeWidget::UAbilityUpgradeWidget(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
+
+void UAbilityUpgradeWidget::NativeConstruct()
 {
 	myPlayer = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	if (myPlayer)
 		abilityComp = myPlayer->abilityComp;
+
+	abliltyInfo = CreateWidget<UAbilityInfo>(GetWorld(), AbilityInfoFactory);
+	InitWidget();
 }
 
 void UAbilityUpgradeWidget::UpgradeSkill(SkillType skillType, bool& result)
@@ -72,7 +77,8 @@ void UAbilityUpgradeWidget::UpgradeSkill(SkillType skillType, bool& result)
 		}
 
 		UpdateRemainSkillCount();
-		tempSkill->UpdateValues(myPlayer);
+		//tempSkill->UpdateValues(myPlayer);
+		UpdateValue(tempSkill);
 	}
 	else
 		UGameplayStatics::PlaySound2D(GetWorld(), failedSound);
@@ -80,6 +86,39 @@ void UAbilityUpgradeWidget::UpgradeSkill(SkillType skillType, bool& result)
 
 }
 
+void UAbilityUpgradeWidget::SkillInfoWidgetEvent(bool isHover, SkillType type)
+{
+	if (isHover) {
+		FSkillInfo* tempInfo = abilityComp->GetSkillInfo(type);
+
+		int nextValue = tempInfo->point < 5 ? tempInfo->powerValues[tempInfo->point] : 0;
+		abliltyInfo->InitWidget(tempInfo->SkillName, tempInfo->SkillInfo, tempInfo->powerValue, nextValue);
+
+		double mouseX = 0;
+		double mouseY = 0;
+		UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetMousePosition(mouseX, mouseY);
+		abliltyInfo->SetPositionInViewport(FVector2D(mouseX, mouseY + 50));
+
+	}
+	else
+		abliltyInfo->UnHoverWidget();
+}
+
+
+void UAbilityUpgradeWidget::UpdateValue(FSkillInfo* skillInfo)
+{
+	if (skillInfo->point <= 0) return;
+
+	if (skillInfo->powerValues.Num() >= skillInfo->point)
+		skillInfo->powerValue = skillInfo->powerValues[skillInfo->point - 1];
+	if (skillInfo->coolDownValues.Num() >= skillInfo->point)
+		skillInfo->coolDownValue = skillInfo->coolDownValues[skillInfo->point - 1];
+
+	if (myPlayer && skillInfo->skillType == SkillType::HpUpgrade) {
+		myPlayer->UpgradeHp(skillInfo->powerValue);
+
+	}
+}
 
 void UAbilityUpgradeWidget::UpdateRemainSkillCount()
 {

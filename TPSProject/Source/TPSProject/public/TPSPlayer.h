@@ -84,8 +84,8 @@ public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UDamageWidget> damageWidgetFactory;
 	TArray<class UDamageWidget*> damageWidgets;
-	int damageWidgetCount = 15;
-
+	int damageWidgetCount = 30;
+	int damageWidgetIndex = 0;
 
 public:
 	class ATPSPlayerController* myController;

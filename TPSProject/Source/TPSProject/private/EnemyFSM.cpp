@@ -353,8 +353,12 @@ void UEnemyFSM::OnDamageProcess(int damage, ATPSPlayer* player,  FName boneName)
 
 	damage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));
 
+	if (hp <= 0 || mState == EEnemyState::Die) {
+		mState = EEnemyState::Die;
+		anim->animState = EEnemyState::Die;
+		return;
+	}
 
-	if (mState == EEnemyState::Die) return;
 
 	me->AddWorldDamageUI(damage);
 	hp -= damage;

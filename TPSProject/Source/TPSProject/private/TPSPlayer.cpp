@@ -158,7 +158,7 @@ void ATPSPlayer::StartGame()
 
 void ATPSPlayer::GetMineralGrace(int mineral, int grace)
 {
-	int additionalValue = abilityComp->CoinBoostPoint.powerValue;
+	int additionalValue = abilityComp->GetSkillInfo(SkillType::CoinBoost)->powerValue;
 	if (additionalValue > 0) {
 		mineral *= additionalValue / 100;
 		grace *= additionalValue / 100;
@@ -189,8 +189,9 @@ void ATPSPlayer::HpRecoveryLoop()
 {
 	GetWorldTimerManager().ClearTimer(hpRecoveryTimer);
 
-	if (hp < maxHp && abilityComp->HpNaturalHealingPoint.point > 0) {
-		hp += abilityComp->HpNaturalHealingPoint.powerValue;
+	FSkillInfo* tempSkillInfo =  abilityComp->GetSkillInfo(SkillType::HpNaturalHealing);
+	if (hp < maxHp && tempSkillInfo->point > 0) {
+		hp += tempSkillInfo->powerValue;
 		if (hp > maxHp) hp = maxHp;
 		playerUI->screenUI->UpdateScreenUI();
 	}
@@ -320,11 +321,14 @@ void ATPSPlayer::AbilityWidget()
 UDamageWidget* ATPSPlayer::GetDamageWidget()
 {
 	for (auto damageWidget : damageWidgets) {
+
 		if (damageWidget->isInView == false)
 			return damageWidget;
 	}
-
-	return nullptr;
+	UDamageWidget* tempWidget = damageWidgets[damageWidgetIndex++];
+	if (damageWidgetIndex >= damageWidgetCount)
+		damageWidgetIndex = 0;
+	return tempWidget;
 }
 
 

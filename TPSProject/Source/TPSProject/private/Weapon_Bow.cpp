@@ -139,13 +139,13 @@ void AWeapon_Bow::ShootArrow(float power)
 	FVector camLocation = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0)->GetCameraLocation();
 	FVector ShootDir = camLocation.ForwardVector * 10000;
 
-	arrow->addDamage = myPlayer->abilityComp->bowProficiencyPoint.powerValue;
-	arrow->doubleAttackRate = myPlayer->abilityComp->DoubleAttackPoint.powerValue;
+	arrow->addDamage = myPlayer->abilityComp->GetSkillInfo(SkillType::bowProficiency)->powerValue;
+	arrow->doubleAttackRate = myPlayer->abilityComp->GetSkillInfo(SkillType::DoubleAttack)->powerValue;
 
 	bool isSuccess = arrow->ShootArrow(TraceStartPoint + TraceStartRotation.Vector() * 10000, power);
 	if (isSuccess) {
 		int randInt = FMath::RandRange(0, 100);
-		if (randInt > myPlayer->abilityComp->LuckyShotPoint.powerValue)
+		if (randInt > myPlayer->abilityComp->GetSkillInfo(SkillType::LuckyShot)->powerValue)
 			currAmmo = FMath::Max(currAmmo-1, 0);
 	}
 }

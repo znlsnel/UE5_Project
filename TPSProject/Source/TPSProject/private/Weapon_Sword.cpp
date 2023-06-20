@@ -108,19 +108,19 @@ void AWeapon_Sword::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 	tempEnemy = Cast<AEnemy>(OtherActor);
 
 
-	int finalDamage = 20 + myPlayer->abilityComp->swordProficiencyPoint.powerValue;
+	int finalDamage = 20 + weapDamage + myPlayer->abilityComp->GetSkillInfo(SkillType::swordProficiency)->powerValue;
 	tempEnemy->OnDamage(finalDamage, SweepResult.BoneName);
 
 
 	int randInt = FMath::RandRange(1, 100);
 	bool isDoubleAttack = false;
-	if (randInt < myPlayer->abilityComp->DoubleAttackPoint.powerValue)
+	if (randInt < myPlayer->abilityComp->GetSkillInfo(SkillType::DoubleAttack)->powerValue)
 		isDoubleAttack = true;
 	
 	if (isDoubleAttack) {
 		GetWorldTimerManager().SetTimer(doubleAttackTimer, FTimerDelegate::CreateLambda([&]() {
 			if (tempEnemy) {
-				int finalDamage = 20 + myPlayer->abilityComp->swordProficiencyPoint.powerValue;
+				int finalDamage = 20 + weapDamage + myPlayer->abilityComp->GetSkillInfo(SkillType::swordProficiency)->powerValue;
 				tempEnemy->OnDamage(finalDamage, SweepResult.BoneName);
 				tempEnemy = nullptr;
 			}

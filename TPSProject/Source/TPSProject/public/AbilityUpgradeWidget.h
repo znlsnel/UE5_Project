@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "PlayerAbilityComp.h"
+
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "AbilityUpgradeWidget.generated.h"
@@ -13,38 +13,45 @@
 
 
 
-
-
-
-
 UCLASS()
 class TPSPROJECT_API UAbilityUpgradeWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
-	UAbilityUpgradeWidget(const FObjectInitializer& ObjectInitializer);
+	virtual void NativeConstruct()override;
+	UFUNCTION(BlueprintImplementableEvent)
+		void InitWidget();
+
 
 	UFUNCTION(BlueprintCallable)
 		void UpgradeSkill(SkillType skillType, bool& result);
 
+	UFUNCTION(BlueprintCallable)
+		void SkillInfoWidgetEvent(bool isHover, SkillType type);
+
 	UFUNCTION(BlueprintImplementableEvent)
 		void OpenWidget();
-
 	UFUNCTION(BlueprintImplementableEvent)
 		void CloseWidget();
-
-	void UpdateRemainSkillCount();
-
 	UFUNCTION(BlueprintImplementableEvent)
 		void playSkillSectionUIAnimation();
+
+	void UpdateValue(struct FSkillInfo* skillInfo);
+	void UpdateRemainSkillCount();
+
 public:
-	UPROPERTY(BlueprintReadWrite)
-		class ATPSPlayer* myPlayer;
+	class ATPSPlayer* myPlayer;
 	class UPlayerAbilityComp* abilityComp;
 
-	UPROPERTY(BlueprintReadWrite)
-		int currSkillCoin = 10;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UAbilityInfo> AbilityInfoFactory;
+
+	UPROPERTY(BlueprintReadOnly)
+		class UAbilityInfo* abliltyInfo;
+
+	UPROPERTY(BlueprintReadOnly)
+		int currSkillCoin = 100;
 
 	int32 Unlock_SecondSection = 5;
 	int32 Unlock_ThirdSection = 5;
@@ -72,4 +79,5 @@ public:
 		USoundBase* successSound;
 	UPROPERTY(EditAnywhere)
 		USoundBase* failedSound;
+
 };

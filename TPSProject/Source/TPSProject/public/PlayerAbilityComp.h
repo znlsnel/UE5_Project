@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "TPSPlayer.h"
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "PlayerAbilityComp.generated.h"
@@ -38,37 +37,27 @@ enum class SkillType : uint8
 
 
 USTRUCT(BlueprintType)
-struct TPSPROJECT_API FSkillInfo
+struct TPSPROJECT_API FSkillInfo 
 {
 	GENERATED_BODY()
 public:
-	FSkillInfo() {};
-	// Array俊 5俺究 持绢辑 积己
-	FSkillInfo(SkillSectionType type, SkillType skill, bool isAbilitySkill, TArray<int> power, TArray<float> coolDown) {
-		attackPower = power;
-		skillcoolDown = coolDown;
-		SectionType = type;
-		isAbility = isAbilitySkill;
-		skillType = skill;
-	};
-	void UpdateValues(class ATPSPlayer* player = nullptr) {
-		if (point <= 0) return;
-
-		if (attackPower.Num() >= point)
-			powerValue = attackPower[point - 1];
-		if (skillcoolDown.Num() >= point)
-			coolDownValue = skillcoolDown[point - 1];
-
-		if (player && skillType == SkillType::HpUpgrade){
-			player->UpgradeHp(powerValue);
-
-		}
-	};
 	UPROPERTY(BlueprintReadOnly)
-		TArray<int> attackPower;
+		FString SkillName;
 
 	UPROPERTY(BlueprintReadOnly)
-		TArray<float> skillcoolDown;
+		FString SkillInfo;
+
+	UPROPERTY(BlueprintReadOnly)
+		TArray<int> powerValues;
+
+	UPROPERTY(BlueprintReadOnly)
+		TArray<float> coolDownValues;
+
+	UPROPERTY(BlueprintReadOnly)
+		SkillSectionType SectionType = SkillSectionType::None;
+
+	UPROPERTY(BlueprintReadOnly)
+		SkillType skillType = SkillType::None;
 
 	UPROPERTY(BlueprintReadOnly)
 		int isAbility = false;
@@ -79,11 +68,6 @@ public:
 	int powerValue = 0;
 	int coolDownValue = 0;
 
-	UPROPERTY(BlueprintReadOnly)
-		SkillSectionType SectionType = SkillSectionType::None;
-
-	UPROPERTY(BlueprintReadOnly)
-		SkillType skillType = SkillType::None;
 };
 
 
@@ -97,14 +81,13 @@ public:
 	UPlayerAbilityComp();
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
+	void LoadJsonFile();
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	FSkillInfo* GetSkillInfo(SkillType type);
-
+	SkillSectionType ConvertSectionType(FString type);
+	SkillType ConvertSkillType(FString type);
 public:
 	class ATPSPlayer* myPlayer;
 		
@@ -113,33 +96,4 @@ public:
 		int skillPoint = 0;
 
 	TArray<FSkillInfo*> skillInfos;
-	
-
-	UPROPERTY(BlueprintReadOnly)
-		FSkillInfo swordProficiencyPoint;
-	UPROPERTY(BlueprintReadOnly)
-		FSkillInfo bowProficiencyPoint;
-	UPROPERTY(BlueprintReadOnly)
-		FSkillInfo gunProficiencyPoint;
-	UPROPERTY(BlueprintReadOnly)
-		FSkillInfo HpUpgradePoint;
-	UPROPERTY(BlueprintReadOnly)
-		FSkillInfo HpNaturalHealingPoint;
-	UPROPERTY(BlueprintReadOnly)
-		FSkillInfo DoubleAttackPoint;
-	UPROPERTY(BlueprintReadOnly)
-		FSkillInfo LuckyShotPoint;
-	UPROPERTY(BlueprintReadOnly)
-		FSkillInfo CoinBoostPoint;
-
-	UPROPERTY(BlueprintReadOnly)
-		FSkillInfo IceAttackPoint;
-	UPROPERTY(BlueprintReadOnly)
-		FSkillInfo LightningStrikePoint;
-	UPROPERTY(BlueprintReadOnly)
-		FSkillInfo HealingPoint;
-	UPROPERTY(BlueprintReadOnly)
-		FSkillInfo FireStormPoint;
-
-
 };

@@ -77,7 +77,7 @@ void AArrow::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimi
 		if (isDoubleAttack) {
 			GetWorldTimerManager().SetTimer(doubleAttackTimer, FTimerDelegate::CreateLambda([&]() {
 				if (tempEnemy) {
-					Cast<AEnemy>(OtherActor)->OnDamage(attackDamage + addDamage, Hit.BoneName);
+					tempEnemy->OnDamage(attackDamage + addDamage, Hit.BoneName);
 
 					tempEnemy->fsm->SetTarget(myPlayer);
 					tempEnemy = nullptr;

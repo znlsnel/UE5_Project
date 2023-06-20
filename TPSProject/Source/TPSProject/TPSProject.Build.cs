@@ -23,7 +23,9 @@ public class TPSProject : ModuleRules
 			"OnlineSubsystem",
 			"OnlineSubsystemUtils",
 			"Networking",
-			"GameplayTasks"
+			"GameplayTasks",
+			"Json",
+			"JsonUtilities"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

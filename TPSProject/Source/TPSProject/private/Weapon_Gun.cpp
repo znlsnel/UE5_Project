@@ -30,7 +30,7 @@ void AWeapon_Gun::FireWeapon()
 
 	if (currAmmo) {
 		int randInt = FMath::RandRange(0, 100);
-		if (randInt > myPlayer->abilityComp->LuckyShotPoint.powerValue)
+		if (randInt > myPlayer->abilityComp->GetSkillInfo(SkillType::LuckyShot)->powerValue)
 			currAmmo--;
 	}
 }
@@ -69,7 +69,7 @@ void AWeapon_Gun::createNiagara(FHitResult pHitResult)
 	{
 		tempEnemy = Cast<AEnemy>(pHitResult.GetActor());
 
-		int damage = weapDamage + myPlayer->abilityComp->gunProficiencyPoint.powerValue;
+		int damage = weapDamage + myPlayer->abilityComp->GetSkillInfo(SkillType::gunProficiency)->powerValue;
 
 		tempEnemy->fsm->SetTarget(myPlayer);
 		tempEnemy->fsm->OnDamageProcess(damage, myPlayer, pHitResult.BoneName);
@@ -77,13 +77,13 @@ void AWeapon_Gun::createNiagara(FHitResult pHitResult)
 
 		bool isDoubleAttack = false;
 		int randInt = FMath::RandRange(1, 100);
-		if (randInt < myPlayer->abilityComp->DoubleAttackPoint.powerValue)
+		if (randInt < myPlayer->abilityComp->GetSkillInfo(SkillType::DoubleAttack)->powerValue)
 			isDoubleAttack = true;
 
 		if (isDoubleAttack) {
 			GetWorldTimerManager().SetTimer(doubleAttackTimer, FTimerDelegate::CreateLambda([&]() {
 				if (tempEnemy) {
-					int damage = weapDamage + myPlayer->abilityComp->gunProficiencyPoint.powerValue;
+					int damage = weapDamage + myPlayer->abilityComp->GetSkillInfo(SkillType::gunProficiency)->powerValue;
 
 					tempEnemy->fsm->SetTarget(myPlayer);
 					tempEnemy->fsm->OnDamageProcess(damage, myPlayer, pHitResult.BoneName);
