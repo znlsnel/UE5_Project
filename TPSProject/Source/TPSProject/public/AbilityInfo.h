@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "PlayerAbilityComp.h"
+
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "AbilityInfo.generated.h"
@@ -14,7 +16,9 @@ class TPSPROJECT_API UAbilityInfo : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void InitWidget(FString SkillName, FString SkillInfomation, int currValue, int nextValue);
+	void InitWidget(FSkillInfo* skillInfo, bool StartHover = true);
+
+	
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void HoverWidget();
@@ -34,4 +38,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 		FString NextValue = "";
+
+	UPROPERTY(BlueprintReadOnly)
+		FString CoolTimeText = "";
 };

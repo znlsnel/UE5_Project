@@ -28,7 +28,7 @@ public:
 		void UpgradeSkill(SkillType skillType, bool& result);
 
 	UFUNCTION(BlueprintCallable)
-		void SkillInfoWidgetEvent(bool isHover, SkillType type);
+		void SkillInfoWidgetEvent(bool isHover, SkillType type, FVector2D pos);
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void OpenWidget();
@@ -37,7 +37,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void playSkillSectionUIAnimation();
 
-	void UpdateValue(struct FSkillInfo* skillInfo);
 	void UpdateRemainSkillCount();
 
 public:

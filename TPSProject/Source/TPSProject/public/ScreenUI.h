@@ -18,7 +18,6 @@ class TPSPROJECT_API UScreenUI : public UUserWidget
 	GENERATED_BODY()
 
 public:
-
 	void UpdateScreenUI();
 
 	void ATVWidget();
@@ -26,15 +25,37 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void StartWidget();
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void UnLockSkill(SkillType type);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+		void ToggleSkillSlot(SkillType type, bool isUse);
+
 	void Initialization(class ATPSPlayer* player);
-	void SetupInputBinding(class UInputComponent* PlayerInputComponent);
 	void ToggleInventory();
 	void ToggleInventory(bool On);
 
+	template<SkillType type>
+	void UseSkillSlot() { UseSkillSlot(type); };
+	void UseSkillSlot(SkillType type);
+	
 public:
 	class ATPSPlayer* myPlayer;
-
+	class UPlayerAbilityComp* myAbilityComp;
 	FTimerHandle startTimerHandle;
+
+	UPROPERTY(BlueprintReadOnly)
+		FString IceAttackTimeText ="";
+
+	UPROPERTY(BlueprintReadOnly)
+		FString LightningStrikeTimeText = "";
+
+	UPROPERTY(BlueprintReadOnly)
+		FString HealTimeText = "";
+
+	UPROPERTY(BlueprintReadOnly)
+		FString FireStormTimeText = "";
+
 
 	UPROPERTY(EditAnywhere, blueprintReadWrite, Category = Inventory)
 		class UInventory* inventory;
@@ -76,4 +97,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		FString UpdateAmmoCount();
+
 };

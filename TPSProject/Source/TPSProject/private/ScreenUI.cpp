@@ -4,14 +4,12 @@
 #include "TPSPlayer.h"
 #include "Inventory.h"
 #include "Weapon.h"
+#include "PlayerAbilityComp.h"
 
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/Image.h>
 
 #include <GameFramework/PlayerState.h>
-
-
-
 
 
 
@@ -36,12 +34,11 @@ void UScreenUI::Initialization(ATPSPlayer* player)
 
 	inventory = CreateWidget<UInventory>(GetWorld());
 	inventory->Initialization(myPlayer);
+	myAbilityComp = myPlayer->abilityComp;
+	myAbilityComp->myScreenUI = this;
 }
 
-void UScreenUI::SetupInputBinding(UInputComponent* PlayerInputComponent)
-{
-	PlayerInputComponent->BindAction(TEXT("Inventory"), IE_Pressed, this, &UScreenUI::ToggleInventory);
-}
+
 
 void UScreenUI::ToggleInventory()
 {
@@ -66,6 +63,13 @@ void UScreenUI::ToggleInventory(bool On)
 
 	InventoryOnOff(On);
 }
+
+void UScreenUI::UseSkillSlot(SkillType type)
+{
+	bool result = myAbilityComp->UseSkill(type);
+	ToggleSkillSlot(type, result);
+}
+
 
 FString UScreenUI::UpdateAmmoCount()
 {

@@ -156,7 +156,7 @@ public:
 		bool isDie = false;
 	UPROPERTY(BlueprintReadWrite)
 		bool isMyPlayer = false;
-
+	
 	UPROPERTY(BlueprintReadWrite)
 		int Grace = 10000;
 
@@ -184,6 +184,5 @@ public:
 		void OnInitialization();
 	FTimerHandle addItemTimer;
 	class UInventory* GetInventory();
-
 
 };

@@ -77,8 +77,9 @@ void UAbilityUpgradeWidget::UpgradeSkill(SkillType skillType, bool& result)
 		}
 
 		UpdateRemainSkillCount();
-		//tempSkill->UpdateValues(myPlayer);
-		UpdateValue(tempSkill);
+		abilityComp->UpdateValue(tempSkill);
+
+		abliltyInfo->InitWidget(tempSkill, false);
 	}
 	else
 		UGameplayStatics::PlaySound2D(GetWorld(), failedSound);
@@ -86,39 +87,20 @@ void UAbilityUpgradeWidget::UpgradeSkill(SkillType skillType, bool& result)
 
 }
 
-void UAbilityUpgradeWidget::SkillInfoWidgetEvent(bool isHover, SkillType type)
+void UAbilityUpgradeWidget::SkillInfoWidgetEvent(bool isHover, SkillType type, FVector2D pos)
 {
 	if (isHover) {
 		FSkillInfo* tempInfo = abilityComp->GetSkillInfo(type);
 
-		int nextValue = tempInfo->point < 5 ? tempInfo->powerValues[tempInfo->point] : 0;
-		abliltyInfo->InitWidget(tempInfo->SkillName, tempInfo->SkillInfo, tempInfo->powerValue, nextValue);
-
-		double mouseX = 0;
-		double mouseY = 0;
-		UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetMousePosition(mouseX, mouseY);
-		abliltyInfo->SetPositionInViewport(FVector2D(mouseX, mouseY + 50));
-
+	
+		abliltyInfo->InitWidget(tempInfo);
+		abliltyInfo->SetPositionInViewport(pos);
 	}
 	else
 		abliltyInfo->UnHoverWidget();
 }
 
 
-void UAbilityUpgradeWidget::UpdateValue(FSkillInfo* skillInfo)
-{
-	if (skillInfo->point <= 0) return;
-
-	if (skillInfo->powerValues.Num() >= skillInfo->point)
-		skillInfo->powerValue = skillInfo->powerValues[skillInfo->point - 1];
-	if (skillInfo->coolDownValues.Num() >= skillInfo->point)
-		skillInfo->coolDownValue = skillInfo->coolDownValues[skillInfo->point - 1];
-
-	if (myPlayer && skillInfo->skillType == SkillType::HpUpgrade) {
-		myPlayer->UpgradeHp(skillInfo->powerValue);
-
-	}
-}
 
 void UAbilityUpgradeWidget::UpdateRemainSkillCount()
 {

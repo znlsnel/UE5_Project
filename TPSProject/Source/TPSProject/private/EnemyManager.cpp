@@ -287,11 +287,11 @@ void AEnemyManager::RoundEvent(bool start)
 		GetWorld()->GetTimerManager().ClearTimer(spawnTimerHandle);
 
 		for (auto enemy : CommonEnemyPool)
-			enemy->OnDamage(enemy->fsm->maxHp * 100, "");
+			enemy->OnDamage(enemy->fsm->maxHp * 100);
 		for (auto enemy : SpecialEnemyPool)
-			enemy->OnDamage(enemy->fsm->maxHp * 100, "");
+			enemy->OnDamage(enemy->fsm->maxHp * 100);
 		for (auto enemy : BossEnemyPool)
-			enemy->OnDamage(enemy->fsm->maxHp * 100, "");
+			enemy->OnDamage(enemy->fsm->maxHp * 100);
 	}
 }
 

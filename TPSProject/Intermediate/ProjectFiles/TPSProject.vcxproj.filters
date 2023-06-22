@@ -171,6 +171,9 @@
     <ClCompile Include="..\..\Source\TPSProject\private\ScreenUI.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Skill.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\SkillManager.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -361,6 +364,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\ScreenUI.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Skill.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\SkillManager.h">

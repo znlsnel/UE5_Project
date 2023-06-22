@@ -344,9 +344,6 @@ UInventory* ATPSPlayer::GetInventory()
 
 
 
-
-
-
 void ATPSPlayer::OnHitEvent(int damage)
 {
 	int randDamage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));

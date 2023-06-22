@@ -10,6 +10,7 @@
 #include "StoreUI.h"
 #include "WeaponUI.h"
 #include "PlayerMove.h"
+#include "PlayerAbilityComp.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Components/WidgetComponent.h>
@@ -40,6 +41,11 @@ void UPlayerUI::SetupInputBinding(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction(TEXT("WeaponSelectUI"), IE_Pressed, this, &UPlayerUI::ATVWeaponSelectUI<true>);
 	PlayerInputComponent->BindAction(TEXT("WeaponSelectUI"), IE_Released, this, &UPlayerUI::ATVWeaponSelectUI<false>);
+
+	PlayerInputComponent->BindAction(TEXT("FirstSkillSlot"), IE_Pressed, screenUI, &UScreenUI::UseSkillSlot<SkillType::IceAttack>);
+	PlayerInputComponent->BindAction(TEXT("SecondSkillSlot"), IE_Pressed, screenUI, &UScreenUI::UseSkillSlot<SkillType::LightningStrike>);
+	PlayerInputComponent->BindAction(TEXT("ThirdSkillSlot"), IE_Pressed, screenUI, &UScreenUI::UseSkillSlot<SkillType::Healing>);
+	PlayerInputComponent->BindAction(TEXT("FourthSkillSlot"), IE_Pressed, screenUI, &UScreenUI::UseSkillSlot<SkillType::FireStorm>);
 
 }
 

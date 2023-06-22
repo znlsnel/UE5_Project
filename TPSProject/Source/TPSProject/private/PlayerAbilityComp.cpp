@@ -3,9 +3,11 @@
 
 #include "PlayerAbilityComp.h"
 #include "TPSPlayer.h"
-
+#include "Skill.h"
+#include "ScreenUI.h"
 
 #include <Serialization/JsonReader.h>
+#include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
 
 // Sets default values for this component's properties
@@ -15,6 +17,7 @@ UPlayerAbilityComp::UPlayerAbilityComp()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	myPlayer =Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	// Load Json
 	LoadJsonFile();
 
@@ -40,6 +43,7 @@ void UPlayerAbilityComp::LoadJsonFile()
 			FSkillInfo* tempSkillInfo = new FSkillInfo();
 			tempSkillInfo->SkillName = jsonValueObject->GetStringField(TEXT("SkillName"));
 			tempSkillInfo->SkillInfo = jsonValueObject->GetStringField(TEXT("SkillInfo"));
+			//UKismetSystemLibrary::PrintString(GetWorld(), tempSkillInfo->SkillInfo);
 
 			TArray<TSharedPtr<FJsonValue>> powerValues = jsonValueObject->GetArrayField(TEXT("powerValues"));
 			for (auto powerValue : powerValues) {
@@ -67,8 +71,123 @@ void UPlayerAbilityComp::LoadJsonFile()
 void UPlayerAbilityComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	
 	// ...
+}
+
+void UPlayerAbilityComp::BeginPlay()
+{
+
+	for (int i = 0; i < 5; i++) {
+		fireStorm.Add(GetWorld()->SpawnActor<ASkill>(FireStormFactory));
+		HealStorm.Add(GetWorld()->SpawnActor<ASkill>(HealFactory));
+		IceAttack.Add(GetWorld()->SpawnActor<ASkill>(IceAttackFactory));
+		LightningStrike.Add(GetWorld()->SpawnActor<ASkill>(LightningStrikeFactory));
+	}
+}
+
+bool UPlayerAbilityComp::GetMouseInput()
+{
+	if (currSkill == nullptr) 
+		return false;
+
+	currSkill->TriggerSkill();
+	SetSkillTimer(currSkill->skillType);
+	currSkill = nullptr;
+	return true;
+}
+
+void UPlayerAbilityComp::SetSkillTimer(SkillType type)
+{
+	switch (type)
+	{
+	case SkillType::IceAttack:
+		IceAttackTime = currSkill->mySkill->coolDownValue;
+		myScreenUI->IceAttackTimeText = FString::Printf(TEXT("%d"), (int)IceAttackTime);
+		break;
+	case SkillType::LightningStrike:
+		LightningStrikeTime = currSkill->mySkill->coolDownValue;
+		myScreenUI->LightningStrikeTimeText = FString::Printf(TEXT("%d"), (int)LightningStrikeTime);
+		break;
+	case SkillType::Healing:
+		HealTime = currSkill->mySkill->coolDownValue;
+		myScreenUI->HealTimeText = FString::Printf(TEXT("%d"), (int)HealTime);
+		break;
+	case SkillType::FireStorm:
+		FireStormTime = currSkill->mySkill->coolDownValue;
+		myScreenUI->FireStormTimeText = FString::Printf(TEXT("%d"), (int)FireStormTime);
+		break;
+	}
+	if (GetWorld()->GetTimerManager().IsTimerActive(skillTimerHandle) == false)
+		OperateSkillTimer();
+}
+
+void UPlayerAbilityComp::OperateSkillTimer()
+{
+	bool isAllZero = true;
+	if (IceAttackTime > 0.f) {
+		IceAttackTime -= 0.1f;
+		if (FMath::Fmod(IceAttackTime, 1.0f) <= 0.1f) {
+			if (IceAttackTime <= 0.1f) {
+				myScreenUI->IceAttackTimeText = "";
+				myScreenUI->ToggleSkillSlot(SkillType::IceAttack, false);
+			}
+			else {
+				myScreenUI->IceAttackTimeText = FString::Printf(TEXT("%d"), (int)IceAttackTime);
+			}
+		}
+		isAllZero = false;
+	}
+
+	if (LightningStrikeTime > 0.f) {
+		LightningStrikeTime -= 0.1f;
+		if (FMath::Fmod(LightningStrikeTime, 1.0f) <= 0.1f) {
+			if (LightningStrikeTime <= 0.1f) {
+				myScreenUI->LightningStrikeTimeText = "";
+				myScreenUI->ToggleSkillSlot(SkillType::LightningStrike, false);
+			}
+			else {
+				myScreenUI->LightningStrikeTimeText = FString::Printf(TEXT("%d"), (int)LightningStrikeTime);
+			}
+		}
+		isAllZero = false;
+	}
+
+	if (HealTime > 0.f) {
+		HealTime -= 0.1f;
+		if (FMath::Fmod(HealTime, 1.0f) <= 0.1f) {
+			if (HealTime <= 0.1f) {
+				myScreenUI->HealTimeText = "";
+				myScreenUI->ToggleSkillSlot(SkillType::Healing, false);
+			}
+			else {
+				myScreenUI->HealTimeText = FString::Printf(TEXT("%d"), (int)HealTime);
+			}
+		}
+		isAllZero = false;
+
+	}
+
+	if (FireStormTime > 0.f) {
+
+		FireStormTime -= 0.1f;
+		if (FMath::Fmod(FireStormTime, 1.0f) <= 0.05f) {
+			if (FireStormTime <= 0.05f) {
+				myScreenUI->FireStormTimeText = "";
+				myScreenUI->ToggleSkillSlot(SkillType::FireStorm, false);
+			}
+			else {
+				myScreenUI->FireStormTimeText = FString::Printf(TEXT("%d"), (int)FireStormTime);
+			}
+		}
+		isAllZero = false;
+	}
+
+	GetWorld()->GetTimerManager().ClearTimer(skillTimerHandle);
+
+	if (isAllZero == false) {
+	GetWorld()->GetTimerManager().SetTimer(skillTimerHandle, this, &UPlayerAbilityComp::OperateSkillTimer, 0.1f, false);
+	}
 }
 
 FSkillInfo* UPlayerAbilityComp::GetSkillInfo(SkillType type)
@@ -80,6 +199,91 @@ FSkillInfo* UPlayerAbilityComp::GetSkillInfo(SkillType type)
 	}
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No SkillInfo"));
 	return nullptr;
+}
+
+bool UPlayerAbilityComp::UseSkill(SkillType type)
+{
+	if (currSkill) 
+	{
+		currSkill->OnSkill(false);
+		if (currSkill->skillType == type) {
+			currSkill = nullptr;
+			return false;
+		}
+	}
+
+	currSkill = GetSkill(type);
+	if (currSkill == nullptr) return false;
+	
+
+	if (currSkill->mySkill->point > 0) {
+		currSkill->state = SkillState::Aiming;
+	} 
+	else {
+		currSkill = nullptr;
+		return false;
+	}
+
+	currSkill->OnSkill(true);
+
+	return true;
+}
+
+ASkill* UPlayerAbilityComp::GetSkill(SkillType type)
+{
+	ASkill* tempSkill = nullptr;
+
+	switch (type)
+	{
+	case SkillType::IceAttack: {
+		if (IceAttackTime > 0.f)
+			return nullptr;
+		for (auto i : IceAttack)
+			if (i->state == SkillState::Standby) {
+				tempSkill = i;
+				break;
+			}
+	}
+		 break;
+
+	case SkillType::LightningStrike: {
+		if (LightningStrikeTime > 0.f)
+			return nullptr;
+
+		for (auto i : LightningStrike)
+			if (i->state == SkillState::Standby) {
+				tempSkill = i;
+				break;
+			}
+	}
+		break;
+
+	case SkillType::Healing: {
+		if (HealTime > 0.f)
+			return nullptr;
+
+		for (auto i : HealStorm)
+			if (i->state == SkillState::Standby) {
+				tempSkill = i;
+				break;
+			}
+	}
+		break;
+
+	case SkillType::FireStorm: {
+		if (FireStormTime > 0.f)
+			return nullptr;
+
+		for (auto i : fireStorm)
+			if (i->state == SkillState::Standby) {
+				tempSkill = i;
+				break;
+			}
+	}
+		break;
+	}
+
+	return tempSkill;
 }
 
 SkillSectionType UPlayerAbilityComp::ConvertSectionType(FString type)
@@ -125,5 +329,23 @@ SkillType UPlayerAbilityComp::ConvertSkillType(FString type)
 		tempType = SkillType::FireStorm;
 
 	return tempType;
+}
+
+void UPlayerAbilityComp::UpdateValue(FSkillInfo* skillInfo)
+{
+	if (skillInfo->point <= 0) 
+		return;
+
+	if (skillInfo->powerValues.Num() >= skillInfo->point)
+		skillInfo->powerValue = skillInfo->powerValues[skillInfo->point - 1];
+
+	if (skillInfo->coolDownValues.Num() >= skillInfo->point)
+		skillInfo->coolDownValue = skillInfo->coolDownValues[skillInfo->point - 1];
+
+	if (myPlayer && skillInfo->skillType == SkillType::HpUpgrade) {
+		myPlayer->UpgradeHp(skillInfo->powerValue);
+	}
+	myScreenUI->UnLockSkill(skillInfo->skillType);
+
 }
 

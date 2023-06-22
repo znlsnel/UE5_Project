@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "PlayerAbilityComp.generated.h"
 
-
 UENUM(BlueprintType)
 enum class SkillSectionType : uint8
 {
@@ -66,7 +65,7 @@ public:
 		int point = 0;
 
 	int powerValue = 0;
-	int coolDownValue = 0;
+	float coolDownValue = 0.f;
 
 };
 
@@ -85,15 +84,44 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void BeginPlay()override;
+
+	bool GetMouseInput();
+	void SetSkillTimer(SkillType type);
+	void OperateSkillTimer();
 	FSkillInfo* GetSkillInfo(SkillType type);
+	class ASkill* GetSkill(SkillType type);
+	bool UseSkill(SkillType type);
 	SkillSectionType ConvertSectionType(FString type);
 	SkillType ConvertSkillType(FString type);
+	void UpdateValue(struct FSkillInfo* skillInfo);
+
 public:
 	class ATPSPlayer* myPlayer;
-		
-
+	class UScreenUI* myScreenUI;
+	FTimerHandle skillTimerHandle;
 	UPROPERTY(BlueprintReadWrite)
 		int skillPoint = 0;
 
 	TArray<FSkillInfo*> skillInfos;
+	class ASkill* currSkill;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class ASkill> FireStormFactory;
+	TArray<class ASkill*> fireStorm;
+	float FireStormTime = 0.f;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class ASkill> HealFactory;
+	TArray<class ASkill*> HealStorm;
+	float HealTime = 0.f;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class ASkill> IceAttackFactory;
+	TArray<class ASkill*> IceAttack;
+	float IceAttackTime = 0.f;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class ASkill> LightningStrikeFactory;
+	TArray<class ASkill*> LightningStrike;
+	float LightningStrikeTime = 0.f;
 };

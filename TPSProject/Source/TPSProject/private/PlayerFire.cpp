@@ -16,6 +16,7 @@
 #include "TPSPlayerController.h"
 #include "StoreUI.h"
 #include "BuildableItem.h"
+#include "PlayerAbilityComp.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Kismet/GameplayStatics.h>
@@ -76,6 +77,8 @@ void UPlayerFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 void UPlayerFire::InputFire(bool isPressed)
 {
 	isFire = isPressed;
+	if (me->abilityComp->GetMouseInput()) return;
+
 	if (currWeapon == nullptr)return;
 	if (IsValid(me->buildableItem) && me->buildableItem->isBuild)
 	{
