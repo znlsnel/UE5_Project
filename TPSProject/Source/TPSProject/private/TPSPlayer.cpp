@@ -133,7 +133,7 @@ void ATPSPlayer::BeginPlay()
 
 	playerAnim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
 	HpRecoveryLoop();
-	myAbilityWidget = CreateWidget<UAbilityUpgradeWidget>(GetWorld(), abilityWidgetFactory);
+
 
 	for (int i = 0; i < damageWidgetCount; i++)
 	{
@@ -306,15 +306,14 @@ void ATPSPlayer::AbilityWidget()
 {
 	if (myAbilityWidget == nullptr) {
 		myAbilityWidget = CreateWidget<UAbilityUpgradeWidget>(GetWorld(), abilityWidgetFactory);
+		myAbilityWidget->AddToViewport();
 	}
 
-	if (myAbilityWidget->IsInViewport())
-	{
-		myAbilityWidget->CloseWidget();
-	}
-	else
-	{
-		myAbilityWidget->OpenWidget();
+	if (myAbilityWidget) {
+		if (myAbilityWidget->isOpen)
+			myAbilityWidget->CloseWidget();
+		else
+			myAbilityWidget->OpenWidget();
 	}
 }
 
@@ -338,6 +337,14 @@ UDamageWidget* ATPSPlayer::GetDamageWidget()
 UInventory* ATPSPlayer::GetInventory()
 {
 	return playerUI->screenUI->inventory;
+}
+
+void ATPSPlayer::AddHP(int value)
+{
+	hp += value;
+	if (hp > maxHp) hp = maxHp;
+	playerUI->screenUI->UpdateScreenUI();
+
 }
 
 

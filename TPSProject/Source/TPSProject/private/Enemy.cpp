@@ -16,6 +16,7 @@
 #include <Net/UnrealNetwork.h>
 #include <Kismet/GameplayStatics.h>
 #include <GameFramework/Character.h>
+#include <Camera/CameraComponent.h>
 
 // Sets default values
 AEnemy::AEnemy()
@@ -67,7 +68,7 @@ void AEnemy::Tick(float DeltaTime)
 
 	if (fsm && fsm->isActive && player)
 	{
-		HpBarWgComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), player->GetActorLocation()));
+		HpBarWgComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), player->tpsCamComp->GetComponentLocation()));
 	}
 
 }

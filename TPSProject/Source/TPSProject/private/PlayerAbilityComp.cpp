@@ -16,12 +16,8 @@ UPlayerAbilityComp::UPlayerAbilityComp()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	myPlayer =Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	// Load Json
 	LoadJsonFile();
-
-
 	// ...
 }
 
@@ -67,16 +63,9 @@ void UPlayerAbilityComp::LoadJsonFile()
 }
 
 
-// Called every frame
-void UPlayerAbilityComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
-	// ...
-}
-
 void UPlayerAbilityComp::BeginPlay()
 {
+	myPlayer = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 	for (int i = 0; i < 5; i++) {
 		fireStorm.Add(GetWorld()->SpawnActor<ASkill>(FireStormFactory));
@@ -86,15 +75,43 @@ void UPlayerAbilityComp::BeginPlay()
 	}
 }
 
+// Called every frame
+void UPlayerAbilityComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
+	// ...
+}
+
 bool UPlayerAbilityComp::GetMouseInput()
 {
 	if (currSkill == nullptr) 
 		return false;
 
+	if (currSkill->hitResult.bBlockingHit == false) 
+		return true;
+
+	int randSkill = FMath::RandRange(1, 3);
+
+	if (myPlayer == nullptr)
+		myPlayer = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	if (myPlayer) {
+		myPlayer->PlayMontage(skillAnim, FName(FString::Printf(TEXT("Skill_%d"), randSkill)));
+		isPlaySkillAnim = true;
+	}
+	else
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Player"));
+
+
+	return true;
+}
+
+void UPlayerAbilityComp::SkillTrigger()
+{
 	currSkill->TriggerSkill();
 	SetSkillTimer(currSkill->skillType);
 	currSkill = nullptr;
-	return true;
 }
 
 void UPlayerAbilityComp::SetSkillTimer(SkillType type)

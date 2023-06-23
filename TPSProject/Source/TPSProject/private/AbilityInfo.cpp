@@ -8,7 +8,8 @@
 void UAbilityInfo::InitWidget(FSkillInfo* skillInfo, bool StartHover)
 {
 	//FString skillName, FString skillInfomation, int currValue, int nextValue, float currCoolTime, float nextCoolTime, bool StartHover
-
+	if (IsInViewport() == false)
+		AddToViewport();
 	SkillName = skillInfo->SkillName;
 	SkillInfomation = skillInfo->SkillInfo;
 

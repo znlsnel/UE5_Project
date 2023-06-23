@@ -54,6 +54,11 @@ public:
 	UPROPERTY(EditAnywhere)
 		SkillType skillType = SkillType::None;
 
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* previewLine;
+
+	UPROPERTY(EditAnywhere)
+		USoundBase* skillSound;
 
 	SkillState state = SkillState::Standby;
 	FTimerHandle SkillLoopTimer;
@@ -61,13 +66,10 @@ public:
 	class ATPSPlayer* myPlayer;
 	class APlayerController* myPlayerControler;
 
-	bool isLoopSkill = false;
-
 	// 조준중 -> 작동중 -> 미작동중
 
-	float lastUsedTime = 0.f;
 	float beginLoopTime = 0.f;
-	
-	UPROPERTY(EditAnywhere)
-		float skillDurationTime = 5.f;
+	float skillDurationTime = 0.f;
+
+
 };

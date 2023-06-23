@@ -39,12 +39,9 @@ public:
 
 	template<DashType type>
 	void DoubleClick() { DoubleClick(type); }
-
-
 	void DoubleClick(DashType dashType);
 
 	void Dash(DashType dashType);
-
 
 	bool isDash = false;
 	// 이동 방향

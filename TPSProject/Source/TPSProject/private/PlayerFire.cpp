@@ -62,7 +62,7 @@ void UPlayerFire::BeginPlay()
 	anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
 
 	GetWorld()->GetTimerManager().SetTimer(BeginPlayTimer, FTimerDelegate::CreateLambda(
-		[&]() {SetWeapon(WeaponType::Pistol); }
+		[&]() {SetWeapon(WeaponType::Sword); }
 	),  1.f, false);
 
 //	SetWeapon(WeaponType::Pistol);

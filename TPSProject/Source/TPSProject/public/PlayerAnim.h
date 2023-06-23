@@ -27,6 +27,12 @@ public:
 	void UpdateTurnAnimation();
 	void DieEvent();
 
+	UFUNCTION()
+		void AnimNotify_SkillTrigger();
+	UFUNCTION()
+		void AnimNotify_EndSkill();
+	UFUNCTION()
+		void AnimNotify_EndSwing();
 	//UFUNCTION(BlueprintImplementableEvent)
 
 	UAnimMontage* Dash(DashType dashDirection);

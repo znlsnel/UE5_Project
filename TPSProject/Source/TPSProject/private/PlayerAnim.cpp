@@ -4,16 +4,20 @@
 #include "PlayerFire.h"
 #include "Weapon.h"
 #include "TPSPlayer.h"
-#include <Net/UnrealNetwork.h>
+#include "PlayerAbilityComp.h"
+#include "Weapon_Sword.h"
 
+#include <Net/UnrealNetwork.h>
 #include <GameFramework/CharacterMovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
 #include <Animation/AnimSequence.h>
 
+
 UPlayerAnim::UPlayerAnim()
 {
+
 }
 
 void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
@@ -74,7 +78,9 @@ void UPlayerAnim::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 
 void UPlayerAnim::UpdateTurn()
 {
+
 	pitch = player->GetBaseAimRotation().Pitch;
+
 	if (pitch > 260) pitch -= 360;
 	if (speed != 0)
 	{
@@ -110,6 +116,22 @@ void UPlayerAnim::UpdateTurnAnimation()
 void UPlayerAnim::DieEvent()
 {
 	PlayMontage(DieAnimMontage);
+}
+
+void UPlayerAnim::AnimNotify_SkillTrigger()
+{
+	player->abilityComp->SkillTrigger();
+}
+
+void UPlayerAnim::AnimNotify_EndSkill()
+{
+	player->abilityComp->isPlaySkillAnim = false;
+}
+
+void UPlayerAnim::AnimNotify_EndSwing()
+{
+	
+	Cast<AWeapon_Sword>(player->playerFire->weapon_Sword)->isSwingingSword = false;
 }
 
 UAnimMontage* UPlayerAnim::Dash(DashType dashDirection)

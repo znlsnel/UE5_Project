@@ -81,12 +81,13 @@ public:
 
 protected:
 	void LoadJsonFile();
+
 public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void BeginPlay()override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	bool GetMouseInput();
+	void SkillTrigger();
 	void SetSkillTimer(SkillType type);
 	void OperateSkillTimer();
 	FSkillInfo* GetSkillInfo(SkillType type);
@@ -99,29 +100,34 @@ public:
 public:
 	class ATPSPlayer* myPlayer;
 	class UScreenUI* myScreenUI;
+	class ASkill* currSkill;
+
 	FTimerHandle skillTimerHandle;
+
 	UPROPERTY(BlueprintReadWrite)
 		int skillPoint = 0;
 
-	TArray<FSkillInfo*> skillInfos;
-	class ASkill* currSkill;
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<class ASkill> FireStormFactory;
-	TArray<class ASkill*> fireStorm;
-	float FireStormTime = 0.f;
-
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<class ASkill> HealFactory;
-	TArray<class ASkill*> HealStorm;
-	float HealTime = 0.f;
-
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class ASkill> IceAttackFactory;
-	TArray<class ASkill*> IceAttack;
-	float IceAttackTime = 0.f;
-
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class ASkill> LightningStrikeFactory;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class ASkill> HealFactory;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class ASkill> FireStormFactory;
+
+	UPROPERTY(EditAnywhere)
+		class UAnimMontage* skillAnim;
+
+	TArray<FSkillInfo*> skillInfos;
+	TArray<class ASkill*> IceAttack;
 	TArray<class ASkill*> LightningStrike;
+	TArray<class ASkill*> HealStorm;
+	TArray<class ASkill*> fireStorm;
+
 	float LightningStrikeTime = 0.f;
+	float IceAttackTime = 0.f;
+	float HealTime = 0.f;
+	float FireStormTime = 0.f;
+	bool isPlaySkillAnim = false;
 };

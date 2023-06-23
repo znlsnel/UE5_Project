@@ -184,5 +184,5 @@ public:
 		void OnInitialization();
 	FTimerHandle addItemTimer;
 	class UInventory* GetInventory();
-
+	void AddHP(int value);
 };

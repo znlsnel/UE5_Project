@@ -61,11 +61,11 @@ public:
 	int32 used_ThirdSection = 0;
 
 	UPROPERTY(BlueprintReadOnly)
-		int32 RemainingSecondSkillCount = 10;
+		int32 RemainingSecondSkillCount = 5;
 	UPROPERTY(BlueprintReadOnly)
 		int32 RemainingThirdSkillCount = 10;
 	UPROPERTY(BlueprintReadOnly)
-		int32 RemainingFourthSkillCount = 10;
+		int32 RemainingFourthSkillCount = 15;
 
 	UPROPERTY(BlueprintReadOnly)
 		float toSecondSectionRate = 0.f;
@@ -78,5 +78,8 @@ public:
 		USoundBase* successSound;
 	UPROPERTY(EditAnywhere)
 		USoundBase* failedSound;
+
+	UPROPERTY(BlueprintReadWrite)
+		bool isOpen = false;
 
 };

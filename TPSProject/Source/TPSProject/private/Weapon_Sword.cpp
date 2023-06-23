@@ -4,8 +4,11 @@
 #include "Weapon_Sword.h"
 #include "Enemy.h"
 
-AWeapon_Sword::AWeapon_Sword()
+#include <particles/ParticleSystemComponent.h>
+
+AWeapon_Sword::AWeapon_Sword() : Super()
 {
+	Tags.Add(TEXT("Sword"));
 	weaponMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("weaponmeshcomp"));
 	
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("SkeletalMesh'/Game/InfinityBladeWeapons/Weapons/Blade/Swords/Blade_SwordB/SK_Blade_SwordB.SK_Blade_SwordB'"));
@@ -30,11 +33,29 @@ AWeapon_Sword::AWeapon_Sword()
 	enemySensor = CreateDefaultSubobject<UBoxComponent>(TEXT("EnemySensor"));
 	enemySensor->SetupAttachment(weaponMeshComp);
 	enemySensor->AttachToComponent(weaponMeshComp, FAttachmentTransformRules::KeepRelativeTransform);
+
+	swordEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("swordEffect"));
+	swordEffect->SetupAttachment(weaponMeshComp);
+	swordEffect->AttachToComponent(weaponMeshComp, FAttachmentTransformRules::KeepRelativeTransform);
+	PrimaryActorTick.bCanEverTick = true;
+
 }
 
 void AWeapon_Sword::BeginPlay()
 {
+	Super::BeginPlay();
 	enemySensor->OnComponentBeginOverlap.AddDynamic(this, &AWeapon_Sword::OnOverlapBegin);
+	swordEffect->Activate(true);
+}
+
+void AWeapon_Sword::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (SwordMoveOn) {
+		FVector moveoffset = myPlayer->GetActorForwardVector() * 10;
+		myPlayer->AddActorWorldOffset(moveoffset);
+	}
 }
 
 
@@ -89,26 +110,29 @@ void AWeapon_Sword::Attack()
 			break;
 		}
 	}
-	UKismetSystemLibrary::PrintString(GetWorld(), attackSection.ToString());
-
-
 	myPlayer->PlayMontage(CharacterFireAM, attackSection);
+	SwordMoveOn = true;
+	isSwingingSword = true;
+
+	GetWorldTimerManager().SetTimer(swordMoveTimer, FTimerDelegate::CreateLambda(
+		[&]() {
+			SwordMoveOn = false;
+		}), swordMoveTime, false);
 }
 
 void AWeapon_Sword::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
-
 	if (OtherActor->ActorHasTag(TEXT("Enemy")) == false)
 		return;
 
-	if (myPlayer && myPlayer->IsPlayingMontage(CharacterFireAM) == false)
+	if (myPlayer == nullptr) return;
+
+	if (myPlayer->IsPlayingMontage(CharacterFireAM) == false)
 		return;
 
-	tempEnemy = Cast<AEnemy>(OtherActor);
-
-
 	int finalDamage = 20 + weapDamage + myPlayer->abilityComp->GetSkillInfo(SkillType::swordProficiency)->powerValue;
+
+	tempEnemy = Cast<AEnemy>(OtherActor);
 	tempEnemy->OnDamage(finalDamage, SweepResult.BoneName);
 
 

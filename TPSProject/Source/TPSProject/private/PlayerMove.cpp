@@ -4,6 +4,10 @@
 #include "PlayerMove.h"
 #include "PlayerUI.h"
 #include "PlayerAnim.h"
+#include "PlayerFire.h"
+#include "PlayerAbilityComp.h"
+#include "Weapon.h"
+#include "Weapon_Sword.h"
 
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
@@ -56,6 +60,9 @@ void UPlayerMove::SetupInputBinding(UInputComponent* PlayerInputComponent)
 #include "BuildableItem.h"
 void UPlayerMove::Turn(float value)
 {
+
+	if (me->abilityComp->isPlaySkillAnim) return;
+
 	turnValue += value;
 	turnValue = UKismetMathLibrary::FClamp(turnValue, -10, 10);
 	
@@ -71,6 +78,8 @@ void UPlayerMove::Turn(float value)
 
 void UPlayerMove::LookUp(float value)
 {
+	if (me->abilityComp->isPlaySkillAnim) return;
+
 	lookUpValue += value;
 	lookUpValue = UKismetMathLibrary::FClamp(lookUpValue, -10, 10);
 
@@ -80,6 +89,8 @@ void UPlayerMove::LookUp(float value)
 	}
 
 	if (me->playerUI->IsMouseActive) return;
+
+	
 	me->AddControllerPitchInput(value);
 }
 
@@ -89,10 +100,16 @@ void UPlayerMove::Move()
 	// GetControlRotation - 플레이어 폰을 컨트롤하고 있는 컨트롤러의 방향을 FRotator 타입으로 넘겨줌
 	// FTransform으로 Transform 인스턴트를 생성
 	// TrasnformVector 는 특정한 vector를 local vector로 변환시켜줌
+	if (me->abilityComp->isPlaySkillAnim) 
+		return;
+
+	if (me->playerFire->currWeapon && 
+		me->playerFire->currWeapon->ActorHasTag(TEXT("Sword")) &&
+		Cast<AWeapon_Sword>(me->playerFire->currWeapon)->isSwingingSword) 
+		return;
+
 	direction = FTransform(me->GetControlRotation()).TransformVector(direction);
-
 	me->AddMovementInput(direction);
-
 	direction = FVector(0, 0, 0);
 }
 void UPlayerMove::InputHorizontal(float value)
