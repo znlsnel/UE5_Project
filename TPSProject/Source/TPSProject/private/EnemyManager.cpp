@@ -151,13 +151,13 @@ void AEnemyManager::CreateEnemy(FVector location, EnemyPoolType poolType)
 	}
 		break;
 	case EnemyPoolType::Special: {
-		int a = FMath::RandRange(0, 5);
+		int a = FMath::RandRange(0, 3);
 		if (a < 2)
 			tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(BigRiktorFactory));
 		else if (a < 4)
 			tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(HelixFactory));
-		else
-			tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(BomberFactory));
+		//else
+		//	tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(BomberFactory));
 	}
 		break;
 

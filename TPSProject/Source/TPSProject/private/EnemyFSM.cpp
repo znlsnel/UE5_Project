@@ -102,7 +102,6 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 	ai = Cast<AAIController>(me->GetController());
 	UpdageTargetTick();
 	
-	me->HpBar->UpdateHpBar(this);
 	anim->speed = me->GetCharacterMovement()->MaxWalkSpeed;
 	if (anim->Montage_IsPlaying(anim->AM_Damaged))
 		anim->Montage_Stop(0, anim->AM_Damaged);
@@ -360,10 +359,14 @@ void UEnemyFSM::OnDamageProcess(int damage, ATPSPlayer* player,  FName boneName)
 	}
 
 
-	me->AddWorldDamageUI(damage);
+	float preHp = hp;
 	hp -= damage;
 	hp = FMath::Max(hp, 0);
-	me->HpBar->UpdateHpBar(this);
+
+	me->AddWorldDamageUI(damage, (float)hp/(float)maxHp, preHp/(float)maxHp);
+	
+
+	//me->HpBar->UpdateHpBar(this);
 
 	anim->playHitSound(hp == 0);
 	if (hp > 0)

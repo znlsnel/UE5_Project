@@ -12,6 +12,7 @@
 #include "DamageWidget.h"
 
 #include <Components/WidgetComponent.h>
+#include <Components/CapsuleComponent.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Net/UnrealNetwork.h>
 #include <Kismet/GameplayStatics.h>
@@ -41,21 +42,14 @@ AEnemy::AEnemy()
 	// AIController부터 Possess될 수 있도록 설정
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	myController = GetController();
-
-	HpBarWgComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("HpBar"));
-	HpBarWgComp->SetupAttachment(GetMesh());
-	HpBarWgComp->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
-	HpBar = CreateWidget<UEnemyHpBar>(GetWorld(), HpBarWg);
-	HpBar->enemyFsm = fsm;
-	HpBarWgComp->SetWidget(HpBar);
-
+	hpBar = CreateWidget<UEnemyHpBar>(GetWorld(), hpBarFactory);
+	hpBar->AddToViewport();
 }
 #include <Kismet/KismetMathLibrary.h>
 // Called every frame
@@ -63,13 +57,6 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (fsm == nullptr)
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("no fsm"));
-
-	if (fsm && fsm->isActive && player)
-	{
-		HpBarWgComp->SetWorldRotation(UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), player->tpsCamComp->GetComponentLocation()));
-	}
 
 }
 
@@ -80,19 +67,21 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AEnemy::AddWorldDamageUI(int Damage)
+void AEnemy::AddWorldDamageUI(int Damage, float currHpPercent, float preHpPercent)
 {
 
 	if (player == nullptr)
 		player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-	FVector pos = HpBarWgComp->GetComponentLocation();
-	pos.Z += 15;
+	FVector pos = GetActorLocation();
+	pos.Z += (GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2) + 30;
+
 
 	UDamageWidget* tempWidget = player->GetDamageWidget();
 	if (IsValid(tempWidget)) {
 		tempWidget->InitDamageWidget(pos, Damage);
 	}
+	hpBar->InitHpWidget(this, currHpPercent, preHpPercent);
 }
 
 

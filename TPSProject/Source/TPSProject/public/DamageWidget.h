@@ -22,6 +22,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void OpenWidget();
 
+	//void InitDamageWidget(FVector EnemyWorldLocation, int damage, float currHp, float preHp);
 	void InitDamageWidget(FVector EnemyWorldLocation, int damage);
 	void SetLocationLoop();
 
@@ -36,4 +37,12 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 		bool isInView = false;
+
+	//UPROPERTY(BlueprintReadOnly)
+	//	float hpPercent = 0.f;
+
+	//UPROPERTY(BlueprintReadOnly)
+	//	float DisappearHp = 0.f;
+
+	float uiRenderTime = 2.f;
 };

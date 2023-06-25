@@ -15,13 +15,33 @@ class TPSPROJECT_API UEnemyHpBar : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	UEnemyHpBar(const FObjectInitializer& ObjectInitialize);
+
 	UFUNCTION(BlueprintImplementableEvent)
-		void UpdateHpBar(class UEnemyFSM* fsm);
+		void OpenWidget();
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void CloseWidget();
+
+	void InitHpWidget(class AEnemy* enemy, float currHpPct, float preHpPct);
+	void SetLocationLoop();
 public:
-	UPROPERTY(BlueprintReadWrite)
-		class UEnemyFSM* enemyFsm;
+	FTimerHandle LoopTimer;
+	FTimerHandle InitTimer;
+	class APlayerController* playerController;
 
+	UPROPERTY(BlueprintReadWrite)
+		bool isInView = false;
+
+	class AEnemy* myEnemy;
+
+	UPROPERTY(BlueprintReadOnly)
+		float currHpPercent;
+
+	UPROPERTY(BlueprintReadOnly)
+		float preHpPercent;
+
+	float uiRenderTime = 2.f;
 	
 };
 

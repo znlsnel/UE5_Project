@@ -25,7 +25,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void AddWorldDamageUI(int Damage);
+	void AddWorldDamageUI(int Damage,float currHpPercent, float preHpPercent);
 	
 	void DieEvent(class ATPSPlayer* AttackPlayer);
 	void OnDamage(int damage, FName boneName ="", class ATPSPlayer* AttackPlayer = nullptr);
@@ -41,10 +41,9 @@ public:
 	class ATPSPlayer* player;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		class UWidgetComponent* HpBarWgComp;
-
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<class UEnemyHpBar> HpBarWg;
-	class UEnemyHpBar* HpBar;
+		TSubclassOf<class UEnemyHpBar> hpBarFactory;
+	class UEnemyHpBar* hpBar;
+
+
 };
