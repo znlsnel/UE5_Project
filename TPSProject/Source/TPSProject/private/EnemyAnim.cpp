@@ -4,6 +4,8 @@
 #include "EnemyAnim.h"
 #include "Enemy.h"
 #include "TPSPlayer.h"
+#include "Weapon_Sword.h"
+#include "PlayerFire.h"
 #include "DoomStone.h"
 #include "BuildableItem.h"
 
@@ -19,8 +21,22 @@ void UEnemyAnim::OnEndAttackAnimation(int Damage)
 	else
 		damage = AttackDamage;
 
-	if (target->ActorHasTag("Player"))
-		Cast<ATPSPlayer>(target)->OnHitEvent(damage);
+	if (target->ActorHasTag("Player")) {
+		ATPSPlayer* tempPlayer = Cast<ATPSPlayer>(target);
+
+		if (tempPlayer->playerFire->currWeapon->weaponType == WeaponType::Sword) {
+			AWeapon_Sword* tempSword = Cast<AWeapon_Sword>(tempPlayer->playerFire->currWeapon);
+
+			if (tempSword->isBlocking == true) {
+				me->OnDamage(10, "", tempPlayer);
+				tempSword->BlockEffect->Activate(true);
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), tempSword->BlockSound, tempSword->GetActorLocation());
+				return;
+			}
+		}
+
+		tempPlayer->OnHitEvent(damage, me->GetActorLocation());
+	}
 
 	else if (target->ActorHasTag("DoomStone"))
 		Cast<ADoomstone>(target)->OnHitEvent(damage);

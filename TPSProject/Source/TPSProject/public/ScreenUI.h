@@ -31,6 +31,15 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void ToggleSkillSlot(SkillType type, bool isUse);
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void playerHpEvent(bool isHeal);
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void RespawnEvent(bool death);
+	UFUNCTION(BlueprintImplementableEvent)
+		void RespawnTimeUpdate();
+
+	void RespawnTimeLoop();
 	void Initialization(class ATPSPlayer* player);
 	void ToggleInventory();
 	void ToggleInventory(bool On);
@@ -43,6 +52,7 @@ public:
 	class ATPSPlayer* myPlayer;
 	class UPlayerAbilityComp* myAbilityComp;
 	FTimerHandle startTimerHandle;
+	FTimerHandle respawnTimer;
 
 	UPROPERTY(BlueprintReadOnly)
 		FString IceAttackTimeText ="";
@@ -56,6 +66,16 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		FString FireStormTimeText = "";
 
+	UPROPERTY(BlueprintReadOnly)
+		FString DashTimeText = "";
+	float DashTime = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+		FString ShieldTimeText = "";
+	float ShieldTime = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+		int RespawnTime = 0;
 
 	UPROPERTY(EditAnywhere, blueprintReadWrite, Category = Inventory)
 		class UInventory* inventory;

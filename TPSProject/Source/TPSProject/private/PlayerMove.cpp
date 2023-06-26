@@ -8,6 +8,7 @@
 #include "PlayerAbilityComp.h"
 #include "Weapon.h"
 #include "Weapon_Sword.h"
+#include "ScreenUI.h"
 
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
@@ -30,9 +31,12 @@ void UPlayerMove::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	gameTime += DeltaTime;
-
-	Move();
+	if (isDash) {
+		me->AddActorWorldOffset(dashDir * 10);
+	}
+	else {
+		Move();
+	}
 }
 
 void UPlayerMove::SetupInputBinding(UInputComponent* PlayerInputComponent)
@@ -48,19 +52,15 @@ void UPlayerMove::SetupInputBinding(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Pressed, this, &UPlayerMove::InputRun);
 	PlayerInputComponent->BindAction(TEXT("Run"), IE_Released, this, &UPlayerMove::InputRun);
 
-	PlayerInputComponent->BindAction(TEXT("Dash_W"), IE_DoubleClick, this, &UPlayerMove::DoubleClick<DashType::W>);
+	PlayerInputComponent->BindAction(TEXT("Dash"), IE_Pressed, this, &UPlayerMove::Dash);
 
-	PlayerInputComponent->BindAction(TEXT("Dash_A"), IE_DoubleClick, this, &UPlayerMove::DoubleClick<DashType::A>);
-
-	PlayerInputComponent->BindAction(TEXT("Dash_S"), IE_DoubleClick, this, &UPlayerMove::DoubleClick<DashType::S>);
-
-	PlayerInputComponent->BindAction(TEXT("Dash_D"), IE_DoubleClick, this, &UPlayerMove::DoubleClick<DashType::D>);
 }
 
 #include "BuildableItem.h"
 void UPlayerMove::Turn(float value)
 {
 
+	if (me->isDie) return;
 	if (me->abilityComp->isPlaySkillAnim) return;
 
 	turnValue += value;
@@ -78,6 +78,7 @@ void UPlayerMove::Turn(float value)
 
 void UPlayerMove::LookUp(float value)
 {
+	if (me->isDie) return;
 	if (me->abilityComp->isPlaySkillAnim) return;
 
 	lookUpValue += value;
@@ -96,6 +97,7 @@ void UPlayerMove::LookUp(float value)
 
 void UPlayerMove::Move()
 {
+	if (me->isDie) return;
 	// 플레이어 이동
 	// GetControlRotation - 플레이어 폰을 컨트롤하고 있는 컨트롤러의 방향을 FRotator 타입으로 넘겨줌
 	// FTransform으로 Transform 인스턴트를 생성
@@ -105,25 +107,37 @@ void UPlayerMove::Move()
 
 	if (me->playerFire->currWeapon && 
 		me->playerFire->currWeapon->ActorHasTag(TEXT("Sword")) &&
-		Cast<AWeapon_Sword>(me->playerFire->currWeapon)->isSwingingSword) 
+		Cast<AWeapon_Sword>(me->playerFire->currWeapon)->IsActiveSword) 
 		return;
+
 
 	direction = FTransform(me->GetControlRotation()).TransformVector(direction);
 	me->AddMovementInput(direction);
+
 	direction = FVector(0, 0, 0);
 }
 void UPlayerMove::InputHorizontal(float value)
 {
 	direction.Y = value;
+	if (isDash == false)
+		dashDir.Y = value;
 }
 
 void UPlayerMove::InputVertical(float value)
 {
 	direction.X = value;
+
+	if (isDash == false)
+		dashDir.X = value;
 }
 
 void UPlayerMove::InputJump()
 {
+	if (me->playerFire->currWeapon && me->playerFire->currWeapon->weaponType == WeaponType::Sword) {
+		if (Cast<AWeapon_Sword>(me->playerFire->currWeapon)->isBlocking == true)
+			return;
+	}
+
 	if (me->GetCharacterMovement()->IsFalling() == false)
 	{
 		me->Jump();
@@ -149,43 +163,52 @@ void UPlayerMove::InputRun()
 
 }
 
-void UPlayerMove::DoubleClick(DashType dashDirection)
+
+void UPlayerMove::Dash( )
 {
-	Dash(dashDirection);
+	if (GetWorld()->GetTimeSeconds() - lastDashTime < dashCoolTime)
+		return;
+
+	lastDashTime = GetWorld()->GetTimeSeconds();
+	playerAnim->PlayDashAnim(dashDir);
+
+	isDash = true;
+
+	float absX = FMath::Abs(dashDir.X);
+	float absY = FMath::Abs(dashDir.Y);
+
+	if (dashDir.X == 0 && dashDir.Y == 0)
+		dashDir = me->GetActorForwardVector();
+
+
+	else if (absX < absY) {
+		if (dashDir.Y > 0.f)
+			dashDir = me->GetActorRightVector();
+		else
+			dashDir = -(me->GetActorRightVector());
+
+	}
+	else {
+		if (dashDir.X > 0.f)
+			dashDir = me->GetActorForwardVector();
+		else
+			dashDir = -(me->GetActorForwardVector());
+
+	}
+	
+	me->playerUI->screenUI->DashTime = dashCoolTime;
+	me->playerUI->screenUI->DashTimeText = FString::Printf(TEXT("%d"), (int)dashCoolTime);
+
+
+	if (GetWorld()->GetTimerManager().IsTimerActive(me->abilityComp->skillTimerHandle) == false)
+		me->abilityComp->OperateSkillTimer();
+
+	GetWorld()->GetTimerManager().ClearTimer(dashTimer);
+	GetWorld()->GetTimerManager().SetTimer(dashTimer, FTimerDelegate::CreateLambda(
+		[&]() {
+			isDash = false;
+		}), 0.7f, false);
+
+	return;
 }
 
-void UPlayerMove::Dash(DashType dashDirection)
-{
-	//UAnimMontage* dashMontage = playerAnim->Dash(dashDirection);
-
-	////playerAnim->PlayMontage(dashMontage);
-	//me->PlayMontageInServer(dashMontage);
-	//FVector ImpulseDirection;
-	//switch (dashDirection)
-	//{
-	//case DashType::W:
-	//	ImpulseDirection = me->GetActorForwardVector();
-	//	break;
-	//case DashType::A:
-	//	ImpulseDirection = -me->GetActorRightVector();
-	//	break;
-	//case DashType::S:
-	//	ImpulseDirection = -me->GetActorForwardVector();
-	//	break;
-	//case DashType::D:
-	//	ImpulseDirection = me->GetActorRightVector();
-	//	break;
-	//}
-
-	//float ImpulseMagnitude = 70000.0f;
-	//FVector Impulse = ImpulseMagnitude * ImpulseDirection;
-
-
-
-	//FVector Point = me->GetActorLocation();
-
-	//me->Jump();
-	//me->GetCharacterMovement()->AddImpulse(Impulse);
-
-	//return;
-}

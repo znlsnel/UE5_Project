@@ -35,7 +35,8 @@ public:
 
 	template<bool b>
 	void SniperAim() { SniperAim(b); }					// 스코프 모드
-	void SniperAim(bool isPressed);					// 스코프 모드
+	void SniperAim(bool isPressed);		
+	void zoomCamera();	// 스코프 모드
 	void LoadBullet();
 
 
@@ -45,14 +46,15 @@ public:
 
 public:
 	bool bSniperAim = false;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bUsingPistol = true;
 
 	bool isFire = false;
+	float zoomCameraValue = 90.f;
 
 	FTimerHandle fireTimerHandle;
 	FTimerHandle BeginPlayTimer;
+	FTimerHandle ZoomTimer;
 
 	class UPlayerAnim* anim;
 

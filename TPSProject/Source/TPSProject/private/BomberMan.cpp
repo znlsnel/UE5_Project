@@ -36,7 +36,7 @@ void ABomberMan::TriggerBomber(UPrimitiveComponent* OverlappedComponent, AActor*
 
 
 	if (OtherActor->ActorHasTag("Player")) {
-		Cast<ATPSPlayer>(OtherActor)->OnHitEvent(fsm->anim->AttackDamage);
+		Cast<ATPSPlayer>(OtherActor)->OnHitEvent(fsm->anim->AttackDamage, GetActorLocation());
 		Explosion();
 	}
 

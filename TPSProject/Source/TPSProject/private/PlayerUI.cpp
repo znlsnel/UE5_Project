@@ -11,6 +11,7 @@
 #include "WeaponUI.h"
 #include "PlayerMove.h"
 #include "PlayerAbilityComp.h"
+#include "playerHpEffect.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Components/WidgetComponent.h>
@@ -31,7 +32,7 @@ void UPlayerUI::InitializeComponent()
 void UPlayerUI::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 void UPlayerUI::SetupInputBinding(UInputComponent* PlayerInputComponent)
@@ -67,7 +68,8 @@ void UPlayerUI::GetMouseInput()
 
 void UPlayerUI::ToggleMouse()
 {
-	APlayerController* pc = GetWorld()->GetFirstPlayerController();
+	APlayerController* pc = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	//APlayerController* pc = GetWorld()->GetFirstPlayerController();
 
 	if (IsMouseActive)
 	{
@@ -166,13 +168,14 @@ void UPlayerUI::InitializeWidgets()
 
 void UPlayerUI::ATVWidgets()
 {
-	if (screenUI)	{
-		screenUI->ATVWidget();
-	}
+
 	if (crosshair) {
 		crosshair->ATVWidget();
 	}
-	if (weaponSelectUI) {
+	if (screenUI)	{
+		screenUI->ATVWidget();
+	}
+	if (weaponSelectUI && weaponSelectUI->IsInViewport() == false) {
 		weaponSelectUI->AddToViewport();
 
 	}

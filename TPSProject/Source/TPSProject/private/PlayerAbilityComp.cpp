@@ -141,6 +141,7 @@ void UPlayerAbilityComp::SetSkillTimer(SkillType type)
 
 void UPlayerAbilityComp::OperateSkillTimer()
 {
+
 	bool isAllZero = true;
 	if (IceAttackTime > 0.f) {
 		IceAttackTime -= 0.1f;
@@ -200,6 +201,36 @@ void UPlayerAbilityComp::OperateSkillTimer()
 		isAllZero = false;
 	}
 
+	if (myScreenUI->DashTime > 0.f) {
+		myScreenUI->DashTime -= 0.1f;
+		if (FMath::Fmod(myScreenUI->DashTime, 1.0f) <= 0.05f) {
+			if (myScreenUI->DashTime <= 0.05f) {
+				myScreenUI->DashTimeText = "";
+				myScreenUI->ToggleSkillSlot(SkillType::FireStorm, false);
+			}
+			else {
+				myScreenUI->DashTimeText = FString::Printf(TEXT("%d"), (int)myScreenUI->DashTime);
+			}
+		}
+		isAllZero = false;
+
+	}
+
+	if (myScreenUI->ShieldTime > 0.f) {
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Shield : %f"), myScreenUI->ShieldTime));
+		myScreenUI->ShieldTime -= 0.1f;
+		if (FMath::Fmod(myScreenUI->ShieldTime, 1.0f) <= 0.05f) {
+			if (myScreenUI->ShieldTime <= 0.05f) {
+				myScreenUI->ShieldTimeText = "";
+				myScreenUI->ToggleSkillSlot(SkillType::FireStorm, false);
+			}
+			else {
+				myScreenUI->ShieldTimeText = FString::Printf(TEXT("%d"), (int)myScreenUI->ShieldTime);
+			}
+		}
+		isAllZero = false;
+
+	}
 	GetWorld()->GetTimerManager().ClearTimer(skillTimerHandle);
 
 	if (isAllZero == false) {

@@ -27,6 +27,19 @@ void UScreenUI::ATVWidget()
 	WeaponSwap();
 }
 
+void UScreenUI::RespawnTimeLoop()
+{
+	GetWorld()->GetTimerManager().ClearTimer(respawnTimer);
+	if (RespawnTime <= 0) {
+		RespawnEvent(false);
+		return;
+	}
+	RespawnTime--;
+	RespawnTimeUpdate();
+
+	GetWorld()->GetTimerManager().SetTimer(respawnTimer, this, &UScreenUI::RespawnTimeLoop, 1.f, false);
+}
+
 void UScreenUI::Initialization(ATPSPlayer* player)
 {
 	if (IsValid(this) == false) return;

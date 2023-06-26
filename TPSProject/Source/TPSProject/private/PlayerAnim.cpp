@@ -131,33 +131,42 @@ void UPlayerAnim::AnimNotify_EndSkill()
 void UPlayerAnim::AnimNotify_EndSwing()
 {
 	
-	Cast<AWeapon_Sword>(player->playerFire->weapon_Sword)->isSwingingSword = false;
+	Cast<AWeapon_Sword>(player->playerFire->weapon_Sword)->IsActiveSword = false;
 }
 
-UAnimMontage* UPlayerAnim::Dash(DashType dashDirection)
+void UPlayerAnim::AnimNotify_Blocking()
 {
+	Cast<AWeapon_Sword>(player->playerFire->weapon_Sword)->OnBlocking(true);
+}
 
-	dashDirection;
-	switch (dashDirection)
-	{
-	case DashType::W:
-		currMontage = FowardDashMontage;
-		break;
-	case DashType::A:
-		currMontage = LeftDashMontage;
-		break;
-	case DashType::S:
-		currMontage = (BackwardDashMontage);
-		break;
-	case DashType::D:
-		currMontage = (RightDashMontage);
-		break;
-	default:
+void UPlayerAnim::AnimNotify_BlockingEnd()
+{
+	Cast<AWeapon_Sword>(player->playerFire->weapon_Sword)->OnBlocking(false);
+}
 
-		break;
+void UPlayerAnim::PlayDashAnim(FVector dir)
+{
+	UAnimMontage* tempMontage = FowardDashMontage;
+
+
+	float absX = FMath::Abs(dir.X);
+	float absY = FMath::Abs(dir.Y);
+
+	if (absX <= absY) {
+		if (dir.Y > 0.f)
+			tempMontage = RightDashMontage;
+		else 
+			tempMontage = LeftDashMontage;
+	}
+	else {
+		if (dir.X > 0.f)
+			tempMontage = FowardDashMontage;
+		else
+			tempMontage = BackwardDashMontage;
 	}
 
-	return currMontage;
+	Montage_Play(tempMontage);
 
+	return;
 }
 

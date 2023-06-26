@@ -52,6 +52,7 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	anim->animState = mState;
 	switch (mState)
 	{
 		case EEnemyState::Idle:
@@ -117,7 +118,6 @@ void UEnemyFSM::IdleState()
 	if (anim->isWin)
 	{
 		mState = EEnemyState::Bictory;
-		anim->animState = mState;
 		return;
 	}
 
@@ -127,7 +127,6 @@ void UEnemyFSM::IdleState()
 	if (GetWorld()->GetTimeSeconds() - currentTime > idleDelayTime)
 	{
 		mState = EEnemyState::Move;
-		anim->animState = mState;
 		currentTime = 0.f;
 	}
 }
@@ -341,6 +340,9 @@ void UEnemyFSM::DieState()
 
 void UEnemyFSM::OnDamageProcess(int damage, ATPSPlayer* player,  FName boneName)
 {
+	if (player && player->ActorHasTag(TEXT("Player"))) {
+		target = player;
+	}
 	if (boneName == FName("head"))
 		damage *= 2;
 
@@ -405,7 +407,7 @@ void UEnemyFSM::RoundInitEnemy(int bonusAtt, int bonusHp, int round)
 void UEnemyFSM::SetTarget(AActor* targetActor)
 {
 	if (targetActor->ActorHasTag("Player")){
-		if ((me->GetActorLocation() - targetActor->GetActorLocation()).Length() > 500) return;
+		if ((me->GetActorLocation() - targetActor->GetActorLocation()).Length() > 1000) return;
 	}
 	else if (targetActor->ActorHasTag("Barricade")) {
 		if (Cast<ABuildableItem>(targetActor)->isDestroy) {

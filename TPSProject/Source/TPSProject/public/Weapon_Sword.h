@@ -24,17 +24,36 @@ public:
 	UFUNCTION()
 		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
-
+	void BlockAttack();
+	void OnBlocking(bool On);
 public:
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* enemySensor;
 	UPROPERTY(EditAnywhere)
 		class UParticleSystemComponent* swordEffect;
-	
-	bool isSwingingSword = false;
+
+	UPROPERTY(EditAnywhere)
+		class UParticleSystemComponent* ShieldEffect;
+
+	UPROPERTY(EditAnywhere)
+		class UParticleSystemComponent* BlockEffect;
+
+	UPROPERTY(EditAnywhere)
+		USoundBase* BlockSound;
+
+	UPROPERTY(EditAnywhere)
+		USoundBase* ShieldSound;
+
+	bool IsActiveSword = false;
 	bool SwordMoveOn = false;
+	bool isBlocking = false;
+
 	float lastAttackTime = 0.f;
+	float lastBlockingTime = -5.f;
 	float nextComboDelay = 2.5f;
+
+	float BlockingCoolTime = 5.f;
+
 	int32 currCombo = 0;
 	FName Attack_1 = FName("Attack_1");
 	FName Attack_2 = FName("Attack_2");
@@ -43,6 +62,13 @@ public:
 	FName Attack_Air = FName("Attack_Air");
 
 	FTimerHandle swordMoveTimer;
+	FTimerHandle swordActiveTimer;
+
 	UPROPERTY(EditAnywhere)
 		float swordMoveTime = 0.2f;
+
+	UPROPERTY(EditAnywhere)
+		class UAnimMontage* AM_Blocking;
+
+
 };

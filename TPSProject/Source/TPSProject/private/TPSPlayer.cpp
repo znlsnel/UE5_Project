@@ -23,10 +23,12 @@
 #include "ItemFactoryComp.h"
 #include "PlayerAbilityComp.h"
 #include "AbilityUpgradeWidget.h"
+#include "playerHpEffect.h"
 #include "DamageWidget.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
+#include <Components/AudioComponent.h>
 
 #include <Blueprint/UserWidget.h>
 #include <GameFramework/CharacterMovementComponent.h>
@@ -38,6 +40,7 @@
 #include <Blueprint/UserWidget.h>
 #include <Net/UnrealNetwork.h>
 #include <Logging/LogVerbosity.h>
+#include <particles/ParticleSystemComponent.h>
 
 // Sets default values
 ATPSPlayer::ATPSPlayer()
@@ -112,6 +115,9 @@ ATPSPlayer::ATPSPlayer()
 
 	itemFactory = CreateDefaultSubobject<UItemFactoryComp>(TEXT("itemFactory"));
 	abilityComp = CreateDefaultSubobject<UPlayerAbilityComp>(TEXT("Abilitys"));
+	SpawnEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SpawnEffect"));
+	SpawnEffect->SetupAttachment(GetMesh());
+	SpawnEffect->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 ATPSPlayer::~ATPSPlayer()
@@ -125,7 +131,9 @@ ATPSPlayer::~ATPSPlayer()
 void ATPSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
-
+	SpawnEffect->Deactivate();
+	heartAudio = UGameplayStatics::SpawnSound2D(GetWorld(), heartSound);
+	heartAudio->Stop();
 	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
 	hp = maxHp;
 	if (playerUI->screenUI)
@@ -191,10 +199,9 @@ void ATPSPlayer::HpRecoveryLoop()
 
 	FSkillInfo* tempSkillInfo =  abilityComp->GetSkillInfo(SkillType::HpNaturalHealing);
 	if (hp < maxHp && tempSkillInfo->point > 0) {
-		hp += tempSkillInfo->powerValue;
-		if (hp > maxHp) hp = maxHp;
-		playerUI->screenUI->UpdateScreenUI();
+		AddHP(tempSkillInfo->powerValue);
 	}
+
 
 	GetWorldTimerManager().SetTimer(hpRecoveryTimer, this, &ATPSPlayer::HpRecoveryLoop, 5.f, false);
 }
@@ -344,35 +351,78 @@ void ATPSPlayer::AddHP(int value)
 	hp += value;
 	if (hp > maxHp) hp = maxHp;
 	playerUI->screenUI->UpdateScreenUI();
-
+	playerUI->screenUI->playerHpEvent(true);
+	
+	if (hp > maxHp / 5) {
+		if (heartAudio)
+			heartAudio->Stop();
+	}
 }
 
 
 
 
 
-void ATPSPlayer::OnHitEvent(int damage)
+void ATPSPlayer::OnHitEvent(int damage, FVector enemyPos)
 {
+	if (GetWorld()->GetTimeSeconds() - lastHitTime < 0.5f)
+		return;
+	if (hp <= 0) return;
+	if (isDie) return;
+
+	lastHitTime = GetWorld()->GetTimeSeconds();
 	int randDamage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));
 
-	if (hp <= 0) return;
-
-
+	randDamage = 81;
 
 	int temphp = hp - randDamage;
 	hp = FMath::Max(temphp, 0);
-	if (playerUI->screenUI)
+
+	if (playerUI->screenUI) {
 		playerUI->screenUI->UpdateScreenUI();
+		playerUI->screenUI->playerHpEvent(false);
+	}
 
-	if (hp <= 0)
-	{
-
-		if (IsLocallyControlled())
-			OnGameOver();
-		isDie = true;
+	if (hp < maxHp / 5) {
+		if (heartAudio)
+			heartAudio->Play();
 
 	}
 
+	if (hp <= 0)
+	{
+		OnPlayerDie();
+		isDie = true;
+
+	}
+	FName temp = FName("Front");
+
+	FVector dir = (enemyPos - GetActorLocation()).GetSafeNormal();
+
+	float forward = FVector::DotProduct(GetActorForwardVector(), dir);
+	float Right = FVector::DotProduct(GetActorRightVector(), dir);
+
+	float checkForward = FMath::Abs(forward);
+	float checkRight = FMath::Abs(Right);
+
+	if (checkForward < checkRight) {
+		if (Right > 0.f) {
+			temp = TEXT("Right");
+		}
+		else {
+			temp = TEXT("Left");
+		}
+	}
+	else {
+		if (forward > 0.f) {
+			temp = TEXT("Front");
+		}
+		else {
+			temp = TEXT("Back");
+		}
+	}
+
+	PlayMontage(AM_damage, temp);
 }
 
 
@@ -532,11 +582,20 @@ void ATPSPlayer::BuyItem(int32 itemId, int ItemGrace, int ItemMineral, int32 Ite
 	}
 }
 
-void ATPSPlayer::OnGameOver_Implementation()
+void ATPSPlayer::OnPlayerDie()
 {
-	UGameplayStatics::SetGamePaused(GetWorld(), true);
+	playerUI->screenUI->RespawnEvent(true);
+	playerUI->screenUI->RespawnTime = respawnTime;
+	playerUI->screenUI->RespawnTimeLoop();
+	if (heartAudio)
+		heartAudio->Stop();
 
-
+	GetWorldTimerManager().SetTimer(PlayerRespawnTimer, FTimerDelegate::CreateLambda([&]() {
+		isDie = false;
+		AddHP(maxHp);
+		PlayMontage(AM_Spawn);
+		SpawnEffect->Activate(true);
+		}), respawnTime, false);
 }
 
 

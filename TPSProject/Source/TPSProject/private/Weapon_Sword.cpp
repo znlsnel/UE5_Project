@@ -3,8 +3,12 @@
 
 #include "Weapon_Sword.h"
 #include "Enemy.h"
+#include "PlayerUI.h"
+#include "PlayerAbilityComp.h"
+#include "ScreenUI.h"
 
 #include <particles/ParticleSystemComponent.h>
+#include <Kismet/GameplayStatics.h>
 
 AWeapon_Sword::AWeapon_Sword() : Super()
 {
@@ -21,6 +25,10 @@ AWeapon_Sword::AWeapon_Sword() : Super()
 	RootComponent = weaponMeshComp;
 
 	pickupCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("pickupCollision"));
+	enemySensor = CreateDefaultSubobject<UBoxComponent>(TEXT("EnemySensor"));
+	swordEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("swordEffect"));
+	ShieldEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ShieldEffect"));
+	BlockEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("BlockEffect"));
 
 	pickupCollision->SetRelativeLocation(FVector(0, 0, 40));
 	pickupCollision->SetRelativeScale3D(FVector(1, 1, 2.25));
@@ -30,15 +38,18 @@ AWeapon_Sword::AWeapon_Sword() : Super()
 	weaponType = WeaponType::Sword;
 	attachCharacterSocketName = FName("RightHandSocket");
 
-	enemySensor = CreateDefaultSubobject<UBoxComponent>(TEXT("EnemySensor"));
 	enemySensor->SetupAttachment(weaponMeshComp);
 	enemySensor->AttachToComponent(weaponMeshComp, FAttachmentTransformRules::KeepRelativeTransform);
 
-	swordEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("swordEffect"));
 	swordEffect->SetupAttachment(weaponMeshComp);
 	swordEffect->AttachToComponent(weaponMeshComp, FAttachmentTransformRules::KeepRelativeTransform);
 	PrimaryActorTick.bCanEverTick = true;
 
+	ShieldEffect->SetupAttachment(weaponMeshComp);
+	ShieldEffect->AttachToComponent(weaponMeshComp, FAttachmentTransformRules::KeepRelativeTransform);
+
+	BlockEffect->SetupAttachment(weaponMeshComp);
+	BlockEffect->AttachToComponent(weaponMeshComp, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 void AWeapon_Sword::BeginPlay()
@@ -46,6 +57,8 @@ void AWeapon_Sword::BeginPlay()
 	Super::BeginPlay();
 	enemySensor->OnComponentBeginOverlap.AddDynamic(this, &AWeapon_Sword::OnOverlapBegin);
 	swordEffect->Activate(true);
+	ShieldEffect->Deactivate();
+	BlockEffect->Deactivate();
 }
 
 void AWeapon_Sword::Tick(float DeltaTime)
@@ -112,7 +125,7 @@ void AWeapon_Sword::Attack()
 	}
 	myPlayer->PlayMontage(CharacterFireAM, attackSection);
 	SwordMoveOn = true;
-	isSwingingSword = true;
+	IsActiveSword = true;
 
 	GetWorldTimerManager().SetTimer(swordMoveTimer, FTimerDelegate::CreateLambda(
 		[&]() {
@@ -130,10 +143,10 @@ void AWeapon_Sword::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 	if (myPlayer->IsPlayingMontage(CharacterFireAM) == false)
 		return;
 
-	int finalDamage = 20 + weapDamage + myPlayer->abilityComp->GetSkillInfo(SkillType::swordProficiency)->powerValue;
+	int finalDamage = weapDamage + myPlayer->abilityComp->GetSkillInfo(SkillType::swordProficiency)->powerValue;
 
 	tempEnemy = Cast<AEnemy>(OtherActor);
-	tempEnemy->OnDamage(finalDamage, SweepResult.BoneName);
+	tempEnemy->OnDamage(finalDamage, SweepResult.BoneName, myPlayer);
 
 
 	int randInt = FMath::RandRange(1, 100);
@@ -144,11 +157,46 @@ void AWeapon_Sword::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* 
 	if (isDoubleAttack) {
 		GetWorldTimerManager().SetTimer(doubleAttackTimer, FTimerDelegate::CreateLambda([&]() {
 			if (tempEnemy) {
-				int finalDamage = 20 + weapDamage + myPlayer->abilityComp->GetSkillInfo(SkillType::swordProficiency)->powerValue;
-				tempEnemy->OnDamage(finalDamage, SweepResult.BoneName);
+				int finalDamage = weapDamage + myPlayer->abilityComp->GetSkillInfo(SkillType::swordProficiency)->powerValue;
+				tempEnemy->OnDamage(finalDamage, SweepResult.BoneName, myPlayer);
 				tempEnemy = nullptr;
 			}
 			}), 0.1f, false);
+	}
+}
+
+void AWeapon_Sword::BlockAttack()
+{
+	if (GetWorld()->GetTimeSeconds() - lastBlockingTime < BlockingCoolTime) {
+		return;
+	} 
+	myPlayer->PlayMontage(AM_Blocking, TEXT("BlockingStart"));
+	IsActiveSword = true;
+
+	GetWorldTimerManager().SetTimer(swordMoveTimer, FTimerDelegate::CreateLambda(
+		[&]() {
+			if (isBlocking == false)
+				IsActiveSword = false;
+		}), 0.5f, false);
+}
+
+void AWeapon_Sword::OnBlocking(bool On)
+{
+	isBlocking = On;
+	if (isBlocking) {
+		ShieldEffect->Activate(true);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShieldSound, GetActorLocation());
+		UScreenUI* tempUI = myPlayer->playerUI->screenUI;
+		tempUI->ShieldTime = BlockingCoolTime;
+		tempUI->ShieldTimeText = FString::Printf(TEXT("%d"), (int)BlockingCoolTime);
+		lastBlockingTime = GetWorld()->GetTimeSeconds();
+
+		if (GetWorld()->GetTimerManager().IsTimerActive(myPlayer->abilityComp->skillTimerHandle) == false)
+			myPlayer->abilityComp->OperateSkillTimer();
+	}
+	else {
+		ShieldEffect->Deactivate();
+		IsActiveSword = false;
 	}
 }
 

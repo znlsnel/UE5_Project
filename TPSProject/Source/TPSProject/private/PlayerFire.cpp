@@ -76,6 +76,7 @@ void UPlayerFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 void UPlayerFire::InputFire(bool isPressed)
 {
+	if (me->isDie) return;
 	isFire = isPressed;
 	if (me->abilityComp->GetMouseInput()) return;
 
@@ -85,8 +86,12 @@ void UPlayerFire::InputFire(bool isPressed)
 		me->buildableItem->GetMouseInput(isPressed);
 		return;
 	}
-		
-	me->ClickBPWidget(isFire);
+	
+	if (currWeapon->weaponType == WeaponType::Sword) {
+		if (Cast<AWeapon_Sword>(currWeapon)->isBlocking == true)
+			return;
+	}
+
 	if (!isFire)
 	{
 		me->playerUI->crosshair->AttackCrosshair(isFire);
@@ -136,10 +141,37 @@ void UPlayerFire::LoadBullet()
 
 void UPlayerFire::SniperAim(bool isPressed)
 {
-	if (isPressed)
-		me->tpsCamComp->SetFieldOfView(45.0f);
-	else
-		me->tpsCamComp->SetFieldOfView(90.0f);
+	if (me->isDie) return;
+	if (currWeapon->ActorHasTag(TEXT("Sword"))) {
+		if (isPressed) {
+			Cast<AWeapon_Sword>(currWeapon)->BlockAttack();
+		}
+		return;
+	}
+
+	if (isPressed) {
+		zoomCameraValue = 45.f;
+		zoomCamera();
+	}
+		/*me->tpsCamComp->SetFieldOfView(45.0f);*/
+	else {
+		zoomCameraValue = 90.f;
+		zoomCamera();
+	}
+
+		//me->tpsCamComp->SetFieldOfView(90.0f);
+}
+
+void UPlayerFire::zoomCamera()
+{
+	GetWorld()->GetTimerManager().ClearTimer(ZoomTimer);
+	if (me->tpsCamComp->FieldOfView == zoomCameraValue|| me->isDie) {
+		return;
+	}
+
+	me->tpsCamComp->SetFieldOfView(FMath::FInterpTo(me->tpsCamComp->FieldOfView, zoomCameraValue,GetWorld()->GetDeltaSeconds(), 3.f));
+
+	GetWorld()->GetTimerManager().SetTimer(ZoomTimer, this, &UPlayerFire::zoomCamera, 0.01f, false);
 }
 
 

@@ -48,8 +48,7 @@ public:
 	// MULTICAST
 		// 피격 달했을 때 처리
 	UFUNCTION(BlueprintCallable, Category = Health)
-		void OnHitEvent(int damage);
-
+		void OnHitEvent(int damage, FVector enemyPos);
 
 	void PlayMontage(class UAnimMontage* AM, FName section = "");
 	bool IsPlayingMontage(class UAnimMontage* AM);
@@ -58,11 +57,6 @@ public:
 
 	void UpdateAttackAndHp(bool updateAttack, float value);
 
-	UFUNCTION(BlueprintImplementableEvent)
-		void ClickBPWidget(bool isPressed);
-
-	UFUNCTION(BlueprintImplementableEvent)
-		void InitWidgetInteraction();
 	class UStoreUI* GetStore();
 
 	FTimerHandle SetTranceformBuildableTimer;
@@ -86,11 +80,11 @@ public:
 	TArray<class UDamageWidget*> damageWidgets;
 	int damageWidgetCount = 30;
 	int damageWidgetIndex = 0;
-
+	float lastHitTime = 0.f;
 public:
 	class ATPSPlayerController* myController;
 	FTimerHandle TickIdTimerHandle;
-
+	FTimerHandle PlayerRespawnTimer;
 // 
 	// 스프링암 Comp
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -124,6 +118,14 @@ public:
 	UPROPERTY(EditAnywhere, blueprintReadOnly)
 		class UPlayerAbilityComp* abilityComp;
 
+	UPROPERTY(EditAnywhere)
+		UAnimMontage* AM_damage;
+
+	UPROPERTY(EditAnywhere)
+		UAnimMontage* AM_Spawn;
+
+	UPROPERTY(EditAnywhere)
+		class UParticleSystemComponent* SpawnEffect;
 //======================================================================
 
 // Detail =====================================================================
@@ -138,7 +140,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
 		class UAnimMontage* DieAnimMontage;
 
-
+	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
+		class USoundBase* heartSound;
+		class UAudioComponent* heartAudio;
 // ===========================================================================
 // 
 // 변수 ========================================================================
@@ -166,6 +170,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		bool isBought = false;
 
+	int respawnTime = 10;
 	UPROPERTY(Replicated)
 	class ABuildableItem* buildableItem;
 	TArray<class ABuildableItem*> ItemArr;
@@ -176,13 +181,13 @@ public:
 		void BuyItem(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = Health)
-		void OnGameOver();
-		void OnGameOver_Implementation();
+	void OnPlayerDie();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Initialization)
 		void OnInitialization();
 	FTimerHandle addItemTimer;
 	class UInventory* GetInventory();
 	void AddHP(int value);
+
+
 };

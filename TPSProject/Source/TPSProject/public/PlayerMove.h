@@ -37,24 +37,24 @@ public:
 	void InputJump();					// 점프
 	void InputRun();
 
-	template<DashType type>
-	void DoubleClick() { DoubleClick(type); }
-	void DoubleClick(DashType dashType);
-
-	void Dash(DashType dashType);
+	void Dash();
 
 	bool isDash = false;
 	// 이동 방향
 	FVector direction = FVector(0, 0, 0);
+	FVector dashDir = FVector(0);
 
-	double gameTime = 0;
-	double DoubleClickStartTime = 0;
+	float lastDashTime = -3.f;
+	float dashCoolTime = 5.f;
 
-	UPROPERTY(EditAnywhere, Category = PlayerSetting) float walkSpeed = 200;
-	UPROPERTY(EditAnywhere, Category = PlayerSetting) float runSpeed = 600;
+	UPROPERTY(EditAnywhere, Category = PlayerSetting) 
+		float walkSpeed = 200;
+	UPROPERTY(EditAnywhere, Category = PlayerSetting) 
+		float runSpeed = 600;
+
 	class UPlayerAnim* playerAnim;
-	DashType tempDashType = DashType::None;
-
 	UPROPERTY(EditAnywhere, Category = Jump)
 		class USoundBase* jumpSound;
+
+	FTimerHandle dashTimer;
 };

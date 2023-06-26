@@ -19,16 +19,6 @@ public:
 };
 
 UENUM(BlueprintType)
-enum class DashType : uint8
-{
-	W		UMETA(DisplayName = "W"),
-	A		UMETA(DisplayName = "A"),
-	S		UMETA(DisplayName = "S"),
-	D		UMETA(DisplayName = "D"),
-	None	UMETA(DisplayName = "None"),
-};
-
-UENUM(BlueprintType)
 enum class ItemType : uint8
 {
 	Weapon		UMETA(DisplayName = "Weapon"),

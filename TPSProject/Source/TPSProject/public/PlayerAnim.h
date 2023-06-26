@@ -33,9 +33,16 @@ public:
 		void AnimNotify_EndSkill();
 	UFUNCTION()
 		void AnimNotify_EndSwing();
+
+	UFUNCTION()
+		void AnimNotify_Blocking();
+
+	UFUNCTION()
+		void AnimNotify_BlockingEnd();
+
 	//UFUNCTION(BlueprintImplementableEvent)
 
-	UAnimMontage* Dash(DashType dashDirection);
+	void PlayDashAnim(FVector dir);
 
 
 
