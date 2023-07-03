@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetPlayerMouse(bool Active);
 
+	UFUNCTION(BlueprintCallable)
+		void OpenStatueAbilityWidget();
+
 	void StartGame();
 	void GetMineralGrace(int mineral, int grace);
 	void UpgradeHp(int addHp);
@@ -94,6 +97,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = Camera)
 		class UCameraComponent* tpsCamComp;			// Camera
 
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* meleeAttackSensor;
+
 	// PlayerMove
 	UPROPERTY(VisibleAnywhere, Category = Component)
 		class UPlayerBaseComponent* playerMove;
@@ -126,6 +132,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		class UParticleSystemComponent* SpawnEffect;
+
+	UPROPERTY(EditAnywhere)
+		class UParticleSystemComponent* DamageEffect;
+
 //======================================================================
 
 // Detail =====================================================================
@@ -174,6 +184,10 @@ public:
 	UPROPERTY(Replicated)
 	class ABuildableItem* buildableItem;
 	TArray<class ABuildableItem*> ItemArr;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf <class UBuildableItemCheckUI> CheckUIFactory;
+	class UBuildableItemCheckUI* BuildableItemCheckUI;
 
 
 // ÇÔ¼ö========================================================================

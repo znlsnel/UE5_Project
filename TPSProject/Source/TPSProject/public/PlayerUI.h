@@ -48,6 +48,14 @@ public:
 	UPROPERTY(blueprintReadWrite, category = UI)
 		class UWeaponUI* weaponSelectUI;
 
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UStatueHpWidget> StatueHpFactory;
+		class UStatueHpWidget* StatueHpWidget;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UStatueAbilityWidget> statueAbilityWidgetFactory;
+	class UStatueAbilityWidget* statueAbilityWidget;
+
 	bool IsMouseActive = false;
 
 

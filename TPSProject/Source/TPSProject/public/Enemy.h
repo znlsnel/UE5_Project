@@ -26,14 +26,23 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void AddWorldDamageUI(int Damage,float currHpPercent, float preHpPercent);
-	
-	void DieEvent(class ATPSPlayer* AttackPlayer);
-	void OnDamage(int damage, FName boneName ="", class ATPSPlayer* AttackPlayer = nullptr);
-	void SetTarget(AActor* target);
+	void OnDamage(int damage, FName boneName ="", class ATPSPlayer* AttackPlayer = nullptr, bool ignoreHpEvent = false );
 	bool isActive();
+
+	UFUNCTION()
+		void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
+			class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult);
+
+	bool isOverlapingTargets();
+	void OnAttackTargets(TArray<AActor*> actors);
+
 public:
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = FSMComponent)
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)
+	FTimerHandle DeathDelayTimer;
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* targetSensor;
+
+	UPROPERTY(VisibleAnywhere)
 		class UEnemyFSM* fsm;
 
 	class AController* myController;
@@ -41,9 +50,12 @@ public:
 	class ATPSPlayer* player;
 
 
+
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UEnemyHpBar> hpBarFactory;
 	class UEnemyHpBar* hpBar;
 
+	UPROPERTY(EditAnywhere)
+		class UParticleSystemComponent* damageEffect;
 
 };

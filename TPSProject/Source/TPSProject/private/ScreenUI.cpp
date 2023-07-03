@@ -83,6 +83,49 @@ void UScreenUI::UseSkillSlot(SkillType type)
 	ToggleSkillSlot(type, result);
 }
 
+void UScreenUI::BasicSkillCoolTime(bool dashOrShield, float CoolTime)
+{
+	if (dashOrShield) {
+		DashCoolTime = CoolTime;
+		DashTime = 0.f;
+	}
+	else {
+		ShieldCoolTime = CoolTime;
+		ShieldTime = 0.f;
+	}
+
+	bBasicSkillLoopEnd = true;
+	BasicSkillCoolTimeLoop();
+
+	GetWorld()->GetTimerManager().ClearTimer(basicSkillLoopEndTimer);
+	GetWorld()->GetTimerManager().SetTimer(basicSkillLoopEndTimer, FTimerDelegate::CreateLambda(
+		[&]() {
+			bBasicSkillLoopEnd = false;
+		}
+	), CoolTime + 0.5f, false); 
+}
+
+void UScreenUI::BasicSkillCoolTimeLoop()
+{
+	GetWorld()->GetTimerManager().ClearTimer(basicSkillLoopTimer);
+	if (bBasicSkillLoopEnd == false) {
+		return;
+	}
+
+	if (DashTime < 0.96f) {
+		DashTime += 0.05f / DashCoolTime;
+	}
+	else DashTime = 1.f;
+
+	if (ShieldTime < 0.96f) {
+		ShieldTime += 0.05f / ShieldCoolTime;
+	}
+	else ShieldTime = 1.f;
+
+
+	GetWorld()->GetTimerManager().SetTimer(basicSkillLoopTimer, this, &UScreenUI::BasicSkillCoolTimeLoop, 0.05f, false);
+}
+
 
 FString UScreenUI::UpdateAmmoCount()
 {

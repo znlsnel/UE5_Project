@@ -47,7 +47,6 @@ void AWeapon::Attack()
 	if (isSynchronized == false) return;
 	if (currAmmo <= 0)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Attack! in AWeapon!"));
 		UGameplayStatics::PlaySoundAtLocation(this, weaponDryClick, myPlayer->GetActorLocation());
 		return;
 	}
@@ -90,9 +89,14 @@ void AWeapon::Attack()
 // Trace From Camera
 TArray<FHitResult> AWeapon::LineTrace()
 {
-	FVector TraceStartPoint;
-	FRotator TraceStartRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT TraceStartPoint, OUT TraceStartRotation);
+	APlayerCameraManager* tempCamera = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+
+	FVector TraceStartPoint = tempCamera->GetCameraLocation();
+	FRotator TraceStartRotation = tempCamera->GetCameraRotation();
+
+	//GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT TraceStartPoint, OUT TraceStartRotation);
+
+
 
 	float traceLength = 10000.f;
 	FVector LineTraceEnd = TraceStartPoint + TraceStartRotation.Vector() * traceLength;
@@ -105,16 +109,18 @@ TArray<FHitResult> AWeapon::LineTrace()
 
 	TraceStartPoint = weaponMeshComp->GetSocketLocation("Muzzle");
 
+	if (pHitResult.bBlockingHit == false)
+		pHitResult.ImpactPoint = LineTraceEnd;
 
 	TArray<FHitResult> hitArr;
-
-
-
 	for (int i = 0; i < FireBulletCount; i++)
 	{
 		LineTraceEnd = TraceStartPoint + (UKismetMathLibrary::RandomUnitVectorInConeInDegrees(MyNormalize(pHitResult.ImpactPoint - TraceStartPoint), currFireSpread) * traceLength);
 
 		isHit = UKismetSystemLibrary::LineTraceSingle(GetWorld(), TraceStartPoint, LineTraceEnd, UEngineTypes::ConvertToTraceType(ECC_Visibility), true, pIgnore, EDrawDebugTrace::None, pHitResult, true);
+
+		if (pHitResult.bBlockingHit == false)
+			pHitResult.ImpactPoint = LineTraceEnd;
 
 		hitArr.Add(pHitResult);
 		

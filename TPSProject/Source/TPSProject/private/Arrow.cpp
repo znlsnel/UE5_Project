@@ -65,7 +65,7 @@ void AArrow::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimi
 	if (OtherActor->ActorHasTag(FName("Enemy")))
 	{
 		tempEnemy = Cast<AEnemy>(OtherActor);
-		tempEnemy->OnDamage(attackDamage + addDamage, Hit.BoneName);
+		tempEnemy->OnDamage(attackDamage + addDamage, Hit.BoneName, myPlayer);
 		// TODO 데미지
 		// Blood Effect
 
@@ -77,16 +77,13 @@ void AArrow::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimi
 		if (isDoubleAttack) {
 			GetWorldTimerManager().SetTimer(doubleAttackTimer, FTimerDelegate::CreateLambda([&]() {
 				if (tempEnemy) {
-					tempEnemy->OnDamage(attackDamage + addDamage, Hit.BoneName);
-
-					tempEnemy->fsm->SetTarget(myPlayer);
+					tempEnemy->OnDamage(attackDamage + addDamage, Hit.BoneName, myPlayer);
 					tempEnemy = nullptr;
 				}
 				}), 0.1f, false);
 		}
 
 	}
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("OnHit!"));
 	// Actor에 SetAttack~~ 해버리기 
 	ArrowEffect->SetHiddenInGame(true);
 	ArrowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -138,8 +135,6 @@ bool AArrow::ShootArrow(FVector target, float power)
 	AddActorLocalRotation(FRotator(-90, 0, 0));
 
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("power : %f"), power));
 
 	power /= 1.5f;
 

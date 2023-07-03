@@ -54,6 +54,9 @@
     <ClCompile Include="..\..\Source\TPSProject\private\Arrow.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\AttackRangeIndicator.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\BarricadeItem.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -129,6 +132,12 @@
     <ClCompile Include="..\..\Source\TPSProject\private\ItemStoreUI.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Kwang.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\KwangAnim.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\Monster.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -136,6 +145,9 @@
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\MonsterAnim.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\myGameStateBase.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\NPCDialogueLogic.cpp">
@@ -168,6 +180,15 @@
     <ClCompile Include="..\..\Source\TPSProject\private\PlayerUI.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\Riktor.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\RiktorAnim.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\RiktorThunder.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\RoundUI.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -181,6 +202,18 @@
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\SkillStateWidget.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\StatueAbilityInfoWidget.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\StatueAbilityWidget.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\StatueAbilityWidgetButton.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\StatueHpWidget.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\StoreActor.cpp">
@@ -250,6 +283,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Arrow.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\AttackRangeIndicator.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\BarricadeItem.h">
@@ -327,6 +363,12 @@
     <ClInclude Include="..\..\Source\TPSProject\public\ItemStoreUI.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Kwang.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\KwangAnim.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\Monster.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
@@ -334,6 +376,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\MonsterAnim.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\myGameStateBase.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\NPCDialogueLogic.h">
@@ -366,6 +411,15 @@
     <ClInclude Include="..\..\Source\TPSProject\public\PlayerUI.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\Riktor.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\RiktorAnim.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\RiktorThunder.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\RoundUI.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
@@ -379,6 +433,18 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\SkillStateWidget.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\StatueAbilityInfoWidget.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\StatueAbilityWidget.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\StatueAbilityWidgetButton.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\StatueHpWidget.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\StoreActor.h">

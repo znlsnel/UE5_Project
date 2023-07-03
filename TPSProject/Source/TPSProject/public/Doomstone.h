@@ -14,7 +14,8 @@ class TPSPROJECT_API ADoomstone : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ADoomstone();
-
+	UFUNCTION(BlueprintImplementableEvent)
+		void DestoryStatue();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -25,24 +26,19 @@ public:
 
 	void OnHitEvent(int Damage);
 	
-	UFUNCTION(BlueprintImplementableEvent)
-		void UpdateStatueHp();
-
-
 
 public:
 	UPROPERTY(BlueprintReadWrite)
 		bool isDestory = false;
 
-
-
-
-
 	UPROPERTY(BlueprintReadWrite)
 		int Hp = 0;
 
 	UPROPERTY(BlueprintReadWrite)
-		int MaxHp = 100;
+		int MaxHp = 1000;
 
+	UPROPERTY(BlueprintReadWrite)
+		float HpPercent = 1.f;
 
+	int initHp = 1000;
 };

@@ -128,10 +128,19 @@ void UPlayerAnim::AnimNotify_EndSkill()
 	player->abilityComp->isPlaySkillAnim = false;
 }
 
-void UPlayerAnim::AnimNotify_EndSwing()
+void UPlayerAnim::AnimNotify_OnMeleeAttack()
 {
-	
-	Cast<AWeapon_Sword>(player->playerFire->weapon_Sword)->IsActiveSword = false;
+	AWeapon* tempWeapon = player->playerFire->currWeapon;
+	if (tempWeapon->weaponType != WeaponType::Sword)
+		return;
+
+
+	TArray<AActor*>tempActors;
+	player->meleeAttackSensor->GetOverlappingActors(tempActors);
+
+	if (tempActors.IsEmpty() == false) {
+		Cast<AWeapon_Sword>(tempWeapon)->AttackEvent(tempActors);
+	}
 }
 
 void UPlayerAnim::AnimNotify_Blocking()

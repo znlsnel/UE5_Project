@@ -142,7 +142,7 @@ void UPlayerFire::LoadBullet()
 void UPlayerFire::SniperAim(bool isPressed)
 {
 	if (me->isDie) return;
-	if (currWeapon->ActorHasTag(TEXT("Sword"))) {
+	if (currWeapon && currWeapon->ActorHasTag(TEXT("Sword"))) {
 		if (isPressed) {
 			Cast<AWeapon_Sword>(currWeapon)->BlockAttack();
 		}

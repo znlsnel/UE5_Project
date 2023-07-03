@@ -76,6 +76,7 @@ public:
 	void CreateDecal(UNiagaraComponent* tempDecal, FHitResult& pHitResult);
 public:
 	class AEnemy* tempEnemy;
+	TArray<class AEnemy*> tempEnemys;
 	FTimerHandle doubleAttackTimer;
 
 

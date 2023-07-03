@@ -25,6 +25,8 @@
 #include "AbilityUpgradeWidget.h"
 #include "playerHpEffect.h"
 #include "DamageWidget.h"
+#include "BuildableItemCheckUI.h"
+#include "StatueAbilityWidget.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -45,85 +47,60 @@
 // Sets default values
 ATPSPlayer::ATPSPlayer()
 {
-	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
 	Tags.Add("Player");
-	UE_SET_LOG_VERBOSITY(LogTemp, NoLogging);
-	//SubObjects
-	{
-
-		playerMove = CreateDefaultSubobject<UPlayerMove>(TEXT("PlayerMove"));
-		playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
-		IKFootComp = CreateDefaultSubobject<UFootIkActorComponent>(TEXT("IKFootComp"));
-
-		pickupManager = CreateDefaultSubobject<UPickupManager>(TEXT("PickUpManager"));
-
-		playerUI = CreateDefaultSubobject<UPlayerUI>(TEXT("UI"));
-	}
-
-
-
-	PrimaryActorTick.bCanEverTick = true;
-
-	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("SkeletalMesh'/Game/ParagonPhase/Characters/Heroes/Phase/Meshes/Phase_GDC.Phase_GDC'"));
-
-	if (TempMesh.Succeeded())
-	{
-		GetMesh()->SetSkeletalMesh(TempMesh.Object);
-		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90.15), FRotator(0, -90, 0));
-
-	}
-
-	//OnComponentBeginOverlap.AddDynamic(this, &AGun::BeginOverlap);
-
-// Spring Arm Comp
-	{
-		springArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
-
-		// RootComponent ´Â °èÃþ±¸Á¶»ó Ä¸½¶ ÄÝ¸®Àü ÄÄÆ÷³ÍÆ®¸¦ ÀÇ¹ÌÇÔ
-		springArmComp->SetupAttachment(RootComponent);
-		springArmComp->SetRelativeLocation(FVector(0, 30, 70));
-		springArmComp->TargetArmLength = 250;
-		springArmComp->bUsePawnControlRotation = true;
-	}
-
-	// TPS Cam Comp
-	{
-		tpsCamComp = CreateDefaultSubobject<UCameraComponent>(TEXT("TpsCamComp"));
-		tpsCamComp->SetupAttachment(springArmComp);
-		tpsCamComp->bUsePawnControlRotation = false;
-		//tpsCamComp->bConstrainAspectRatio = true;
-		//tpsCamComp->SetAspectRatio(1.777f);
-	}
-
-	// Animation Mode
-	{
-		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-	}
-
-
-	// Self
-	{
-		bUseControllerRotationYaw = true;
-
-		// CharactorMovement
-		{
-			JumpMaxCount = 2;
-		}
-	}
-
-	myController = Cast<ATPSPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	Tags.Add("EnemysTarget");
+	
+	playerMove = CreateDefaultSubobject<UPlayerMove>(TEXT("PlayerMove"));
+	playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
+	IKFootComp = CreateDefaultSubobject<UFootIkActorComponent>(TEXT("IKFootComp"));
+	pickupManager = CreateDefaultSubobject<UPickupManager>(TEXT("PickUpManager"));
+	playerUI = CreateDefaultSubobject<UPlayerUI>(TEXT("UI"));
+	
+	springArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
+	tpsCamComp = CreateDefaultSubobject<UCameraComponent>(TEXT("TpsCamComp"));
+	meleeAttackSensor = CreateDefaultSubobject<UBoxComponent>(TEXT("MeleeAttackSensor"));
 
 	itemFactory = CreateDefaultSubobject<UItemFactoryComp>(TEXT("itemFactory"));
 	abilityComp = CreateDefaultSubobject<UPlayerAbilityComp>(TEXT("Abilitys"));
 	SpawnEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SpawnEffect"));
-	SpawnEffect->SetupAttachment(GetMesh());
-	SpawnEffect->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+	DamageEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("DamageEffect"));
+
+	// RootComponent ´Â °èÃþ±¸Á¶»ó Ä¸½¶ ÄÝ¸®Àü ÄÄÆ÷³ÍÆ®¸¦ ÀÇ¹ÌÇÔ
+	springArmComp->SetupAttachment(RootComponent);
+	springArmComp->SetRelativeLocation(FVector(0, 30, 70));
+	springArmComp->TargetArmLength = 250;
+	springArmComp->bUsePawnControlRotation = true;
+
+	tpsCamComp->SetupAttachment(springArmComp);
+	tpsCamComp->bUsePawnControlRotation = false;
+
+	meleeAttackSensor->SetupAttachment(GetMesh());
+	meleeAttackSensor->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+
+	DamageEffect->SetupAttachment(GetMesh());
+	DamageEffect->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+
+
+	myController = Cast<ATPSPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+	PrimaryActorTick.bCanEverTick = true;
+	bUseControllerRotationYaw = true;
+
+	JumpMaxCount = 2;
+
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("SkeletalMesh'/Game/ParagonPhase/Characters/Heroes/Phase/Meshes/Phase_GDC.Phase_GDC'"));
+
+	if (TempMesh.Succeeded()){
+		GetMesh()->SetSkeletalMesh(TempMesh.Object);
+		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90.15), FRotator(0, -90, 0));
+	}
 }
 
 ATPSPlayer::~ATPSPlayer()
 {
 	ATPSPlayer::playerId = 0;
-
 }
 
 
@@ -132,6 +109,8 @@ void ATPSPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	SpawnEffect->Deactivate();
+	DamageEffect->Deactivate();
+
 	heartAudio = UGameplayStatics::SpawnSound2D(GetWorld(), heartSound);
 	heartAudio->Stop();
 	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
@@ -142,6 +121,8 @@ void ATPSPlayer::BeginPlay()
 	playerAnim = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
 	HpRecoveryLoop();
 
+	BuildableItemCheckUI = CreateWidget<UBuildableItemCheckUI>(GetWorld(), CheckUIFactory);
+	//BuildableItemCheckUI->AddToViewport();
 
 	for (int i = 0; i < damageWidgetCount; i++)
 	{
@@ -195,13 +176,10 @@ void ATPSPlayer::Tick(float DeltaTime)
 
 void ATPSPlayer::HpRecoveryLoop()
 {
-	GetWorldTimerManager().ClearTimer(hpRecoveryTimer);
-
 	FSkillInfo* tempSkillInfo =  abilityComp->GetSkillInfo(SkillType::HpNaturalHealing);
-	if (hp < maxHp && tempSkillInfo->point > 0) {
+	if (tempSkillInfo && hp < maxHp && tempSkillInfo->point > 0) {
 		AddHP(tempSkillInfo->powerValue);
 	}
-
 
 	GetWorldTimerManager().SetTimer(hpRecoveryTimer, this, &ATPSPlayer::HpRecoveryLoop, 5.f, false);
 }
@@ -227,6 +205,14 @@ void ATPSPlayer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 void ATPSPlayer::SetPlayerMouse(bool Active)
 {
 	playerUI->ToggleMouse(Active);
+}
+
+void ATPSPlayer::OpenStatueAbilityWidget()
+{
+	if (playerUI->statueAbilityWidget->IsInViewport() == false) {
+		playerUI->statueAbilityWidget->AddToViewport();
+		playerUI->statueAbilityWidget->OpenWidget();
+	}
 }
 
 
@@ -281,7 +267,6 @@ void ATPSPlayer::UpdateAttackAndHp(bool updateAttack, float value)
 	{
 		hp += 10;
 		maxHp += 10;
-		//UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("HP : %d"), hp));
 
 		playerUI->screenUI->UpdateScreenUI();
 	}
@@ -317,10 +302,12 @@ void ATPSPlayer::AbilityWidget()
 	}
 
 	if (myAbilityWidget) {
-		if (myAbilityWidget->isOpen)
+		if (myAbilityWidget->isOpen) {
 			myAbilityWidget->CloseWidget();
-		else
+		}
+		else {
 			myAbilityWidget->OpenWidget();
+		}
 	}
 }
 
@@ -354,8 +341,9 @@ void ATPSPlayer::AddHP(int value)
 	playerUI->screenUI->playerHpEvent(true);
 	
 	if (hp > maxHp / 5) {
-		if (heartAudio)
+		if (heartAudio && heartAudio->IsPlaying()) {
 			heartAudio->Stop();
+		}
 	}
 }
 
@@ -373,8 +361,8 @@ void ATPSPlayer::OnHitEvent(int damage, FVector enemyPos)
 	lastHitTime = GetWorld()->GetTimeSeconds();
 	int randDamage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));
 
-	randDamage = 81;
-
+	randDamage = 1;
+	DamageEffect->Activate(true);
 	int temphp = hp - randDamage;
 	hp = FMath::Max(temphp, 0);
 
@@ -384,8 +372,10 @@ void ATPSPlayer::OnHitEvent(int damage, FVector enemyPos)
 	}
 
 	if (hp < maxHp / 5) {
-		if (heartAudio)
+		if (IsValid(heartAudio)) {
+			heartAudio->Stop();
 			heartAudio->Play();
+		}
 
 	}
 

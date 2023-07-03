@@ -48,11 +48,17 @@ public:
 	void UseSkillSlot() { UseSkillSlot(type); };
 	void UseSkillSlot(SkillType type);
 	
+	// dash - true, Shield - false
+	void BasicSkillCoolTime(bool dashOrShield, float CoolTime);
+	void BasicSkillCoolTimeLoop();
+
 public:
 	class ATPSPlayer* myPlayer;
 	class UPlayerAbilityComp* myAbilityComp;
 	FTimerHandle startTimerHandle;
 	FTimerHandle respawnTimer;
+	FTimerHandle basicSkillLoopTimer;
+	FTimerHandle basicSkillLoopEndTimer;
 
 	UPROPERTY(BlueprintReadOnly)
 		FString IceAttackTimeText ="";
@@ -67,12 +73,12 @@ public:
 		FString FireStormTimeText = "";
 
 	UPROPERTY(BlueprintReadOnly)
-		FString DashTimeText = "";
-	float DashTime = 0;
+		float DashTime = 1.f;
+	float DashCoolTime = 0.f;
 
 	UPROPERTY(BlueprintReadOnly)
-		FString ShieldTimeText = "";
-	float ShieldTime = 0;
+		float ShieldTime = 1.f;
+	float ShieldCoolTime = 0.f;
 
 	UPROPERTY(BlueprintReadOnly)
 		int RespawnTime = 0;
@@ -104,7 +110,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 		UTexture2D* currWeaponTexture;
 
-
+	bool bBasicSkillLoopEnd = false;
 
 	// ÇÔ¼ö ##############################################
 

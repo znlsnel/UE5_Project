@@ -21,14 +21,11 @@ public:
 	virtual void SynchronizeWhitPlayer(class ATPSPlayer* player)override;
 	virtual void Attack()override;
 
-	UFUNCTION()
-		void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void AttackEvent(TArray<AActor*> &monsters);
 	
 	void BlockAttack();
 	void OnBlocking(bool On);
 public:
-	UPROPERTY(EditAnywhere)
-		class UBoxComponent* enemySensor;
 	UPROPERTY(EditAnywhere)
 		class UParticleSystemComponent* swordEffect;
 
@@ -44,7 +41,6 @@ public:
 	UPROPERTY(EditAnywhere)
 		USoundBase* ShieldSound;
 
-	bool IsActiveSword = false;
 	bool SwordMoveOn = false;
 	bool isBlocking = false;
 

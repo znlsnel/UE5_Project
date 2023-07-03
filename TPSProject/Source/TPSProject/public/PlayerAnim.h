@@ -32,7 +32,7 @@ public:
 	UFUNCTION()
 		void AnimNotify_EndSkill();
 	UFUNCTION()
-		void AnimNotify_EndSwing();
+		void AnimNotify_OnMeleeAttack();
 
 	UFUNCTION()
 		void AnimNotify_Blocking();

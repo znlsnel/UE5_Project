@@ -9,26 +9,26 @@
 #include "GameFramework/Actor.h"
 #include "EnemyManager.generated.h"
 
-UENUM(BlueprintType)
-enum class EnemyType : uint8
-{
-	Riktor			UMETA(DisplayName = "Riktor"),
-	RiktorFast		UMETA(DisplayName = "RiktorFast"),
-	RiktorBig			UMETA(DisplayName = "RiktorBig"),
-	RiktorGiant		UMETA(DisplayName = "RiktorGiant"),
-	Helix			UMETA(DisplayName = "Helix"),
-	Kraken			UMETA(DisplayName = "Kraken"),
-	BomberMan		UMETA(DisplayName = "BomberMan"),
-	Super			UMETA(DisplayName = "Super"),
-};
+//UENUM(BlueprintType)
+//enum class EnemyType : uint8
+//{
+//	Riktor			UMETA(DisplayName = "Riktor"),
+//	RiktorFast		UMETA(DisplayName = "RiktorFast"),
+//	RiktorBig			UMETA(DisplayName = "RiktorBig"),
+//	RiktorGiant		UMETA(DisplayName = "RiktorGiant"),
+//	Helix			UMETA(DisplayName = "Helix"),
+//	Kraken			UMETA(DisplayName = "Kraken"),
+//	BomberMan		UMETA(DisplayName = "BomberMan"),
+//	Super			UMETA(DisplayName = "Super"),
+//};
 
-UENUM(BlueprintType)
-enum class EnemyPoolType : uint8
-{
-	Common			UMETA(DisplayName = "Common"),
-	Special		UMETA(DisplayName = "Special"),
-	Boss			UMETA(DisplayName = "Boss"),
-};
+//UENUM(BlueprintType)
+//enum class EnemyPoolType : uint8
+//{
+//	Common			UMETA(DisplayName = "Common"),
+//	Special		UMETA(DisplayName = "Special"),
+//	Boss			UMETA(DisplayName = "Boss"),
+//};
 
 
 
@@ -55,14 +55,15 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	class ATPSPlayer* player;
-	
-		void SpawnEnemy(bool SpawnBoss = false);
-		int GetSpawnIndex();
-		void CreateEnemy(FVector location, EnemyPoolType poolType);
-		void AddEnemy(FVector location, EnemyPoolType poolType);
-		bool RecycleEnemy(class AEnemy* enemy, int SpawnIndex);
 
-		void FindSpawnPoints();
+	void SpawnEnemy();
+	void SpawnBossMonster();
+	int GetSpawnIndex();
+	void CreateEnemy(FVector location , TSubclassOf<class AEnemy>& enemyFactory, TArray<class AEnemy*>& pool);
+	void AddEnemy(FVector location, TArray<class AEnemy*>& pool);
+	bool RecycleEnemy(class AEnemy* enemy, int SpawnIndex);
+
+	void FindSpawnPoints();
 
 
 		TArray<int> preSpawnIndex;
@@ -74,49 +75,55 @@ public:
 public:
 	// 스폰을 위한 알람 타이머
 	FTimerHandle spawnTimerHandle;
+	FTimerHandle bossSpawnTimerHandle;
 	FTimerHandle SpawnWaitTimer;
+
 	bool isbreakTime = true;
 	int currRound = 0;
 
 	// 랜덤 시간 간격 최솟값
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		float minTime = 5.f;
-
+		float MonsterSpawnMinTime = 5.f;
 	// 랜덤 시간 간격 최댓값
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		float maxTime = 10.5f;
+		float MonsterSpawnMaxTime = 10.5f;
 
+	UPROPERTY(EditAnywhere, Category = SpawnSettings)
+		float BossSpawnMinTime = 60.f;
+	// 랜덤 시간 간격 최댓값
+	UPROPERTY(EditAnywhere, Category = SpawnSettings)
+		float BossSpawnMaxTime = 100.f;
+	float lastBossSpawnTime = 0.f;
 	// 스폰할 위치 정보 배열
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
 		TArray<class AActor*> spawnPoints;
 
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
 		TSubclassOf<class AEnemy> RiktorFactory;
-	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		TSubclassOf<class AEnemy> FastRiktorFactory;
-	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		TSubclassOf<class AEnemy> BigRiktorFactory;
-	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		TSubclassOf<class AEnemy> GiantRiktorFactory;
-	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		TSubclassOf<class AEnemy> KrakenFactory;
-	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		TSubclassOf<class AEnemy> SuperFactory;
-	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		TSubclassOf<class AEnemy>HelixFactory;
-	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		TSubclassOf<class AEnemy> BomberFactory;
 
-	TArray<class AEnemy*> CommonEnemyPool;
-	TArray<class AEnemy*> SpecialEnemyPool;
-	TArray<class AEnemy*> BossEnemyPool;
+	UPROPERTY(EditAnywhere, Category = SpawnSettings)
+		TSubclassOf<class AEnemy> KwangFactory;
+
+	UPROPERTY(EditAnywhere, Category = SpawnSettings)
+		TSubclassOf<class AEnemy> Parasite;
+	UPROPERTY(EditAnywhere, Category = SpawnSettings)
+		TSubclassOf<class AEnemy> Yaku;
+
+	TArray<class AEnemy*> RiktorPool;
+	TArray<class AEnemy*> KwangPool;
+	TArray<class AEnemy*> EnemyPool;
+
+
+	//TArray<class AEnemy*> SpecialEnemyPool;
+	//TArray<class AEnemy*> BossEnemyPool;
 
 
 	AEnemy* tempEnemy;
-	int32 commonSpawnLimit = 20;
-	int32 SpecialSpawnLimit = 8;
-	int32 BossSpawnLimit = 2;
-
+	UPROPERTY(EditDefaultsOnly)
+		int32 spawnLimit = 40;
+	UPROPERTY(EditDefaultsOnly)
+		int32 bossSpawnLimit = 10;
+	bool spawnRiktor = true;
 	int enemyBonusAttackPower = 0;
 	int enemyBonusHp = 0;
 };

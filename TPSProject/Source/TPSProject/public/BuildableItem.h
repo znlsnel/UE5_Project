@@ -62,8 +62,7 @@ public:
 	//UPROPERTY(EditAnywhere)
 	//	TSubclassOf<class UBuildableItemCheckUI> CheckWidgetTS;
 
-	UPROPERTY(EditAnywhere)
-		TSubclassOf <class UUserWidget> CheckUIFactory;
+
 	class UBuildableItemCheckUI* CheckUI;
 
 	//UPROPERTY(EditAnywhere)

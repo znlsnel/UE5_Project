@@ -8,7 +8,7 @@
 #include "RoundUI.h"
 #include "TPSPlayer.h"
 
-
+#include <Kismet/KismetMathLibrary.h>
 #include <EngineUtils.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/GameplayStatics.h>
@@ -54,56 +54,68 @@ void AEnemyManager::Tick(float DeltaTime)
 }
 
 
-void AEnemyManager::SpawnEnemy(bool SpawnBoss)
+void AEnemyManager::SpawnEnemy()
 {
 	int spawnIndex = GetSpawnIndex();
-	int spawnLimit = 0;
 
-	EnemyPoolType poolType = EnemyPoolType::Common;
-	if (SpawnBoss)
-		poolType = EnemyPoolType::Boss;
-	else {
-		int a = FMath::RandRange(0, 15);
-		if (a > 12)
-			poolType = EnemyPoolType::Special;
-	}
+	if (EnemyPool.Num() >= spawnLimit) {
 
-	TArray<class AEnemy*>* tempPool;
-	if (poolType == EnemyPoolType::Common) {
-		tempPool = &CommonEnemyPool;
-		spawnLimit = commonSpawnLimit;
-	}
-	else if (poolType == EnemyPoolType::Special) {
-		tempPool = &SpecialEnemyPool;
-		spawnLimit = SpecialSpawnLimit;
-	}
-	else {
-		tempPool = &BossEnemyPool;
-		spawnLimit = BossSpawnLimit;
-	}
-
-
-
-	if (tempPool->Num() >= commonSpawnLimit) {
-		for (auto enemy : *tempPool)
+		for (auto enemy : EnemyPool)
 			if (RecycleEnemy(enemy, spawnIndex))
 				break;
 	}
-
 	else
 	{
 		FVector tempPos = spawnPoints[spawnIndex]->GetActorLocation();
 		tempPos.Z += 150;
 
-		CreateEnemy(tempPos, poolType);
+		bool spawnParasite = FMath::RandRange(0, 1) == 0;
+		if (spawnParasite)
+			CreateEnemy(tempPos, Parasite, EnemyPool);
+		else
+			CreateEnemy(tempPos, Yaku, EnemyPool);
 	}
+
 	// 다시 랜덤 시간에 CreateEnemy 함수가 호출되도록 타이머 설정
-	float createTime = FMath::RandRange(minTime, maxTime);
+	float createTime = FMath::RandRange(MonsterSpawnMinTime, MonsterSpawnMaxTime);
 
 	// 다시 호출되게끔 타이머를 설정함
 	GetWorld()->GetTimerManager().SetTimer(spawnTimerHandle, FTimerDelegate::CreateLambda([&]() {
 		SpawnEnemy();
 		}), createTime, false);
+}
+
+void AEnemyManager::SpawnBossMonster( )
+{
+	int spawnIndex = GetSpawnIndex();
+
+	TArray<AEnemy*>* tempArr = &KwangPool;
+	if (spawnRiktor) {
+		tempArr = &RiktorPool;
+	}
+
+	if (tempArr->Num() >= spawnLimit) {
+		for (auto boss : *tempArr)
+			if (RecycleEnemy(boss, spawnIndex))
+				break;
+	}
+	else{
+		FVector tempPos = spawnPoints[spawnIndex]->GetActorLocation();
+		tempPos.Z += 150;
+
+		if (spawnRiktor)
+			CreateEnemy(tempPos, RiktorFactory, RiktorPool);
+		else
+			CreateEnemy(tempPos, KwangFactory, KwangPool);
+	}
+
+
+
+	spawnRiktor = spawnRiktor ? false : true;
+
+
+	float randTime =  FMath::FRandRange(BossSpawnMinTime, BossSpawnMaxTime);
+	GetWorld()->GetTimerManager().SetTimer(bossSpawnTimerHandle, this, &AEnemyManager::SpawnBossMonster, randTime, false);
 }
 
 int AEnemyManager::GetSpawnIndex()
@@ -136,54 +148,26 @@ int AEnemyManager::GetSpawnIndex()
 	return result;
 }
 
-void AEnemyManager::CreateEnemy(FVector location, EnemyPoolType poolType)
+void AEnemyManager::CreateEnemy(FVector location, TSubclassOf<class AEnemy>& enemyFactory, TArray<class AEnemy*>& pool)
 {
 
-	switch (poolType) {
-	case EnemyPoolType::Common: {
-		int a = FMath::RandRange(0, 5);
-		if (a < 3)
-			tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(RiktorFactory));
-		else if (a < 4)
-			tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(SuperFactory));
-		else 
-			tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(FastRiktorFactory));
-	}
-		break;
-	case EnemyPoolType::Special: {
-		int a = FMath::RandRange(0, 3);
-		if (a < 2)
-			tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(BigRiktorFactory));
-		else if (a < 4)
-			tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(HelixFactory));
-		//else
-		//	tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(BomberFactory));
-	}
-		break;
-
-	case EnemyPoolType::Boss: {
-		int a = FMath::RandRange(0, 2);
-		if (a < 1)
-			tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(GiantRiktorFactory));
-		else
-			tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(KrakenFactory));
-	}
-		break;
-	}
+	tempEnemy = Cast<AEnemy>(GetWorld()->SpawnActor(enemyFactory));
 
 	if (tempEnemy)
 		tempEnemy->SetActorHiddenInGame(true);
 	else
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Enemy"));
 
-	GetWorld()->GetTimerManager().SetTimer(SpawnWaitTimer, FTimerDelegate::CreateLambda(
-		[&, location]() {
-			AddEnemy(location, poolType);
-		}
-	), 1.f, false);
+	AddEnemy(location, pool);
+
+	//GetWorld()->GetTimerManager().SetTimer(SpawnWaitTimer, FTimerDelegate::CreateLambda(
+	//	[&, location]() {
+	//		AddEnemy(location);
+	//	}
+	//), 1.f, false);
 }
 
-void AEnemyManager::AddEnemy(FVector location, EnemyPoolType poolType)
+void AEnemyManager::AddEnemy(FVector location, TArray<AEnemy*>& pool)
 {
 	if (IsValid(tempEnemy))
 	{
@@ -194,7 +178,6 @@ void AEnemyManager::AddEnemy(FVector location, EnemyPoolType poolType)
 			tempEnemy->player = player;
 
 		if (tempEnemy->fsm == nullptr) {
-			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No FSM"));
 			return;
 		}
 
@@ -202,21 +185,8 @@ void AEnemyManager::AddEnemy(FVector location, EnemyPoolType poolType)
 		tempEnemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp, currRound);
 		tempEnemy->fsm->InitializeEnemy(location);
 
-		switch (poolType)
-		{
-		case EnemyPoolType::Common:
-			CommonEnemyPool.Add(tempEnemy);
-			break;
 
-		case EnemyPoolType::Special:
-			SpecialEnemyPool.Add(tempEnemy);
-			break;
-
-		case EnemyPoolType::Boss:
-			BossEnemyPool.Add(tempEnemy);
-			break;
-		}
-
+		pool.Add(tempEnemy);
 
 		tempEnemy->enemyManager = this;
 	}
@@ -224,19 +194,16 @@ void AEnemyManager::AddEnemy(FVector location, EnemyPoolType poolType)
 
 bool AEnemyManager::RecycleEnemy(AEnemy* enemy, int SpawnIndex)
 {
-	if (IsValid(enemy) == false) return false;
+	if (IsValid(enemy) == false || enemy->fsm->isActive) 
+		return false;
 
-	if (enemy->fsm->isActive == false)
-	{
-		FVector genPos = spawnPoints[SpawnIndex]->GetActorLocation();
-		genPos.Z += 150;
+	FVector genPos = spawnPoints[SpawnIndex]->GetActorLocation();
+	genPos.Z += 150;
 
-		enemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp, currRound);
-		enemy->fsm->InitializeEnemy(genPos);
+	enemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp, currRound);
+	enemy->fsm->InitializeEnemy(genPos);
 
-		return true;
-	}
-	return false;
+	return true;
 }
 
 
@@ -263,35 +230,39 @@ void AEnemyManager::FindSpawnPoints()
 
 void AEnemyManager::RoundEvent(bool start)
 {
-
 	if (start)
 	{
 		isbreakTime = false;
 
 		if (currRound > 0) {
-			enemyBonusAttackPower += 3;
-			enemyBonusHp += 3;
+			enemyBonusAttackPower += 1;
+			enemyBonusHp += 10;
 		}
 
 		currRound++;
 		// All Enemy Die
-		SpawnEnemy(true);
-		float createTime = FMath::RandRange(minTime, maxTime);
-		GetWorld()->GetTimerManager().SetTimer(spawnTimerHandle, FTimerDelegate::CreateLambda([&]() {
-			SpawnEnemy();
-			}), createTime, false);
+
+		SpawnEnemy();
+		SpawnBossMonster();
+		//float createTime = FMath::RandRange(MonsterSpawnMinTime, MonsterSpawnMaxTime);
+		//GetWorld()->GetTimerManager().SetTimer(spawnTimerHandle, FTimerDelegate::CreateLambda([&]() {
+		//	SpawnEnemy();
+		//	}), createTime, false);
 	}
 	else
 	{
 		isbreakTime = true;
 		GetWorld()->GetTimerManager().ClearTimer(spawnTimerHandle);
 
-		for (auto enemy : CommonEnemyPool)
-			enemy->OnDamage(enemy->fsm->maxHp * 100);
-		for (auto enemy : SpecialEnemyPool)
-			enemy->OnDamage(enemy->fsm->maxHp * 100);
-		for (auto enemy : BossEnemyPool)
-			enemy->OnDamage(enemy->fsm->maxHp * 100);
+		GetWorld()->GetTimerManager().ClearTimer(bossSpawnTimerHandle);
+
+		for (auto enemy : EnemyPool)
+			enemy->OnDamage(enemy->fsm->maxHp * 100,"",nullptr,true);
+		for (auto enemy : RiktorPool)
+			enemy->OnDamage(enemy->fsm->maxHp * 100, "", nullptr, true);
+		for (auto enemy : KwangPool)
+			enemy->OnDamage(enemy->fsm->maxHp * 100, "", nullptr, true);
+
 	}
 }
 

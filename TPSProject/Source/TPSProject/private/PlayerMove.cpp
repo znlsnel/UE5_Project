@@ -97,6 +97,11 @@ void UPlayerMove::LookUp(float value)
 
 void UPlayerMove::Move()
 {
+	if (me->playerFire->currWeapon && me->playerFire->currWeapon->weaponType == WeaponType::Sword) {
+		if (Cast<AWeapon_Sword>(me->playerFire->currWeapon)->isBlocking == true)
+			return;
+	}
+
 	if (me->isDie) return;
 	// 플레이어 이동
 	// GetControlRotation - 플레이어 폰을 컨트롤하고 있는 컨트롤러의 방향을 FRotator 타입으로 넘겨줌
@@ -107,9 +112,8 @@ void UPlayerMove::Move()
 
 	if (me->playerFire->currWeapon && 
 		me->playerFire->currWeapon->ActorHasTag(TEXT("Sword")) &&
-		Cast<AWeapon_Sword>(me->playerFire->currWeapon)->IsActiveSword) 
+		Cast<AWeapon_Sword>(me->playerFire->currWeapon)->SwordMoveOn) 
 		return;
-
 
 	direction = FTransform(me->GetControlRotation()).TransformVector(direction);
 	me->AddMovementInput(direction);
@@ -166,6 +170,11 @@ void UPlayerMove::InputRun()
 
 void UPlayerMove::Dash( )
 {
+	if (me->playerFire->currWeapon && me->playerFire->currWeapon->weaponType == WeaponType::Sword) {
+		if (Cast<AWeapon_Sword>(me->playerFire->currWeapon)->isBlocking == true)
+			return;
+	}
+
 	if (GetWorld()->GetTimeSeconds() - lastDashTime < dashCoolTime)
 		return;
 
@@ -196,9 +205,7 @@ void UPlayerMove::Dash( )
 
 	}
 	
-	me->playerUI->screenUI->DashTime = dashCoolTime;
-	me->playerUI->screenUI->DashTimeText = FString::Printf(TEXT("%d"), (int)dashCoolTime);
-
+	me->playerUI->screenUI->BasicSkillCoolTime(true, dashCoolTime);
 
 	if (GetWorld()->GetTimerManager().IsTimerActive(me->abilityComp->skillTimerHandle) == false)
 		me->abilityComp->OperateSkillTimer();

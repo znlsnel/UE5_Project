@@ -143,7 +143,11 @@ void ASkill::TriggerSkill()
 void ASkill::SetLocatoin()
 {
 	hitResult = LineTrace();
-	SetActorLocation(hitResult.ImpactPoint);
+
+	if (hitResult.bBlockingHit)
+		SetActorLocation(hitResult.ImpactPoint);
+	else
+		SetActorLocation(myPlayer->GetActorLocation());
 	//SkillPreview->SetWorldRotation(hitResult.ImpactNormal.Rotation());
 }
 

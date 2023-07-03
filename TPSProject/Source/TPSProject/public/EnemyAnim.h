@@ -17,50 +17,74 @@ class TPSPROJECT_API UEnemyAnim : public UAnimInstance
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = FSM)
-		EEnemyState animState;
+	virtual void NativeBeginPlay()override;
+	// 피격 애니메이션 재생 함수
+	virtual void PlayDamageAnim(bool IsDeath, AActor* attacker = nullptr);
+	virtual void PlayAttackAnim(bool isLongRangeAttack = false, bool startMotion = false);
+	virtual void LongRangeAttack();
 
+	UFUNCTION()
+		void AnimNotify_OnAttack();
+	UFUNCTION()
+		void AnimNotify_DamagedEnd();
+
+	void playHitSound(bool IsDeath);
+	void AttackToTargets(TArray<AActor*> actors, int damage);
+
+
+public:
+	UPROPERTY(EditAnywhere, blueprintReadWrite, category = FSM)
+		bool isDead = false;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = FSM)
 		bool bAttackPlay = false;
 
-	UPROPERTY(BlueprintReadOnly)
-		class AEnemy* me;
-	UPROPERTY(BlueprintReadOnly)
-		bool isWin = false;
-	// 공격 애니메이션 끝나는 이벤트 함수
-	UFUNCTION(BlueprintCallable, Category = FSMEvent)
-		void OnEndAttackAnimation(int Damage = -1);
-
-	// 피격 애니메이션 재생 함수
-	void PlayDamageAnim(FName sectionName);
-
-	UFUNCTION()
-		void AnimNotify_AttackEnd();
-	UFUNCTION()
-		void AnimNotify_DamagedEnd();
-	UFUNCTION()
-		void AnimNotify_DieENd();
-	void playHitSound(bool IsDeath);
-
-
-	UFUNCTION(BlueprintImplementableEvent, Category = FSMEvent)
-		void InitializeEnemy();
-
-	UPROPERTY(EditAnywhere, blueprintReadWrite, category = FSM)
-		bool isDead = false;
+	UPROPERTY(EditAnywhere)
+		bool bHasAbilitySkill = false;
 
 	UPROPERTY(EditAnywhere)
 		UAnimMontage* AM_Damaged;
+	UPROPERTY(EditAnywhere)
+		UAnimMontage* AM_Attack;
+	UPROPERTY(EditAnywhere)
+		UAnimMontage* AM_Skill;
+	UPROPERTY(EditAnywhere)
+		UAnimMontage* AM_Die;
+	
+	UPROPERTY(EditAnywhere)
+		int attackAMSectionCount = 1;
+	int currAttackSection = 1;
+
+	int AttackDamage = 5;
+	int SkillDamage = 5;
+
+	UPROPERTY(EditAnywhere)
+		float LongRangeSkillCoolTime = 15.f;
+	float lastLongRangeSkillUseTime = 0.f;
+
+	UPROPERTY(EditAnywhere)
+		float MeleeSkillCoolTime = 15.f;
+	float lastMeleeSkillUseTime = 0.f;
+
+
+	UPROPERTY(BlueprintReadOnly)
+		float speed = 100.f;
+
 	UPROPERTY(EditAnywhere)
 		USoundBase* HitSound;
 	UPROPERTY(EditAnywhere)
 		USoundBase* DeathSound;
 
-	UPROPERTY(BlueprintReadOnly)
-		int AttackDamage = 5;
-	int initAttackDamage = 5;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = FSM)
+		EEnemyState animState;
 
 	UPROPERTY(BlueprintReadOnly)
-	float speed = 100.f;
-	class AActor* target;
+		class AEnemy* me;
+
+	UPROPERTY(EditAnywhere)
+		FName meleeSkill= "Ability_1";
+
+	UPROPERTY(EditAnywhere)
+		FName longRangeSkill = "Ability_2";
+
 };

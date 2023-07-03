@@ -39,15 +39,19 @@ void AWeapon_Gun::createNiagara(FHitResult pHitResult)
 {
 	UNiagaraComponent* tempTracer = UNiagaraFunctionLibrary::SpawnSystemAttached(TracerNS, weaponMeshComp, TEXT(""), weaponMeshComp->GetSocketLocation(TEXT("Muzzle")), FRotator(0), EAttachLocation::KeepWorldPosition, true);
 
-
-
 	if (tempTracer)
 	{
 		tempTracer->SetNiagaraVariableBool(FString("User.Trigger"), true);
+		//pHitResult.ImpactPoint = pHitResult.bBlockingHit ? pHitResult.ImpactPoint : pHitResult.TraceEnd;
 
-		FVector tempPos = pHitResult.bBlockingHit ? pHitResult.ImpactPoint : pHitResult.TraceEnd;
+		if (pHitResult.bBlockingHit == false)
+			pHitResult.ImpactPoint = pHitResult.TraceEnd;
+
+
+
 		TArray<FVector> TraceImpactPosArr;
-		TraceImpactPosArr.Add(tempPos);
+		TraceImpactPosArr.Add(pHitResult.ImpactPoint);
+
 
 		UNiagaraDataInterfaceArrayFunctionLibrary::
 			SetNiagaraArrayVector(tempTracer, TEXT("User.ImpactPositions"), TraceImpactPosArr);
@@ -55,7 +59,6 @@ void AWeapon_Gun::createNiagara(FHitResult pHitResult)
 		tempTracer->SetNiagaraVariablePosition(FString("User.MuzzlePostion"), weaponMeshComp->GetSocketLocation("Muzzle"));
 
 	}
-
 	UNiagaraComponent* tempDecal = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactDecal, pHitResult.ImpactPoint, pHitResult.ImpactNormal.Rotation());
 
 	CreateDecal(tempDecal, pHitResult);
@@ -71,7 +74,6 @@ void AWeapon_Gun::createNiagara(FHitResult pHitResult)
 
 		int damage = weapDamage + myPlayer->abilityComp->GetSkillInfo(SkillType::gunProficiency)->powerValue;
 
-		tempEnemy->fsm->SetTarget(myPlayer);
 		tempEnemy->fsm->OnDamageProcess(damage, myPlayer, pHitResult.BoneName);
 
 
@@ -85,7 +87,6 @@ void AWeapon_Gun::createNiagara(FHitResult pHitResult)
 				if (tempEnemy) {
 					int damage = weapDamage + myPlayer->abilityComp->GetSkillInfo(SkillType::gunProficiency)->powerValue;
 
-					tempEnemy->fsm->SetTarget(myPlayer);
 					tempEnemy->fsm->OnDamageProcess(damage, myPlayer, pHitResult.BoneName);
 					tempEnemy = nullptr;
 				}

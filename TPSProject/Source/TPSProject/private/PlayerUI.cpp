@@ -12,6 +12,8 @@
 #include "PlayerMove.h"
 #include "PlayerAbilityComp.h"
 #include "playerHpEffect.h"
+#include "StatueHpWidget.h"
+#include "StatueAbilityWidget.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Components/WidgetComponent.h>
@@ -157,28 +159,31 @@ void UPlayerUI::InitializeWidgets()
 {
 
 	screenUI = Cast<UScreenUI>(CreateWidget(GetWorld(), ScreenUIFactory));
+	StatueHpWidget = Cast<UStatueHpWidget>(CreateWidget(GetWorld(), StatueHpFactory));
 
 	screenUI->Initialization(me);
 
 	crosshair = Cast<UCrosshair>(CreateWidget(GetWorld(), crosshairFactory));
 	if (crosshair) crosshair->Initialization(me);
 	weaponSelectUI = Cast<UWeaponUI>(CreateWidget(GetWorld(), weaponUIFactory));
-
+	statueAbilityWidget = Cast<UStatueAbilityWidget>(CreateWidget(GetWorld(), statueAbilityWidgetFactory));
 }
 
 void UPlayerUI::ATVWidgets()
 {
-
+	if (StatueHpWidget && StatueHpWidget->IsInViewport()==false) {
+		StatueHpWidget->AddToViewport();
+	}
 	if (crosshair) {
 		crosshair->ATVWidget();
 	}
-	if (screenUI)	{
+	if (screenUI) {
 		screenUI->ATVWidget();
 	}
 	if (weaponSelectUI && weaponSelectUI->IsInViewport() == false) {
 		weaponSelectUI->AddToViewport();
-
 	}
+
 
 }
 
