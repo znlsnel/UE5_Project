@@ -22,8 +22,19 @@ protected:
 
 	virtual void BeginPlay()override;
 
+	// Save Function
+public:
+	void SaveGame(FString SaveSlotName, int slotNumber);
+	bool LoadGame(int slotNumber);
+	void SaveFileDuplicate(class UMySaveGame* saveGame, bool Load = false);
+	void UpdateJsonFile(FString SaveSlotName, int slotNumber, int currDay);
+	FString ConvertSlotNumberToString(int slotNumber);
+	FString GetSlotName(int SlotNumber);
+	void GetFieldItem(TArray<struct FFieldItem>& fieldItems);
+	void SetFieldItem(TArray<struct FFieldItem>& fieldItems);
 
 public:
+	FTimerHandle LoadTimer;
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class AEnemyManager> enemyManagerFactory;
 	UPROPERTY(EditAnywhere, blueprintReadOnly, Category = SpawnSettings)
@@ -32,8 +43,16 @@ public:
 
 	//UPROPERTY(Replicated)
 	TArray<AActor*> managedActors;
+	TArray<class ABuildableItem*> loadActors;
+
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 		class AEnemyManager* EnemyManager;
 	FTimerHandle StartTimer;
+	class ATPSPlayer* myPlayer;
+
+	FString firstSaveSlotName = "";
+	FString SecondSaveSlotName = "";
+	FString ThirdSaveSlotName = "";
+
 };

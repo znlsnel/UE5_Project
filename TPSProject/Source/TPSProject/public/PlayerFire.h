@@ -20,7 +20,7 @@ class TPSPROJECT_API UPlayerFire : public UPlayerBaseComponent
 		UPlayerFire();
 	virtual void SetupInputBinding(class UInputComponent* PlayerInputComponent) override;
 	virtual void BeginPlay() override;
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
+
 
 
 public:
@@ -31,6 +31,8 @@ public:
 	void LoopFire();
 
 	void EquipWeapon(WeaponType weaponType);
+	int GetOwnWeapons();
+	void SetOwnWeapons(int ownWeapon);
 
 
 	template<bool b>
@@ -41,7 +43,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-		void ChangeWeapon();
+		void ChangeWeapon(class AWeapon* weapon = nullptr);
 
 
 public:
@@ -77,7 +79,9 @@ public:
 	class AWeapon* weapon_Pistol;
 	class AWeapon* weapon_Bow;
 	class AWeapon* weapon_Sword;
-	class AWeapon* currWeapon;
+
+	UPROPERTY(BlueprintReadOnly)
+		class AWeapon* currWeapon;
 	class AWeapon* nextWeapon;
 	class AWeapon* GetWeapon(WeaponType weaponType);
 

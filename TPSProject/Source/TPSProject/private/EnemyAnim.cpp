@@ -42,26 +42,20 @@ void UEnemyAnim::playHitSound(bool IsDeath)
 
 void UEnemyAnim::AttackToTargets(TArray<AActor*> actors, int damage)
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("AttackToTargets"));
-
 	if (actors.IsEmpty()) {
 		me->fsm->isInAttackRange = false;
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Target"));
-
 		return;
 	}
 
 	for (auto target : actors) {
 		if (target->ActorHasTag("Player")) {
-			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Player"));
-
 			ATPSPlayer* tempPlayer = Cast<ATPSPlayer>(target);
 
 			if (tempPlayer->playerFire->currWeapon->weaponType == WeaponType::Sword) {
 				AWeapon_Sword* tempSword = Cast<AWeapon_Sword>(tempPlayer->playerFire->currWeapon);
 
 				if (tempSword->isBlocking == true) {
-					me->OnDamage(10, "", tempPlayer);
+					me->OnDamage(damage, "", tempPlayer);
 					tempSword->BlockEffect->Activate(true);
 					UGameplayStatics::PlaySoundAtLocation(GetWorld(), tempSword->BlockSound, tempSword->GetActorLocation());
 					return;
@@ -100,16 +94,16 @@ void UEnemyAnim::PlayDamageAnim(bool IsDeath, AActor* attacker)
 		return;
 	}
 
-	if (Montage_IsPlaying(AM_Skill))
+	if (Montage_IsPlaying(AM_Skill) || Montage_IsPlaying(AM_Attack))
 		return;
 
-	FName sectionName = "";
 	Montage_Play(AM_Damaged);
 	if (attacker) {
+		FName sectionName = "";
 		FVector dir = (attacker->GetActorLocation() - me->GetActorLocation()).GetSafeNormal();
+
 		float forward = FVector::DotProduct(dir, me->GetActorForwardVector());
 		float Right = FVector::DotProduct(dir, me->GetActorRightVector());
-
 		float AbsForward = FMath::Abs(forward);
 		float AbsRight = FMath::Abs(Right);
 
@@ -125,8 +119,9 @@ void UEnemyAnim::PlayDamageAnim(bool IsDeath, AActor* attacker)
 			else
 				sectionName = FName("Left");
 		}
+
+		Montage_JumpToSection(sectionName, AM_Damaged);
 	}
-	Montage_JumpToSection(sectionName, AM_Damaged);
 }
 
 void UEnemyAnim::PlayAttackAnim(bool isLongRangeAttack, bool startMotion)

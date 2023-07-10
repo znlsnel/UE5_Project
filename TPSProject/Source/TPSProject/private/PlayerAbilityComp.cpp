@@ -65,6 +65,7 @@ void UPlayerAbilityComp::LoadJsonFile()
 
 void UPlayerAbilityComp::BeginPlay()
 {
+	Super::BeginPlay();
 	myPlayer = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 	for (int i = 0; i < 5; i++) {
@@ -98,7 +99,8 @@ bool UPlayerAbilityComp::GetMouseInput()
 
 	if (myPlayer) {
 		myPlayer->PlayMontage(skillAnim, FName(FString::Printf(TEXT("Skill_%d"), randSkill)));
-		isPlaySkillAnim = true;
+		myPlayer->isRotatable = false;
+		myPlayer->isMovable = false;
 	}
 
 	return true;
@@ -207,12 +209,37 @@ void UPlayerAbilityComp::OperateSkillTimer()
 
 FSkillInfo* UPlayerAbilityComp::GetSkillInfo(SkillType type)
 {
+
 	for (auto skillInfo : skillInfos)
 	{
 		if (skillInfo->skillType == type)
 			return skillInfo;
 	}
 	return nullptr;
+}
+
+void UPlayerAbilityComp::SetSkillInfoArr(TArray<FSkillInfo> setSkillInfos)
+{
+	if (setSkillInfos.IsEmpty()) {
+		return;
+	}
+
+	skillInfos.Empty();
+	for (auto skillInfo : setSkillInfos) {
+		skillInfos.Add(&skillInfo);
+		UpdateValue(&skillInfo);
+	}
+}
+
+TArray<FSkillInfo> UPlayerAbilityComp::GetSkillInfoArr()
+{
+	TArray<FSkillInfo> resultArr;
+
+	for (auto skillInfo : skillInfos) {
+		resultArr.Add(*skillInfo);
+	}
+
+	return resultArr;
 }
 
 bool UPlayerAbilityComp::UseSkill(SkillType type)
@@ -227,8 +254,11 @@ bool UPlayerAbilityComp::UseSkill(SkillType type)
 	}
 
 	currSkill = GetSkill(type);
-	if (currSkill == nullptr) return false;
-	
+	if (currSkill == nullptr) {
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("skill nullptr"));
+
+		return false;
+	}
 
 	if (currSkill->mySkill->point > 0) {
 		currSkill->state = SkillState::Aiming;

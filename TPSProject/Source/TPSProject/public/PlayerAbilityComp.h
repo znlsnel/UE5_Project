@@ -35,6 +35,7 @@ enum class SkillType : uint8
 };
 
 
+
 USTRUCT(BlueprintType)
 struct TPSPROJECT_API FSkillInfo 
 {
@@ -91,6 +92,8 @@ public:
 	void SetSkillTimer(SkillType type);
 	void OperateSkillTimer();
 	FSkillInfo* GetSkillInfo(SkillType type);
+	void SetSkillInfoArr(TArray< FSkillInfo> skillInfos);
+	TArray< FSkillInfo> GetSkillInfoArr();
 	class ASkill* GetSkill(SkillType type);
 	bool UseSkill(SkillType type);
 	SkillSectionType ConvertSectionType(FString type);
@@ -129,5 +132,4 @@ public:
 	float IceAttackTime = 0.f;
 	float HealTime = 0.f;
 	float FireStormTime = 0.f;
-	bool isPlaySkillAnim = false;
 };

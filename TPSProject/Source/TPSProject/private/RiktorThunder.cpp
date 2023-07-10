@@ -2,6 +2,9 @@
 
 
 #include "RiktorThunder.h"
+#include "Enemy.h"
+#include "EnemyAnim.h"
+#include "EnemyFSM.h"
 #include "TPSPlayer.h"
 #include "Doomstone.h"
 
@@ -57,15 +60,17 @@ void ARiktorThunder::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
-void ARiktorThunder::SetActiveThunder(bool active, FVector GenPos, AActor* targetActor)
+void ARiktorThunder::SetActiveThunder(bool active, AEnemy* parent,  FVector GenPos, AActor* targetActor)
 {
 	if (active) {
+		myParent = parent;
 		target = targetActor;
+
+		SetActorLocation(GenPos);
 		SetActorHiddenInGame(false);
 		mainEffect->Activate(true);
 		isActiveThunder = true;
 
-		SetActorLocation(GenPos);
 		MoveLoop();
 		GetWorldTimerManager().ClearTimer(EndTimer);
 		GetWorldTimerManager().SetTimer(EndTimer, FTimerDelegate::CreateLambda(
@@ -87,19 +92,19 @@ void ARiktorThunder::MoveLoop()
 	GetWorldTimerManager().ClearTimer(AIMoveLoopTimer);
 	if (isActiveThunder == false)
 		return;
+
 	if (target) {
 		myAI->MoveToActor(target);
-
 	}
-	else
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Target"));
+	if (myParent->fsm->anim->isDead) {
+		SetActiveThunder(false);
+	}
 
 	GetWorldTimerManager().SetTimer(AIMoveLoopTimer, this, &ARiktorThunder::MoveLoop, 1.f, false);
 }
 
 void ARiktorThunder::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Thunder! Overlap"));
 	if (isActiveThunder == false)
 		return;
 

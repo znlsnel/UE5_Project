@@ -14,6 +14,7 @@
 #include "playerHpEffect.h"
 #include "StatueHpWidget.h"
 #include "StatueAbilityWidget.h"
+#include "ExcOptionWidget.h"
 
 #include <Blueprint/UserWidget.h>
 #include <Components/WidgetComponent.h>
@@ -44,6 +45,7 @@ void UPlayerUI::SetupInputBinding(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction(TEXT("WeaponSelectUI"), IE_Pressed, this, &UPlayerUI::ATVWeaponSelectUI<true>);
 	PlayerInputComponent->BindAction(TEXT("WeaponSelectUI"), IE_Released, this, &UPlayerUI::ATVWeaponSelectUI<false>);
+	PlayerInputComponent->BindAction(TEXT("OptionScreen"), IE_Pressed, this, &UPlayerUI::OnOffOptionWidget);
 
 	PlayerInputComponent->BindAction(TEXT("FirstSkillSlot"), IE_Pressed, screenUI, &UScreenUI::UseSkillSlot<SkillType::IceAttack>);
 	PlayerInputComponent->BindAction(TEXT("SecondSkillSlot"), IE_Pressed, screenUI, &UScreenUI::UseSkillSlot<SkillType::LightningStrike>);
@@ -167,19 +169,48 @@ void UPlayerUI::InitializeWidgets()
 	if (crosshair) crosshair->Initialization(me);
 	weaponSelectUI = Cast<UWeaponUI>(CreateWidget(GetWorld(), weaponUIFactory));
 	statueAbilityWidget = Cast<UStatueAbilityWidget>(CreateWidget(GetWorld(), statueAbilityWidgetFactory));
+	excOptionWidget = Cast< UExcOptionWidget>(CreateWidget(GetWorld(), excOptionWidgetFactory));
+}
+
+void UPlayerUI::OnOffOptionWidget()
+{
+	if (excOptionWidget == nullptr) return;
+
+	if (excOptionWidget->IsInViewport()) {
+		excOptionWidget->CloseWidget();
+	}
+	else {
+		excOptionWidget->OpenWidget();
+
+	}
+
+
 }
 
 void UPlayerUI::ATVWidgets()
 {
-	if (StatueHpWidget && StatueHpWidget->IsInViewport()==false) {
+	if (StatueHpWidget) {
 		StatueHpWidget->AddToViewport();
 	}
+
+
+	int a = 4;
+
 	if (crosshair) {
 		crosshair->ATVWidget();
 	}
+
+	int c = 4;
+
+
+
 	if (screenUI) {
 		screenUI->ATVWidget();
 	}
+
+
+
+
 	if (weaponSelectUI && weaponSelectUI->IsInViewport() == false) {
 		weaponSelectUI->AddToViewport();
 	}

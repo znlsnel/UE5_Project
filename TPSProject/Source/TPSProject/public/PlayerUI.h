@@ -30,6 +30,7 @@ public:
 	void ATVWidgets();
 
 	void InitializeWidgets();
+	void OnOffOptionWidget();
 
 
 public:
@@ -50,12 +51,18 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<class UStatueHpWidget> StatueHpFactory;
+	UPROPERTY()
 		class UStatueHpWidget* StatueHpWidget;
 
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UStatueAbilityWidget> statueAbilityWidgetFactory;
-	class UStatueAbilityWidget* statueAbilityWidget;
+	UPROPERTY()
+		class UStatueAbilityWidget* statueAbilityWidget;
 
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UExcOptionWidget> excOptionWidgetFactory;
+	UPROPERTY()
+		class UExcOptionWidget* excOptionWidget;
 	bool IsMouseActive = false;
 
 

@@ -46,7 +46,7 @@ public:
 
 
 	void OnDamageProcess(int damage, AActor* attacker, FName boneName, bool ignoreHpEvent = false);
-	void RoundInitEnemy(int  bonusAtt, int bonusHp, int round);
+	void RoundInitEnemy(int round);
 	void UpdageTargetTick();
 
 public:

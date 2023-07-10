@@ -36,11 +36,17 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const;
+
 	UFUNCTION(BlueprintCallable)
 		void SetPlayerMouse(bool Active);
 
 	UFUNCTION(BlueprintCallable)
 		void OpenStatueAbilityWidget();
+
+	UFUNCTION(BlueprintCallable)
+		void StartSequenceBegin();
+	UFUNCTION(BlueprintCallable)
+		void StartSequenceEnd();
 
 	void StartGame();
 	void GetMineralGrace(int mineral, int grace);
@@ -57,7 +63,6 @@ public:
 	bool IsPlayingMontage(class UAnimMontage* AM);
 
 	void AddItemInServer(class AItem* item);
-
 	void UpdateAttackAndHp(bool updateAttack, float value);
 
 	class UStoreUI* GetStore();
@@ -76,11 +81,14 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UAbilityUpgradeWidget> abilityWidgetFactory;
-	class UAbilityUpgradeWidget* myAbilityWidget;
+	UPROPERTY()
+		class UAbilityUpgradeWidget* myAbilityWidget;
 
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UDamageWidget> damageWidgetFactory;
-	TArray<class UDamageWidget*> damageWidgets;
+	UPROPERTY()
+		TArray<class UDamageWidget*> damageWidgets;
+
 	int damageWidgetCount = 30;
 	int damageWidgetIndex = 0;
 	float lastHitTime = 0.f;
@@ -170,12 +178,16 @@ public:
 		bool isDie = false;
 	UPROPERTY(BlueprintReadWrite)
 		bool isMyPlayer = false;
-	
+
+	bool isMovable = true;
+	bool isRotatable = true;
 	UPROPERTY(BlueprintReadWrite)
 		int Grace = 10000;
 
 	UPROPERTY(BlueprintReadWrite)
 		int Mineral = 10000;
+	UPROPERTY()
+		int currRound = 0;
 
 	UPROPERTY(BlueprintReadOnly)
 		bool isBought = false;
@@ -187,13 +199,14 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		TSubclassOf <class UBuildableItemCheckUI> CheckUIFactory;
-	class UBuildableItemCheckUI* BuildableItemCheckUI;
+	UPROPERTY()
+		class UBuildableItemCheckUI* BuildableItemCheckUI;
 
 
 // ÇÔ¼ö========================================================================
 	UFUNCTION(BlueprintCallable)
 		void BuyItem(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
-
+	void CreateItem(TArray<ABuildableItem*>& items, int32 itemId, int count = 1);
 
 	void OnPlayerDie();
 
@@ -202,6 +215,5 @@ public:
 	FTimerHandle addItemTimer;
 	class UInventory* GetInventory();
 	void AddHP(int value);
-
 
 };

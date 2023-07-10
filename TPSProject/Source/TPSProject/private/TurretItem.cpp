@@ -9,79 +9,146 @@
 
 #include <Components/SphereComponent.h>
 #include <Components/BoxComponent.h>
+#include <Components/StaticMeshComponent.h>
 #include <Kismet/KismetMathLibrary.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/GameplayStatics.h>
+#include <particles/ParticleSystemComponent.h>
+#include <NiagaraSystem.h>
+#include <NiagaraFunctionLibrary.h>
+#include <NiagaraDataInterfaceArrayFunctionLibrary.h>
 
 ATurretItem::ATurretItem() : Super()
 {
+	Tags.Add("Turret");
 	itemType = ItemType::Building;
 	buildableItemType = BuildableItemType::Turret;
 
 	enemySensorComp = CreateDefaultSubobject<USphereComponent>(TEXT("EnemySensor"));
+	myCylinder = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("myCylinder"));
+	myMuzzle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("myMuzzle"));
+	fireEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("FireEffect"));
+
 	enemySensorComp->SetSphereRadius(sensorRange);
 	enemySensorComp->SetupAttachment(boxCollision);
 	enemySensorComp->AttachToComponent(boxCollision, FAttachmentTransformRules::KeepRelativeTransform);
+
+	myCylinder->SetupAttachment(boxCollision);
+	myCylinder->AttachToComponent(boxCollision, FAttachmentTransformRules::KeepRelativeTransform);
+
+	myMuzzle->SetupAttachment(myCylinder);
+	myMuzzle->AttachToComponent(myCylinder, FAttachmentTransformRules::KeepRelativeTransform);
+
+	fireEffect->SetupAttachment(myMuzzle);
+	fireEffect->AttachToComponent(myMuzzle, FAttachmentTransformRules::KeepRelativeTransform);
+
 }
 
 void ATurretItem::Tick(float DeltaSecond)
 {
 	Super::Tick(DeltaSecond);
-	if (GetWorldTimerManager().IsTimerActive(fireLoopTimer) == false)
-	{
-		TArray<AActor*> overlappnigActor;
-		enemySensorComp->GetOverlappingActors(overlappnigActor);
-		if (overlappnigActor.IsEmpty() == false)
-			FireLoop();
+
+	if (isTurretActive && currTarget) {
+		FVector currPos = myCylinder->GetComponentLocation();
+		FVector targetPos = currTarget->GetActorLocation();
+		if (FVector::Distance(currPos, targetPos) > enemySensorComp->GetScaledSphereRadius()) {
+			currTarget = nullptr;
+			return;
+		}
+		FRotator LookVector = UKismetMathLibrary::FindLookAtRotation(currPos, targetPos);
+		
+		LookVector.Pitch = 0;
+		LookVector.Roll = 0;
+
+		FRotator currRot = myCylinder->GetComponentRotation();
+		myCylinder->SetWorldRotation(FMath::RInterpTo(currRot, LookVector, DeltaSecond, 1.f));
+		
+		float offset = FMath::Abs(LookVector.Yaw - currRot.Yaw);
+		isFireable = offset < 1;
 	}
 }
+
+void ATurretItem::BeginPlay()
+{
+	Super::BeginPlay();
+	fireEffect->Deactivate();
+	FindEnemy();
+}
+
 
 void ATurretItem::FireLoop()
 {
 	GetWorld()->GetTimerManager().ClearTimer(fireLoopTimer);
 	
+	if (isFireable && currTarget)
 	{ // Attack Logic
-		GetFirePos();
-
-		currTarget = FindEnemy();
-		if (currTarget == nullptr)	{
+		FHitResult hit;
+		if (isShootingPossible(currTarget, hit) == false) {
+			isFireable = false;
+			isTurretActive = false;
+			currTarget = nullptr;
 			return;
 		}
+		else {
 
-		FRotator tempRot =  UKismetMathLibrary::FindLookAtRotation(muzzlePos, currTarget->GetActorLocation());
-		ATurretBullet* bullet = GetBullet();
+			CreateEffect(hit);
 
-		if (IsValid(bullet))
-			bullet->InitBullet(muzzlePos, tempRot, myPlayer);
+			if (hit.GetActor()->GetClass()->IsChildOf(AEnemy::StaticClass())) {
+				AEnemy* tempEnemy = Cast<AEnemy>(hit.GetActor());
+				tempEnemy->OnDamage(Damage, hit.BoneName, myPlayer);
 
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), fireSound, GetActorLocation());
+			}
+			UKismetSystemLibrary::PrintString(GetWorld(), hit.GetActor()->GetName());
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), fireSound, GetActorLocation());
+		}
 	}
 
 	GetWorld()->GetTimerManager().SetTimer(fireLoopTimer, this, &ATurretItem::FireLoop, fireSpeed, false);
 }
 
-AEnemy* ATurretItem::FindEnemy()
+void ATurretItem::FindEnemy()
 {
-	TArray<AActor*> overlappingActors;
-	enemySensorComp->GetOverlappingActors(overlappingActors);
+	GetWorldTimerManager().ClearTimer(findEnemyTimer);
 
-	for (auto overlappingActor : overlappingActors) {
-		if (overlappingActor->ActorHasTag("Enemy") == false)
-			continue;
+	if (IsHidden() == false && isBuild == false && currTarget == nullptr){
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Finding. . ."));
 
-		AEnemy* enemy = Cast<AEnemy>(overlappingActor);
-		if (enemy->isActive() && isShootingPossible(enemy)) 
-			return enemy;
+		isTurretActive = true;
 
+		TArray<AActor*> overlappingActors;
+		enemySensorComp->GetOverlappingActors(overlappingActors);
+
+		for (auto overlappingActor : overlappingActors) {
+			if (overlappingActor->ActorHasTag("Enemy") == false)
+				continue;
+
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Find ! ! !"));
+
+			FHitResult hit;
+			AEnemy* enemy = Cast<AEnemy>(overlappingActor);
+			if (enemy->isActive() && isShootingPossible(enemy, hit)) {
+				currTarget = enemy;
+				FireLoop();
+			}
+
+		}
 	}
-	return nullptr;
+
+	GetWorldTimerManager().SetTimer(findEnemyTimer, this, &ATurretItem::FindEnemy, 1.f, false);
 }
 
-bool ATurretItem::isShootingPossible(AEnemy* enemy)
+bool ATurretItem::isShootingPossible(AEnemy* enemy, FHitResult& hitResult)
 {
-	FHitResult hit = LineTrace(muzzlePos, enemy->GetActorLocation());
+	if (enemy->isDead())
+		return false;
 
-	if (hit.GetActor() && hit.GetActor()->ActorHasTag("Enemy"))
+	FVector StartPos = myMuzzle->GetComponentLocation();
+	FVector dir =  (enemy->GetActorLocation() - myMuzzle->GetComponentLocation()).GetSafeNormal();
+	FVector EndPos = StartPos + dir * 2000;
+
+	hitResult = LineTrace(StartPos, EndPos);
+
+	if (hitResult.GetActor() && hitResult.GetActor()->GetClass()->IsChildOf(AEnemy::StaticClass()))
 		return true;
 	else
 		return false;
@@ -94,29 +161,59 @@ bool ATurretItem::isTargetsEmpty()
 	return temp.IsEmpty();
 }
 
-void ATurretItem::BeginPlay()
+void ATurretItem::CreateEffect(FHitResult& hit)
 {
-	Super::BeginPlay();
-	for (int i = 0; i < bulletCount; i++)
+	fireEffect->Activate(true);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), fireSound, myMuzzle->GetComponentLocation());
+
+	UNiagaraComponent* tempTracer = UNiagaraFunctionLibrary::SpawnSystemAttached(bulletTracer, myMuzzle, TEXT(""), myMuzzle->GetComponentLocation(), FRotator(0), EAttachLocation::KeepWorldPosition, true);
+
+	if (tempTracer)
 	{
-		ATurretBullet* bullet =  Cast<ATurretBullet>(GetWorld()->SpawnActor(bulletFactory));
-		
-		bullet->SetActorHiddenInGame(true);
-		bullets.Add(bullet);
-	}
-}
+		tempTracer->SetNiagaraVariableBool(FString("User.Trigger"), true);
 
-ATurretBullet* ATurretItem::GetBullet()
-{
-	for (auto bullet : bullets)
+		if (hit.bBlockingHit == false)
+			hit.ImpactPoint = hit.TraceEnd;
+
+		TArray<FVector> TraceImpactPosArr;
+		TraceImpactPosArr.Add(hit.ImpactPoint);
+
+
+		UNiagaraDataInterfaceArrayFunctionLibrary::
+			SetNiagaraArrayVector(tempTracer, TEXT("User.ImpactPositions"), TraceImpactPosArr);
+
+		tempTracer->SetNiagaraVariablePosition(FString("User.MuzzlePostion"), myMuzzle->GetComponentLocation());
+	}
+
+	UNiagaraComponent* tempEffect = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitEffect, hit.ImpactPoint, hit.ImpactNormal.Rotation());
+
+	if (tempEffect)
 	{
-		if (bullet->isFire == false) {
-			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Bullet!"));
-			return bullet;
-		}
-		
 
+		tempEffect->SetNiagaraVariableBool(TEXT("User.Trigger"), true);
+
+		int32 surfacetype = 2;
+		if (hit.GetActor() && hit.GetActor()->ActorHasTag(TEXT("Enemy"))) surfacetype = 1;
+
+		tempEffect->SetNiagaraVariableInt(TEXT("User.SurfaceType"), surfacetype);
+
+		TArray<FVector> ImpactPosArr;
+		ImpactPosArr.Add(hit.ImpactPoint);
+		UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayPosition(tempEffect, TEXT("User.ImpactPositions"), ImpactPosArr);
+
+		TArray<FVector> ImpactNormalArr;
+		ImpactNormalArr.Add(hit.ImpactNormal);
+
+		UNiagaraDataInterfaceArrayFunctionLibrary::
+			SetNiagaraArrayVector(tempEffect, TEXT("User.ImpactNormals"), ImpactNormalArr);
+
+		TArray<int32> tempInt32Array;
+		tempInt32Array.Add(2);
+
+		UNiagaraDataInterfaceArrayFunctionLibrary::
+			SetNiagaraArrayInt32(tempEffect, TEXT("User.ImpactSurfaces"), tempInt32Array);
+
+		tempEffect->SetNiagaraVariableInt(TEXT("User.NumberOfHits"), 1);
 	}
 
-	return nullptr;
 }

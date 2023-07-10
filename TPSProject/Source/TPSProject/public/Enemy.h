@@ -28,7 +28,7 @@ public:
 	void AddWorldDamageUI(int Damage,float currHpPercent, float preHpPercent);
 	void OnDamage(int damage, FName boneName ="", class ATPSPlayer* AttackPlayer = nullptr, bool ignoreHpEvent = false );
 	bool isActive();
-
+	bool isDead();
 	UFUNCTION()
 		void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor,
 			class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,

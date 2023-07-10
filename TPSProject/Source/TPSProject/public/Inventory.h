@@ -26,7 +26,8 @@ public: // 함수
 	void DisablePopup();
 	class UInventorySlot* FindFirstEmptySlot(class AItem* item);
 	class UInventorySlot* FindSameItemSlot(class AItem* item);
-
+	void GetInventorySlot(TArray<int>& ItemIDArr);
+	void SetInventorySlot(TArray<int>& ItemIDArr);
 
 public: // 변수
 	class UTexture2D* testTexture;

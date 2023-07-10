@@ -130,3 +130,45 @@ void UAbilityUpgradeWidget::UpdateRemainSkillCount()
 	playSkillSectionUIAnimation();
 	return;
 }
+
+FUpgradeInfo UAbilityUpgradeWidget::GetAbilityInfo()
+{
+	FUpgradeInfo result;
+	result.Unlock_SecondSection = Unlock_SecondSection;
+	result.Unlock_ThirdSection = Unlock_ThirdSection;
+	result.Unlock_FourthSection = Unlock_FourthSection;
+
+	result.used_FirstSection = used_FirstSection;
+	result.used_SecondSection = used_SecondSection;
+	result.used_ThirdSection = used_ThirdSection;
+
+	result.RemainingSecondSkillCount = RemainingSecondSkillCount;
+	result.RemainingThirdSkillCount = RemainingThirdSkillCount;
+	result.RemainingFourthSkillCount = RemainingFourthSkillCount;
+
+	result.toSecondSectionRate = toSecondSectionRate;
+	result.toThirdSectionRate = toThirdSectionRate;
+	result.toFourthSectionRate = toFourthSectionRate;
+
+
+	return result;
+}
+
+void UAbilityUpgradeWidget::SetAbilityInfo(FUpgradeInfo upgradeInfo)
+{
+	Unlock_SecondSection = upgradeInfo.Unlock_SecondSection;
+	Unlock_ThirdSection = upgradeInfo.Unlock_ThirdSection;
+	Unlock_FourthSection = upgradeInfo.Unlock_FourthSection;
+	
+	used_FirstSection =upgradeInfo.used_FirstSection;
+	used_SecondSection = upgradeInfo.used_SecondSection;
+	used_ThirdSection =upgradeInfo. used_ThirdSection;
+	
+	RemainingSecondSkillCount = upgradeInfo.RemainingSecondSkillCount;
+	RemainingThirdSkillCount = upgradeInfo.RemainingThirdSkillCount;
+	RemainingFourthSkillCount = upgradeInfo.RemainingFourthSkillCount;
+	
+	toSecondSectionRate =upgradeInfo. toSecondSectionRate;
+	toThirdSectionRate = upgradeInfo.toThirdSectionRate;
+	toFourthSectionRate =upgradeInfo. toFourthSectionRate;
+}

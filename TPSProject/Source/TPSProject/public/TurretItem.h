@@ -18,25 +18,22 @@ protected:
 
 public:
 	virtual void Tick(float DeltaSecond)override;
+	virtual void BeginPlay()override;
 
 	void FireLoop();
-	class AEnemy* FindEnemy();
-	bool isShootingPossible(class AEnemy* enemy);
+	void FindEnemy();
+	bool isShootingPossible(class AEnemy* enemy, FHitResult& hitResult);
 	UFUNCTION(Blueprintpure)
 		bool isTargetsEmpty();
+	void CreateEffect(FHitResult& hit);
 
-	virtual void BeginPlay()override;
-	
-	UFUNCTION(BlueprintImplementableEvent)
-		void GetFirePos();
-
-	class ATurretBullet* GetBullet();
 public:
+	FTimerHandle findEnemyTimer;
+
 	UPROPERTY(BlueprintReadWrite)
 		FVector muzzlePos;
 
-	UPROPERTY(BlueprintReadWrite)
-		class AEnemy* currTarget;
+
 
 	int targetId = 0;
 
@@ -45,14 +42,23 @@ public:
 	float sensorRange = 1200.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-		float fireSpeed = 1.f;
+		float fireSpeed = 0.3f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-		int Damage = 10.f;
+		int Damage = 2.f;
 
-	UPROPERTY(EditAnywhere)
-		TSubclassOf <class ATurretBullet> bulletFactory;
-	TArray<class ATurretBullet*> bullets;
+
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* myCylinder;
+	UPROPERTY(VisibleAnywhere)
+		class UStaticMeshComponent* myMuzzle;
+
+	UPROPERTY(EditDefaultsOnly)
+		class UParticleSystemComponent* fireEffect;
+	UPROPERTY(EditDefaultsOnly)
+		class UNiagaraSystem* bulletTracer;
+	UPROPERTY(EditDefaultsOnly)
+		class UNiagaraSystem* HitEffect;
 
 	UPROPERTY(EditAnywhere)
 		class USoundBase* fireSound;
@@ -60,5 +66,10 @@ public:
 	int bulletCount = 10;
 
 	FTimerHandle fireLoopTimer;
+	
+	UPROPERTY(BlueprintReadWrite)
+		class AEnemy* currTarget;
 
+	bool isTurretActive = false; 
+	bool isFireable = false;
 };

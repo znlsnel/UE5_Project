@@ -94,7 +94,6 @@ void AAttackRangeIndicator::AttackToTargets()
 	if (myEnemy == nullptr)
 		return;
 
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("AttackToTargets"));
 
 	TArray<AActor*> actors;
 	targetSensor->GetOverlappingActors(actors);

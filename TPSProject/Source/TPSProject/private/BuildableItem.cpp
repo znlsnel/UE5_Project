@@ -16,7 +16,7 @@
 #include <Components/ArrowComponent.h>
 #include <NavigationSystem.h>
 
-ABuildableItem::ABuildableItem()
+ABuildableItem::ABuildableItem() : Super()
 {
 //	arrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
 	SetReplicates(true);
@@ -53,13 +53,13 @@ void ABuildableItem::UseItem(UInventorySlot* inventorySlot)
 	boxCollision->SetCollisionResponseToChannel
 		(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	boxCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	//boxCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera,
-	//	ECollisionResponse::ECR_Ignore);
+
 	RootComponent = boxCollision;
 
 	myInventorySlot = inventorySlot;
-	isSetLocation = true;
 	myPlayer->buildableItem = this;
+
+	isSetLocation = true;
 	isBuild = true;
 
 	if (IsValid(CheckUI) == false)
@@ -102,7 +102,6 @@ void ABuildableItem::GetMouseInput(bool isPressed)
 
 void ABuildableItem::SetLocation()
 {
-
 	FHitResult fHit = LineTrace();
 	FVector pos = fHit.ImpactPoint;
 
@@ -149,10 +148,8 @@ FHitResult ABuildableItem::LineTrace(FVector StartPoint, FVector EndPoint)
 
 void ABuildableItem::UpdateTranceform()
 {
-
 	if (isBuild)
 	{
-
 		if (isSetLocation)
 			SetLocation();
 		else
@@ -199,7 +196,6 @@ void ABuildableItem::SyncTranceform()
 	(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	boxCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
-	isBuild = false;
 
 	if (IsValid(myInventorySlot) == false)
 		myInventorySlot = myPlayer->GetInventory()->FindSameItemSlot(this);
@@ -220,7 +216,8 @@ void ABuildableItem::SyncTranceform()
 void ABuildableItem::DamageProcess(int Damage)
 {
 	if (isDestroy) return;
-	shield -= 5;
+
+	shield -= Damage;
 	if (shield == 0)
 	{
 		boxCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);

@@ -44,6 +44,8 @@ public:
 	void HorverButton(bool isHorver, AbilityType type, FVector2D pos);
 	void UpdateRepairRate();
 
+	void SetGetStatueAbilityArr(TArray< FStatueAbility>& arr, float& repairRate, bool Set);
+
 	UFUNCTION(BlueprintCallable)
 		void CloseWidget();
 

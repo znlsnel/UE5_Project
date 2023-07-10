@@ -61,16 +61,15 @@ void UPlayerFire::BeginPlay()
 	me->OnInitialization();
 	anim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
 
-	GetWorld()->GetTimerManager().SetTimer(BeginPlayTimer, FTimerDelegate::CreateLambda(
-		[&]() {SetWeapon(WeaponType::Sword); }
-	),  1.f, false);
+	//GetWorld()->GetTimerManager().SetTimer(BeginPlayTimer, FTimerDelegate::CreateLambda(
+	//	[&]() {
+	//		SetWeapon(WeaponType::Sword); 
+	//	}
+	//),  1.f, false);
+
+	SetWeapon(WeaponType::Sword, false);
 
 //	SetWeapon(WeaponType::Pistol);
-}
-
-void UPlayerFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-
 }
 
 
@@ -184,8 +183,62 @@ void UPlayerFire::EquipWeapon(WeaponType weaponType)
 	
 }
 
-void UPlayerFire::ChangeWeapon()
+
+int UPlayerFire::GetOwnWeapons()
 {
+	int result = 0;
+
+	if (IsValid(weapon_Pistol))
+		result |= 1;
+
+	if (IsValid(weapon_Rifle))
+		result |= 1 << 1;
+
+	if (IsValid(weapon_Shotgun))
+		result |= 1 << 2;
+
+	if (IsValid(weapon_Bow))
+		result |= 1 << 3;
+
+	return result;
+}
+
+void UPlayerFire::SetOwnWeapons(int ownWeapon)
+{
+	EquipWeapon(WeaponType::Sword);
+
+	// pistol
+	if (ownWeapon & 1) {
+		SetWeapon(WeaponType::Pistol, false);
+	}
+	else weapon_Pistol = nullptr;
+
+	//rifle
+	if (ownWeapon & (1 << 1)) {
+		SetWeapon(WeaponType::Rifle , false);
+	}
+	else weapon_Rifle = nullptr;
+
+	// shogun
+	if (ownWeapon & (1 << 2)) {
+		SetWeapon(WeaponType::Shotgun, false);
+	}
+	else weapon_Shotgun = nullptr;
+
+	if (ownWeapon & (1 << 3)) {
+		SetWeapon(WeaponType::Bow, false);
+	}
+	else weapon_Bow = nullptr;
+	//bow
+
+}
+
+
+void UPlayerFire::ChangeWeapon(AWeapon* weapon)
+{
+	if (weapon)
+		nextWeapon = weapon;
+
 	if (currWeapon)
 		currWeapon->HideWeapon();
 	if (nextWeapon == nullptr) return;

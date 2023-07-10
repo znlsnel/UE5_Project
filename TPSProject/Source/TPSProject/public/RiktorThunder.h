@@ -27,7 +27,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
-	void SetActiveThunder(bool active, FVector GenPos = FVector(0), AActor* target = nullptr);
+	void SetActiveThunder(bool active, class AEnemy* parent = nullptr,  FVector GenPos = FVector(0), AActor * target = nullptr);
 
 	void MoveLoop();
 	UFUNCTION()
@@ -51,5 +51,6 @@ public:
 		USoundBase* explosionSound;
 
 	class AAIController* myAI;
+	class AEnemy* myParent;
 	class AActor* target;
 };

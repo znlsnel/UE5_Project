@@ -12,6 +12,7 @@
       <Filter>Source</Filter>
     </None>
     <None Include="..\..\.gitignore" />
+    <None Include="..\..\TPSProject.png" />
     <Filter Include="Config">
       <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
     </Filter>
@@ -108,6 +109,9 @@
     <ClCompile Include="..\..\Source\TPSProject\private\EnemyManager.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\ExcOptionWidget.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\FootIkActorComponent.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
@@ -148,6 +152,9 @@
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\myGameStateBase.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\MySaveGame.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\NPCDialogueLogic.cpp">
@@ -202,6 +209,9 @@
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\SkillStateWidget.cpp">
+      <Filter>Source\TPSProject\private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\TPSProject\private\StartMenu.cpp">
       <Filter>Source\TPSProject\private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\TPSProject\private\StatueAbilityInfoWidget.cpp">
@@ -339,6 +349,9 @@
     <ClInclude Include="..\..\Source\TPSProject\public\EnemyManager.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\ExcOptionWidget.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\FootIkActorComponent.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
@@ -379,6 +392,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\myGameStateBase.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\MySaveGame.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\NPCDialogueLogic.h">
@@ -433,6 +449,9 @@
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\SkillStateWidget.h">
+      <Filter>Source\TPSProject\public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TPSProject\public\StartMenu.h">
       <Filter>Source\TPSProject\public</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\TPSProject\public\StatueAbilityInfoWidget.h">

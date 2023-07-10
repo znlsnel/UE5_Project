@@ -117,6 +117,24 @@ void UStatueAbilityWidget::UpdateRepairRate()
 	GetWorld()->GetTimerManager().SetTimer(repairRateLoopTimer, this, &UStatueAbilityWidget::UpdateRepairRate, 0.1f, false);
 }
 
+void UStatueAbilityWidget::SetGetStatueAbilityArr(TArray<FStatueAbility>& arr, float& m_repairRate, bool Set)
+{
+	if (Set) {
+		statueAbilitys.Empty();
+		for (auto ability : arr) {
+			statueAbilitys.Add(&ability);
+		}
+		repairRate = m_repairRate;
+		return;
+	}
+	arr.Empty();
+	for (auto ability : statueAbilitys) {
+		arr.Add(*ability);
+	}
+	m_repairRate = repairRate;
+}
+
+
 void UStatueAbilityWidget::CloseWidget()
 {
 	abilityInfo->CloseWidget();

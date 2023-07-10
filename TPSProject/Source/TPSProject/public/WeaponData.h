@@ -32,13 +32,14 @@ enum class ItemType : uint8
 UENUM(BlueprintType)
 enum class BuildableItemType : uint8
 {
-	StoneWall		UMETA(DisplayName = "StoneWall"),
-	SandBag			UMETA(DisplayName = "SandBag"),
-	Concrete		UMETA(DisplayName = "Concrete"),
-	BrokenWall		UMETA(DisplayName = "BrokenWall"),
-	Turret			UMETA(DisplayName = "Turret"),
-	None			UMETA(DisplayName = "None"),
+	None = 0			UMETA(DisplayName = "None"),
+	StoneWall = 1	UMETA(DisplayName = "StoneWall"),
+	SandBag = 2		UMETA(DisplayName = "SandBag") ,
+	Concrete = 3		UMETA(DisplayName = "Concrete"),
+	BrokenWall = 4	UMETA(DisplayName = "BrokenWall") ,
+	Turret = 5		UMETA(DisplayName = "Turret") ,
 };
+
 
 UENUM(BlueprintType)
 enum class BowState : uint8

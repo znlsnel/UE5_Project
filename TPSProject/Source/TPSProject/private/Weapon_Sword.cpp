@@ -119,31 +119,51 @@ void AWeapon_Sword::Attack()
 		}
 	}
 	myPlayer->PlayMontage(CharacterFireAM, attackSection);
-	SwordMoveOn = true;
 
+	TArray<AActor*> overlappingAcotrs;
+	myPlayer->meleeAttackSensor->GetOverlappingActors(overlappingAcotrs);
+
+	isEnemyInSensor = false;
+	for (auto actor : overlappingAcotrs) {
+		if (actor->GetClass()->IsChildOf(AEnemy::StaticClass())) {
+			isEnemyInSensor = true;
+			break;
+		}
+	}
+
+	myPlayer->isMovable = false;	
+	if (isEnemyInSensor == false) {
+		SwordMoveOn = true;
+	}
+	
 	GetWorldTimerManager().SetTimer(swordMoveTimer, FTimerDelegate::CreateLambda(
 		[&]() {
+			myPlayer->isMovable = true;
 			SwordMoveOn = false;
 		}), swordMoveTime, false);
+
+
 }
 
 
-void AWeapon_Sword::AttackEvent(TArray<AActor*>& monsters)
+void AWeapon_Sword::AttackEvent()
 {
 	if (myPlayer == nullptr) {
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Player"));
 		return;
 	}
 
-	for (auto tempActor : monsters) {
-		if (tempActor->GetClass()->IsChildOf(AEnemy::StaticClass()) == false) 
-			return;
+	for (auto tempActor : overlappingActors) {
+		if (tempActor->GetClass()->IsChildOf(AEnemy::StaticClass()) == false) {
+			continue;
+		}
 
 		int finalDamage = weapDamage + myPlayer->abilityComp->GetSkillInfo(SkillType::swordProficiency)->powerValue;
 
 		AEnemy* enemy = Cast<AEnemy>(tempActor);
 		enemy->OnDamage(finalDamage, "", myPlayer);
 		
-		int randInt = FMath::RandRange(1, 100);
+		int randInt = FMath::RandRange(0, 100);
 		if (randInt < myPlayer->abilityComp->GetSkillInfo(SkillType::DoubleAttack)->powerValue) {
 			tempEnemys.Add(enemy);
 		}
@@ -171,7 +191,19 @@ void AWeapon_Sword::BlockAttack()
 
 void AWeapon_Sword::OnBlocking(bool On)
 {
+	myPlayer->isMovable = On ? false : true;
 	isBlocking = On;
+
+	GetWorld()->GetTimerManager().ClearTimer(blockingTimer);
+	GetWorld()->GetTimerManager().SetTimer(blockingTimer, FTimerDelegate::CreateLambda(
+		[&]() {
+			if (isBlocking) {
+				myPlayer->isMovable = true;
+				isBlocking = false;
+			}
+		}), 1.5f, false);
+
+
 	if (isBlocking) {
 		ShieldEffect->Activate(true);
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ShieldSound, GetActorLocation());

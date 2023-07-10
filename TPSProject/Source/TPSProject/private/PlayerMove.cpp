@@ -60,8 +60,7 @@ void UPlayerMove::SetupInputBinding(UInputComponent* PlayerInputComponent)
 void UPlayerMove::Turn(float value)
 {
 
-	if (me->isDie) return;
-	if (me->abilityComp->isPlaySkillAnim) return;
+	if (me->isDie || me->isRotatable == false) return;
 
 	turnValue += value;
 	turnValue = UKismetMathLibrary::FClamp(turnValue, -10, 10);
@@ -78,8 +77,7 @@ void UPlayerMove::Turn(float value)
 
 void UPlayerMove::LookUp(float value)
 {
-	if (me->isDie) return;
-	if (me->abilityComp->isPlaySkillAnim) return;
+	if (me->isDie || me->isRotatable == false) return;
 
 	lookUpValue += value;
 	lookUpValue = UKismetMathLibrary::FClamp(lookUpValue, -10, 10);
@@ -97,24 +95,11 @@ void UPlayerMove::LookUp(float value)
 
 void UPlayerMove::Move()
 {
-	if (me->playerFire->currWeapon && me->playerFire->currWeapon->weaponType == WeaponType::Sword) {
-		if (Cast<AWeapon_Sword>(me->playerFire->currWeapon)->isBlocking == true)
-			return;
-	}
-
-	if (me->isDie) return;
+	if (me->isDie || me->isMovable == false) return;
 	// 플레이어 이동
 	// GetControlRotation - 플레이어 폰을 컨트롤하고 있는 컨트롤러의 방향을 FRotator 타입으로 넘겨줌
 	// FTransform으로 Transform 인스턴트를 생성
 	// TrasnformVector 는 특정한 vector를 local vector로 변환시켜줌
-	if (me->abilityComp->isPlaySkillAnim) 
-		return;
-
-	if (me->playerFire->currWeapon && 
-		me->playerFire->currWeapon->ActorHasTag(TEXT("Sword")) &&
-		Cast<AWeapon_Sword>(me->playerFire->currWeapon)->SwordMoveOn) 
-		return;
-
 	direction = FTransform(me->GetControlRotation()).TransformVector(direction);
 	me->AddMovementInput(direction);
 
@@ -137,10 +122,8 @@ void UPlayerMove::InputVertical(float value)
 
 void UPlayerMove::InputJump()
 {
-	if (me->playerFire->currWeapon && me->playerFire->currWeapon->weaponType == WeaponType::Sword) {
-		if (Cast<AWeapon_Sword>(me->playerFire->currWeapon)->isBlocking == true)
-			return;
-	}
+	if (me->isMovable == false)
+		return;
 
 	if (me->GetCharacterMovement()->IsFalling() == false)
 	{
@@ -170,10 +153,9 @@ void UPlayerMove::InputRun()
 
 void UPlayerMove::Dash( )
 {
-	if (me->playerFire->currWeapon && me->playerFire->currWeapon->weaponType == WeaponType::Sword) {
-		if (Cast<AWeapon_Sword>(me->playerFire->currWeapon)->isBlocking == true)
-			return;
-	}
+
+	if (me->isMovable == false)
+		return;
 
 	if (GetWorld()->GetTimeSeconds() - lastDashTime < dashCoolTime)
 		return;

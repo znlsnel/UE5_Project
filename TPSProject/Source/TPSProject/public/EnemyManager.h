@@ -81,19 +81,11 @@ public:
 	bool isbreakTime = true;
 	int currRound = 0;
 
-	// 랜덤 시간 간격 최솟값
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		float MonsterSpawnMinTime = 5.f;
-	// 랜덤 시간 간격 최댓값
-	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		float MonsterSpawnMaxTime = 10.5f;
+		float InitMonsterSpawnTime = 7.f;
+	float currMonsterSpawnTimer = 10.f;
+	float BossSpawnTime = 60.f;
 
-	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		float BossSpawnMinTime = 60.f;
-	// 랜덤 시간 간격 최댓값
-	UPROPERTY(EditAnywhere, Category = SpawnSettings)
-		float BossSpawnMaxTime = 100.f;
-	float lastBossSpawnTime = 0.f;
 	// 스폰할 위치 정보 배열
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
 		TArray<class AActor*> spawnPoints;
@@ -124,6 +116,6 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		int32 bossSpawnLimit = 10;
 	bool spawnRiktor = true;
-	int enemyBonusAttackPower = 0;
-	int enemyBonusHp = 0;
+
+	class AmyGameStateBase* myGameState;
 };

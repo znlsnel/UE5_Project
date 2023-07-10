@@ -11,6 +11,27 @@
  * 
  */
 
+USTRUCT(BlueprintType)
+struct TPSPROJECT_API FUpgradeInfo
+{
+	GENERATED_BODY()
+public:
+	int32 Unlock_SecondSection = 5;
+	int32 Unlock_ThirdSection = 5;
+	int32 Unlock_FourthSection = 5;
+
+	int32 used_FirstSection = 0;
+	int32 used_SecondSection = 0;
+	int32 used_ThirdSection = 0;
+
+	int32 RemainingSecondSkillCount = 5;
+	int32 RemainingThirdSkillCount = 10;
+	int32 RemainingFourthSkillCount = 15;
+
+	float toSecondSectionRate = 0.f;
+	float toThirdSectionRate = 0.f;
+	float toFourthSectionRate = 0.f;
+};
 
 
 UCLASS()
@@ -38,6 +59,8 @@ public:
 		void playSkillSectionUIAnimation();
 
 	void UpdateRemainSkillCount();
+	FUpgradeInfo GetAbilityInfo();
+	void SetAbilityInfo(FUpgradeInfo upgradeInfo);
 
 public:
 	class ATPSPlayer* myPlayer;
@@ -50,7 +73,7 @@ public:
 		class UAbilityInfo* abliltyInfo;
 
 	UPROPERTY(BlueprintReadOnly)
-		int currSkillCoin = 100;
+		int currSkillCoin = 1;
 
 	int32 Unlock_SecondSection = 5;
 	int32 Unlock_ThirdSection = 5;

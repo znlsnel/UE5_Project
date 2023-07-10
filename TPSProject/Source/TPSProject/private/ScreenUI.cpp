@@ -79,6 +79,7 @@ void UScreenUI::ToggleInventory(bool On)
 
 void UScreenUI::UseSkillSlot(SkillType type)
 {
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("UseSkillSlot"));
 	bool result = myAbilityComp->UseSkill(type);
 	ToggleSkillSlot(type, result);
 }

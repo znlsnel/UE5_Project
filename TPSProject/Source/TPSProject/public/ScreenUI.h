@@ -96,6 +96,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void InventoryOnOff(bool On);
 
+	UPROPERTY(BlueprintReadWrite)
+		int currDay = 1;
+
 	UPROPERTY(EditAnywhere)
 		UTexture2D* PistolUI;
 	UPROPERTY(EditAnywhere)

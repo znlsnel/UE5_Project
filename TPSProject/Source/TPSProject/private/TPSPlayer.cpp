@@ -64,7 +64,6 @@ ATPSPlayer::ATPSPlayer()
 	abilityComp = CreateDefaultSubobject<UPlayerAbilityComp>(TEXT("Abilitys"));
 	SpawnEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SpawnEffect"));
 	DamageEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("DamageEffect"));
-
 	// RootComponent 는 계층구조상 캡슐 콜리전 컴포넌트를 의미함
 	springArmComp->SetupAttachment(RootComponent);
 	springArmComp->SetRelativeLocation(FVector(0, 30, 70));
@@ -122,6 +121,7 @@ void ATPSPlayer::BeginPlay()
 	HpRecoveryLoop();
 
 	BuildableItemCheckUI = CreateWidget<UBuildableItemCheckUI>(GetWorld(), CheckUIFactory);
+	myAbilityWidget = CreateWidget<UAbilityUpgradeWidget>(GetWorld(), abilityWidgetFactory);
 	//BuildableItemCheckUI->AddToViewport();
 
 	for (int i = 0; i < damageWidgetCount; i++)
@@ -132,9 +132,6 @@ void ATPSPlayer::BeginPlay()
 			tempDamageWidget->AddToViewport();
 			damageWidgets.Add(tempDamageWidget);
 		}
-
-
-			
 	}
 
 }
@@ -210,8 +207,25 @@ void ATPSPlayer::SetPlayerMouse(bool Active)
 void ATPSPlayer::OpenStatueAbilityWidget()
 {
 	if (playerUI->statueAbilityWidget->IsInViewport() == false) {
+
 		playerUI->statueAbilityWidget->AddToViewport();
 		playerUI->statueAbilityWidget->OpenWidget();
+
+	}
+}
+
+void ATPSPlayer::StartSequenceBegin()
+{
+	SetActorHiddenInGame(true);
+}
+
+void ATPSPlayer::StartSequenceEnd()
+{
+	SetActorHiddenInGame(false);
+
+	if (playerFire->weapon_Sword) {
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("dd"));
+		playerFire->ChangeWeapon(playerFire->weapon_Sword);
 	}
 }
 
@@ -296,8 +310,8 @@ void ATPSPlayer::InteractionObject()
 
 void ATPSPlayer::AbilityWidget()
 {
-	if (myAbilityWidget == nullptr) {
-		myAbilityWidget = CreateWidget<UAbilityUpgradeWidget>(GetWorld(), abilityWidgetFactory);
+	if (myAbilityWidget->IsInViewport() == false) {
+
 		myAbilityWidget->AddToViewport();
 	}
 
@@ -570,6 +584,48 @@ void ATPSPlayer::BuyItem(int32 itemId, int ItemGrace, int ItemMineral, int32 Ite
 		Grace -= ItemGrace * ItemCount;
 		Mineral -= ItemMineral * ItemCount;
 	}
+}
+
+void ATPSPlayer::CreateItem(TArray<ABuildableItem*>& items, int32 itemId, int count)
+{	
+
+	for (int i = 0; i < count; i++) {
+
+		switch (itemId)
+		{
+			// 돌담
+		case 1001: {
+			items.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->StoneWall)));
+		}
+				break;
+
+				// 바리케이드
+		case 1003: {
+			items.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Barricade)));
+		}
+				break;
+
+				// 부서진담
+		case 1004: {
+			items.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->BrokenWalll)));
+		}
+				break;
+
+				// 모래주머니 담
+		case 1002: {
+			items.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Sandbag)));
+		}
+				break;
+
+				// 터렛
+		case 1005: {
+			items.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Turret)));
+		}
+				break;
+		}
+	}
+
+	return;
 }
 
 void ATPSPlayer::OnPlayerDie()

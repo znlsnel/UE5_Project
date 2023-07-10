@@ -86,7 +86,6 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 	mState = EEnemyState::Idle;
 	target = stoneStatue;
 	isActive = true;
-	maxHp = InitHp;
 	hp = maxHp;
 
 	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -148,7 +147,7 @@ void UEnemyFSM::MoveState()
 		ai->MoveToActor(target);
 	else
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Failed"));
+		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Failed"));
 	}
 }
 
@@ -175,7 +174,7 @@ bool UEnemyFSM::isPossibleToMove(AActor* goalTarget)
 	if (r.Result == ENavigationQueryResult::Success)
 		return true;
 	else {
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Failed findPath"));
+		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Failed findPath"));
 		return false;
 	}
 }
@@ -238,8 +237,8 @@ void UEnemyFSM::DieState()
 		isActive = false;
 		mState = EEnemyState::Idle;
 
+		me->AddActorLocalOffset(FVector(0, 0, -1000));
 		me->SetActorHiddenInGame(true);
-
 		if (anim->Montage_IsPlaying(anim->AM_Damaged))
 			anim->Montage_Stop(0, anim->AM_Damaged);
 	}
@@ -258,7 +257,12 @@ void UEnemyFSM::OnDamageProcess(int damage, AActor* attacker,  FName boneName, b
 		if (target->ActorHasTag(TEXT("Player")) == false) {
 			anim->PlayAttackAnim(false, true);
 		}
-		target = attacker;
+
+		double dist = FVector::Distance(attacker->GetActorLocation(), me->GetActorLocation());
+		bool isInRange = dist < (me->targetSensor->GetScaledBoxExtent().Y * me->GetMesh()->GetRelativeScale3D().Y) * 10;
+
+		if (isInRange)
+			target = attacker;
 	}
 
 	// Damage
@@ -301,13 +305,13 @@ void UEnemyFSM::OnDamageProcess(int damage, AActor* attacker,  FName boneName, b
 }
 
 
-void UEnemyFSM::RoundInitEnemy(int bonusAtt, int bonusHp, int round)
+void UEnemyFSM::RoundInitEnemy(int round)
 {
 	if (round == currRound)
 		return;
 
-	InitHp += bonusHp;
-	anim->AttackDamage = attackPower + bonusAtt;
+	maxHp = InitHp + (int)((float)InitHp * 0.2f * (float)round);
+	anim->AttackDamage = attackPower + (int)((float)attackPower * 0.2f * (float)round);
 
 	currRound = round;
 }
@@ -319,13 +323,14 @@ void UEnemyFSM::UpdageTargetTick()
 	if (target == nullptr || isActiveUpdateTargetTick == false)
 		return;
 
-	if (target->ActorHasTag("Player")) {
-		if (Cast<ATPSPlayer>(target)->isDie == false &&
-			(target->GetActorLocation() - me->GetActorLocation()).Length() < 1500) {
+	if (target->ActorHasTag("Player") && Cast<ATPSPlayer>(target)->isDie == false) {
+			double dist = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
+			bool isInRange = dist < (me->targetSensor->GetScaledBoxExtent().Y * me->GetMesh()->GetRelativeScale3D().Y) * 10;
 
-			return;
+			if (isInRange)
+				return;
 		}
-	}
+	
 
 	if (target->ActorHasTag("BuildableItem")) {
 		if (Cast<ABuildableItem>(target)->isDestroy == false && target->IsHidden() == false)

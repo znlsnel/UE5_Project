@@ -7,6 +7,9 @@
 #include "EnemyFSM.h"
 #include "RoundUI.h"
 #include "TPSPlayer.h"
+#include "AbilityUpgradeWidget.h"
+#include "myGameStateBase.h"
+
 
 #include <Kismet/KismetMathLibrary.h>
 #include <EngineUtils.h>
@@ -30,15 +33,17 @@ AEnemyManager::AEnemyManager()
 void AEnemyManager::BeginPlay()
 {
 	Super::BeginPlay();
+	player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-
+	myGameState = Cast<AmyGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
+	if (myGameState == nullptr)
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No State"));
 	StartGame();
 }
 
 void AEnemyManager::StartGame()
 {
 
-	player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 
 	FindSpawnPoints();
@@ -76,13 +81,10 @@ void AEnemyManager::SpawnEnemy()
 			CreateEnemy(tempPos, Yaku, EnemyPool);
 	}
 
-	// 다시 랜덤 시간에 CreateEnemy 함수가 호출되도록 타이머 설정
-	float createTime = FMath::RandRange(MonsterSpawnMinTime, MonsterSpawnMaxTime);
-
 	// 다시 호출되게끔 타이머를 설정함
 	GetWorld()->GetTimerManager().SetTimer(spawnTimerHandle, FTimerDelegate::CreateLambda([&]() {
 		SpawnEnemy();
-		}), createTime, false);
+		}), currMonsterSpawnTimer, false);
 }
 
 void AEnemyManager::SpawnBossMonster( )
@@ -104,9 +106,9 @@ void AEnemyManager::SpawnBossMonster( )
 		tempPos.Z += 150;
 
 		if (spawnRiktor)
-			CreateEnemy(tempPos, RiktorFactory, RiktorPool);
+			CreateEnemy(tempPos, RiktorFactory, *tempArr);
 		else
-			CreateEnemy(tempPos, KwangFactory, KwangPool);
+			CreateEnemy(tempPos, KwangFactory, *tempArr);
 	}
 
 
@@ -114,8 +116,7 @@ void AEnemyManager::SpawnBossMonster( )
 	spawnRiktor = spawnRiktor ? false : true;
 
 
-	float randTime =  FMath::FRandRange(BossSpawnMinTime, BossSpawnMaxTime);
-	GetWorld()->GetTimerManager().SetTimer(bossSpawnTimerHandle, this, &AEnemyManager::SpawnBossMonster, randTime, false);
+	GetWorld()->GetTimerManager().SetTimer(bossSpawnTimerHandle, this, &AEnemyManager::SpawnBossMonster, BossSpawnTime, false);
 }
 
 int AEnemyManager::GetSpawnIndex()
@@ -182,7 +183,7 @@ void AEnemyManager::AddEnemy(FVector location, TArray<AEnemy*>& pool)
 		}
 
 
-		tempEnemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp, currRound);
+		tempEnemy->fsm->RoundInitEnemy(currRound);
 		tempEnemy->fsm->InitializeEnemy(location);
 
 
@@ -200,7 +201,7 @@ bool AEnemyManager::RecycleEnemy(AEnemy* enemy, int SpawnIndex)
 	FVector genPos = spawnPoints[SpawnIndex]->GetActorLocation();
 	genPos.Z += 150;
 
-	enemy->fsm->RoundInitEnemy(enemyBonusAttackPower, enemyBonusHp, currRound);
+	enemy->fsm->RoundInitEnemy( currRound);
 	enemy->fsm->InitializeEnemy(genPos);
 
 	return true;
@@ -234,26 +235,25 @@ void AEnemyManager::RoundEvent(bool start)
 	{
 		isbreakTime = false;
 
-		if (currRound > 0) {
-			enemyBonusAttackPower += 1;
-			enemyBonusHp += 10;
-		}
-
+		currRound = player->currRound;
 		currRound++;
+		
+		currMonsterSpawnTimer = InitMonsterSpawnTime - (0.3f * currRound);
+		BossSpawnTime = (myGameState->DaySecond / (currRound / 3) + 1);
+
 		// All Enemy Die
 
 		SpawnEnemy();
 		SpawnBossMonster();
-		//float createTime = FMath::RandRange(MonsterSpawnMinTime, MonsterSpawnMaxTime);
-		//GetWorld()->GetTimerManager().SetTimer(spawnTimerHandle, FTimerDelegate::CreateLambda([&]() {
-		//	SpawnEnemy();
-		//	}), createTime, false);
 	}
 	else
 	{
+		if (player->myAbilityWidget)
+			player->myAbilityWidget->currSkillCoin++;
+		player->currRound = currRound;
 		isbreakTime = true;
-		GetWorld()->GetTimerManager().ClearTimer(spawnTimerHandle);
 
+		GetWorld()->GetTimerManager().ClearTimer(spawnTimerHandle);
 		GetWorld()->GetTimerManager().ClearTimer(bossSpawnTimerHandle);
 
 		for (auto enemy : EnemyPool)

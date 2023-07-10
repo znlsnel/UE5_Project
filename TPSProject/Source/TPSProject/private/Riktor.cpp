@@ -24,8 +24,6 @@ void ARiktor::BeginPlay()
 		if (IsValid(tempActor)) {
 			Thunders.Add(tempActor);
 		}
-		else
-			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No ARiktorThunder"));
 
 	}
 
@@ -34,8 +32,6 @@ void ARiktor::BeginPlay()
 		rangeIndicator->SetActive(false);
 		rangeIndicator->SetMode(true);
 	}
-	else
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No RangeIndicator"));
 
 }
 
@@ -83,9 +79,9 @@ void ARiktor::SpawnThunderLoop()
 	//TODO
 	ARiktorThunder* tempThunder = GetThunder();
 	if (tempThunder)
-		tempThunder->SetActiveThunder(true, GenPos, target);
+		tempThunder->SetActiveThunder(true, this, GenPos, target);
 	else {
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No ARiktorThunder"));
+
 		return;
 	}
 

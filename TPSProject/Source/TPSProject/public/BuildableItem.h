@@ -9,6 +9,9 @@
 /**
  * 
  */
+
+
+
 UCLASS()
 class TPSPROJECT_API ABuildableItem : public AItem
 {
@@ -30,10 +33,8 @@ public:
 
 	void UpdateTranceform();
 
-	UFUNCTION(BlueprintCallable)
-		void completeBuilding(bool decide);
-	UFUNCTION(BlueprintCallable)
-		void CancelBuilding();
+	void completeBuilding(bool decide);
+	void CancelBuilding();
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void DestroyActor();
@@ -62,8 +63,8 @@ public:
 	//UPROPERTY(EditAnywhere)
 	//	TSubclassOf<class UBuildableItemCheckUI> CheckWidgetTS;
 
-
-	class UBuildableItemCheckUI* CheckUI;
+	UPROPERTY()
+		class UBuildableItemCheckUI* CheckUI;
 
 	//UPROPERTY(EditAnywhere)
 		//class UArrowComponent* arrowComp;
@@ -72,9 +73,9 @@ public:
 		class UBoxComponent* boxCollision;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int shield = 10;
+		int shield = 100;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int MaxShield = 10;
+		int MaxShield = 100;
 
 	float lastClickTime = 0.f;
 	float turnValue = 0.f;

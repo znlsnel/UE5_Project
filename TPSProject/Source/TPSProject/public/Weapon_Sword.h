@@ -21,7 +21,7 @@ public:
 	virtual void SynchronizeWhitPlayer(class ATPSPlayer* player)override;
 	virtual void Attack()override;
 
-	void AttackEvent(TArray<AActor*> &monsters);
+	void AttackEvent();
 	
 	void BlockAttack();
 	void OnBlocking(bool On);
@@ -43,6 +43,7 @@ public:
 
 	bool SwordMoveOn = false;
 	bool isBlocking = false;
+	bool isEnemyInSensor = false;
 
 	float lastAttackTime = 0.f;
 	float lastBlockingTime = -5.f;
@@ -59,6 +60,7 @@ public:
 
 	FTimerHandle swordMoveTimer;
 	FTimerHandle swordActiveTimer;
+	FTimerHandle blockingTimer;
 
 	UPROPERTY(EditAnywhere)
 		float swordMoveTime = 0.2f;
@@ -66,5 +68,5 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UAnimMontage* AM_Blocking;
 
-
+	TArray<AActor*> overlappingActors;
 };

@@ -49,5 +49,4 @@ public:
 
 	UPROPERTY(EditAnyWhere)
 		class UBoxComponent* pickupCollision;
-
 };
