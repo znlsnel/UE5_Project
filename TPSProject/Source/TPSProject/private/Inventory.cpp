@@ -9,6 +9,7 @@
 #include "Weapon.h"
 #include "AmmoBox.h"
 #include "BuildableItem.h"
+#include "ItemStoreUI.h"
 
 #include <Styling/SlateBrush.h>
 #include <Engine/Texture2D.h>
@@ -144,7 +145,7 @@ void UInventory::GetInventorySlot(TArray<int>& ItemIDArr)
 		//itemId->i
 		if (InventorySlot->itemType == ItemType::Building) {
 			for (auto item : InventorySlot->Items) {
-				ItemIDArr.Add((uint16)Cast<ABuildableItem>(item)->buildableItemType + 1000);
+				ItemIDArr.Add((uint8)Cast<ABuildableItem>(item)->buildableItemType);
 			}
 		}
 	}
@@ -158,7 +159,7 @@ void UInventory::SetInventorySlot(TArray<int>& ItemIDArr)
 	for (auto itemID : ItemIDArr) {
 		if (currItemID != 0 && itemID != currItemID) {
 			TArray<ABuildableItem*>tempArr;
-			myPlayer->CreateItem(tempArr, currItemID, count);
+			myPlayer->CreateItem(tempArr, (EItemID)currItemID, count);
 			for (auto item : tempArr) {
 				item->myPlayer = myPlayer;
 				AddItemToInventory(item);
@@ -169,7 +170,7 @@ void UInventory::SetInventorySlot(TArray<int>& ItemIDArr)
 		count++;
 	}
 	TArray<ABuildableItem*> tempArr;
-	myPlayer->CreateItem(tempArr, currItemID, count);
+	myPlayer->CreateItem(tempArr, (EItemID)currItemID, count);
 	for (auto item : tempArr) {
 		item->myPlayer = myPlayer;
 		AddItemToInventory(item);

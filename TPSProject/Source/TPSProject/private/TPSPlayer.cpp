@@ -27,6 +27,7 @@
 #include "DamageWidget.h"
 #include "BuildableItemCheckUI.h"
 #include "StatueAbilityWidget.h"
+#include "ItemStoreUI.h"
 
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
@@ -430,163 +431,111 @@ void ATPSPlayer::OnHitEvent(int damage, FVector enemyPos)
 }
 
 
-void ATPSPlayer::BuyItem(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount)
+void ATPSPlayer::BuyItem(EItemID itemId, int ItemGrace, int ItemMineral, int32 ItemCount, bool& result)
 {
-	isBought = false;
-
-	if (itemId < 100) ItemCount = 1;
+	result = false;
 
 	if (Grace < ItemGrace * ItemCount || Mineral < ItemMineral * ItemCount)
 		return;
 
-	if (itemId < 100)
-	{
-		switch (itemId)
-		{
-			// Sword
-		case 0:
-			if (playerFire->weapon_Sword == nullptr) {
-				playerFire->SetWeapon(WeaponType::Sword, true);
-				isBought = true;
-			}
-			break;
-
-			// Pistol
-		case 1:
+	for (int i = 0; i < ItemCount; i++) {
+		switch (itemId) {
+		case EItemID::Pistol:
 			if (playerFire->weapon_Pistol == nullptr) {
 				playerFire->SetWeapon(WeaponType::Pistol, true);
-				isBought = true;
+				result = true;
 			}
 			break;
-
-			// Rifle
-		case 2:
-			if (playerFire->weapon_Rifle == nullptr) {
-				playerFire->SetWeapon(WeaponType::Rifle, true);
-				isBought = true;
-			}
-			break;
-
-			//Shotgun
-		case 3:
+		case EItemID::Shotgun:
 			if (playerFire->weapon_Shotgun == nullptr) {
 				playerFire->SetWeapon(WeaponType::Shotgun, true);
-				isBought = true;
+				result = true;
 			}
 			break;
-
-			//Bow
-		case 4:
+		case EItemID::Rifle:
+			if (playerFire->weapon_Rifle == nullptr) {
+				playerFire->SetWeapon(WeaponType::Rifle, true);
+				result = true;
+			}
+			break;
+		case EItemID::Bow:
 			if (playerFire->weapon_Bow == nullptr) {
 				playerFire->SetWeapon(WeaponType::Bow, true);
-				isBought = true;
+				result = true;
 			}
 			break;
-		}
 
-	}
-	else if (itemId < 1000)
-	{
-
-		switch (itemId)
-		{
-			// Pistol Ammo
-		case 101:
+		case EItemID::PistolAmmo:
 			if (playerFire->weapon_Pistol) {
-				playerFire->weapon_Pistol->Ammo += (12 * ItemCount);
-				isBought = true;
+				playerFire->weapon_Pistol->Ammo += (12);
+				result = true;
 			}
 			break;
-
-			// Rifle Ammo
-		case 102:
-			if (playerFire->weapon_Rifle) {
-				playerFire->weapon_Rifle->Ammo += (30 * ItemCount);
-				isBought = true;
-			}
-			break;
-
-			//Shotgun Ammo
-		case 103:
+		case EItemID::ShotgunAmmo:
 			if (playerFire->weapon_Shotgun) {
-				playerFire->weapon_Shotgun->Ammo += (8 * ItemCount);
-				isBought = true;
+				playerFire->weapon_Shotgun->Ammo += (8);
+				result = true;
 			}
 			break;
-
-			//Bow Ammo
-		case 104:
+		case EItemID::RifleAmmo:
+			if (playerFire->weapon_Rifle) {
+				playerFire->weapon_Rifle->Ammo += (30);
+				result = true;
+			}
+			break;
+		case EItemID::Arrow:
 			if (playerFire->weapon_Bow) {
-				playerFire->weapon_Bow->currAmmo += (20 * ItemCount);
-				isBought = true;
+				playerFire->weapon_Bow->currAmmo += (20);
+				result = true;
 			}
+			break;
+
+		case EItemID::StoneWall:	{
+			ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->StoneWall)));
+			result = true;
+		}
+			break;
+		case EItemID::SendBagWall: {
+			ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Sandbag)));
+			result = true;
+		}
+			break;
+		case EItemID::ConcreteWall:	{
+			ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->BrokenWalll)));
+			result = true;
+		}
+			break;
+		case EItemID::Barricade: {
+			ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Barricade)));
+			result = true;
+		}
+			break;
+		
+		case EItemID::Turret: {
+			ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Turret)));
+			result = true;
+		}
 			break;
 		}
 	}
 
-
-	else if (itemId < 10000)
-	{
-		for (int i = 0; i < ItemCount; i++)
+	GetWorldTimerManager().ClearTimer(addItemTimer);
+	GetWorld()->GetTimerManager().SetTimer(addItemTimer, FTimerDelegate::CreateLambda([&]() {
+		while (ItemArr.Num() > 0)
 		{
-			switch (itemId)
-			{
-
-				// 돌담
-			case 1000: {
-				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->StoneWall)));
-				isBought = true;
-			}
-				 break;
-
-				 // 바리케이드
-			case 1001: {
-				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Barricade)));
-				isBought = true;
-			}
-				 break;
-
-				 // 부서진담
-			case 1002: {
-				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->BrokenWalll)));
-				isBought = true;
-			}
-				 break;
-
-				 // 모래주머니 담
-			case 1003: {
-				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Sandbag)));
-				isBought = true;
-			}
-				 break;
-
-				 // 터렛
-			case 1101: {
-
-				ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Turret)));
-				isBought = true;
-			}
-				 break;
-			}
+			auto item = ItemArr.Pop();
+			item->myPlayer = this;
+			GetInventory()->AddItemToInventory(item);
 		}
-		GetWorldTimerManager().ClearTimer(addItemTimer);
-		GetWorld()->GetTimerManager().SetTimer(addItemTimer, FTimerDelegate::CreateLambda([&]() {
-				while (ItemArr.Num() > 0)
-				{
-					auto item = ItemArr.Pop();
-					item->myPlayer = this; 
-					GetInventory()->AddItemToInventory(item);
-				}
-			}), 1.f, false);
-	}
+	}), 1.f, false);
 
-	if (isBought) {
+	if (result) {
 		Grace -= ItemGrace * ItemCount;
 		Mineral -= ItemMineral * ItemCount;
 	}
 }
 
-void ATPSPlayer::CreateItem(TArray<ABuildableItem*>& items, int32 itemId, int count)
+void ATPSPlayer::CreateItem(TArray<ABuildableItem*>& items, EItemID itemId, int count)
 {	
 
 	for (int i = 0; i < count; i++) {
@@ -594,31 +543,31 @@ void ATPSPlayer::CreateItem(TArray<ABuildableItem*>& items, int32 itemId, int co
 		switch (itemId)
 		{
 			// 돌담
-		case 1001: {
+		case EItemID::StoneWall: {
 			items.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->StoneWall)));
 		}
 				break;
 
 				// 바리케이드
-		case 1003: {
+		case EItemID::Barricade: {
 			items.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Barricade)));
 		}
 				break;
 
 				// 부서진담
-		case 1004: {
+		case EItemID::ConcreteWall: {
 			items.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->BrokenWalll)));
 		}
 				break;
 
 				// 모래주머니 담
-		case 1002: {
+		case EItemID::SendBagWall: {
 			items.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Sandbag)));
 		}
 				break;
 
 				// 터렛
-		case 1005: {
+		case EItemID::Turret: {
 			items.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Turret)));
 		}
 				break;

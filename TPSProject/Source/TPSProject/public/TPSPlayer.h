@@ -189,9 +189,6 @@ public:
 	UPROPERTY()
 		int currRound = 0;
 
-	UPROPERTY(BlueprintReadOnly)
-		bool isBought = false;
-
 	int respawnTime = 10;
 	UPROPERTY(Replicated)
 	class ABuildableItem* buildableItem;
@@ -205,8 +202,8 @@ public:
 
 // ÇÔ¼ö========================================================================
 	UFUNCTION(BlueprintCallable)
-		void BuyItem(int32 itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
-	void CreateItem(TArray<ABuildableItem*>& items, int32 itemId, int count = 1);
+		void BuyItem(EItemID itemId, int ItemGrace, int ItemMineral, int32 ItemCount, bool& result);
+	void CreateItem(TArray<ABuildableItem*>& items, EItemID itemId, int count = 1);
 
 	void OnPlayerDie();
 

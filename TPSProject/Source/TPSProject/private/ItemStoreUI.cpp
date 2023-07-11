@@ -2,12 +2,24 @@
 
 
 #include "ItemStoreUI.h"
+#include "StoreBuyItemWidget.h"
 
 #include <Components/Button.h>
+#include <Components/ListView.h>
 #include <Blueprint/WidgetLayoutLibrary.h>
+#include <StoreListItemObject.h>
+#include <Engine/Texture2D.h>
+#include "Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"
+
+UItemStoreUI::UItemStoreUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	LoadJsonFile();
+
+}
 
 void UItemStoreUI::NativeConstruct()
 {
+
 	Super::NativeConstruct();
 	ListButton_All->OnClicked.AddDynamic(this, &UItemStoreUI::ClickListButton_All);
 	ListButton_Weapon->OnClicked.AddDynamic(this, &UItemStoreUI::ClickListButton_Weapon);
@@ -18,8 +30,19 @@ void UItemStoreUI::NativeConstruct()
 	buttons.Add(ListButton_Weapon);
 	buttons.Add(ListButton_Ammo);
 	buttons.Add(ListButton_Items);
-	currListType = EListType::All;
-	UpdateButtonImage();
+	currListType = EItemType::None;
+	SetButtonImage(ListButton_All);
+
+}
+
+bool UItemStoreUI::Initialize()
+{
+	if (Super::Initialize() == false)
+		return false;
+
+	buyItemWidget = CreateWidget< UStoreBuyItemWidget>(GetWorld(), buyItemWidgetFactory);
+	UpdateItemObject();
+	return true;
 }
 
 void UItemStoreUI::GetMouseInput()
@@ -48,45 +71,39 @@ void UItemStoreUI::ClosePopup()
 
 void UItemStoreUI::ClickListButton_All()
 {
-	currListType = EListType::All;
-	UpdateButtonImage();
+	currListType = EItemType::None;
+	SetButtonImage(ListButton_All);
+
 }
 
 void UItemStoreUI::ClickListButton_Weapon()
 {
-	currListType = EListType::Weapon;
-	UpdateButtonImage();
+	currListType = EItemType::weapon;
+	SetButtonImage(ListButton_Weapon);
+
 }
 
 void UItemStoreUI::ClickListButton_Ammo()
 {
-	currListType = EListType::Ammo;
-	UpdateButtonImage();
+	currListType = EItemType::ammo;
+	SetButtonImage(ListButton_Ammo);
+
 }
 
 void UItemStoreUI::ClickListButton_Items()
 {
-	currListType = EListType::Items;
-	UpdateButtonImage();
+	currListType = EItemType::items;
+	SetButtonImage(ListButton_Items);
+
 }
 
-void UItemStoreUI::UpdateButtonImage()
+
+void UItemStoreUI::OffBuyItemWidget()
 {
-	switch (currListType) {
-	case EListType::All: 
-		SetButtonImage(ListButton_All);
-		break;
-	case EListType::Weapon:
-		SetButtonImage(ListButton_Weapon);
-		break;
-	case EListType::Ammo:
-		SetButtonImage(ListButton_Ammo);
-		break;
-	case EListType::Items:
-		SetButtonImage(ListButton_Items);
-		break;
-	}
+	if (buyItemWidget && buyItemWidget->IsInViewport())
+		buyItemWidget->RemoveFromParent();
 }
+
 
 void UItemStoreUI::SetButtonImage(UButton* button)
 {
@@ -102,4 +119,121 @@ void UItemStoreUI::SetButtonImage(UButton* button)
 		tempButton->WidgetStyle.Pressed.SetResourceObject(ButtonImage_NonClick);
 	}
 
+	UpdateItemList();
+}
+
+void UItemStoreUI::LoadJsonFile()
+{
+	FString JsonString; 
+	FString filepath = FPaths::ProjectContentDir() + "\\Assets\\Json\\storeItemList.json";
+	FFileHelper::LoadFileToString(JsonString, *filepath); 
+
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<TCHAR>::Create(JsonString);
+	TArray<TSharedPtr<FJsonValue>> JsonParsed; 
+
+	if (FJsonSerializer::Deserialize(JsonReader, JsonParsed))
+	{
+		for (auto& RowData : JsonParsed) {
+			TSharedPtr<FJsonObject> row = RowData->AsObject();
+			FStoreItem item;
+			item.ItemName = row->GetStringField("ItemName");
+
+			const TCHAR* texturePath = *(row->GetStringField("ItemIcon"));
+			const FString path(row->GetStringField("ItemIcon"));
+
+			ConstructorHelpers::FObjectFinder<UTexture2D> tempTexture(*path);
+
+			if (tempTexture.Succeeded())
+				item.ItemIcon = tempTexture.Object;
+
+			item.GraceCost = row->GetIntegerField("GraceCost");
+			item.MineralCost = row->GetIntegerField("MineralCost");
+			item.ItemID = ConvertStringToItemID(row->GetStringField("ItemID"));
+			item.itemType = ConvertStringToItemType(row->GetStringField("itemType"));
+			ItemList.Add(item);
+		}
+	}
+}
+
+void UItemStoreUI::UpdateItemObject()
+{
+	for (auto ItemInfo : ItemList) {
+		UStoreListItemObject* temp = NewObject<UStoreListItemObject>(this);
+		temp->itemIfno = ItemInfo;
+		temp->parentStore = this;
+		ItemObjects.Add(temp);
+	}
+}
+
+EItemID UItemStoreUI::ConvertStringToItemID(FString id)
+{
+	if (id == "Pistol")
+		return EItemID::Pistol;
+
+	if (id == "Shotgun")
+		return EItemID::Shotgun;
+
+	if (id == "Rifle")
+		return EItemID::Rifle;
+
+	if (id == "Bow")
+		return EItemID::Bow;
+
+
+
+	if (id == "PistolAmmo")
+		return EItemID::PistolAmmo;
+
+	if (id == "ShotgunAmmo")
+		return EItemID::ShotgunAmmo;
+
+	if (id == "RifleAmmo")
+		return EItemID::RifleAmmo;
+
+	if (id == "Arrow")
+		return EItemID::Arrow;
+
+
+
+	if (id == "StoneWall")
+		return EItemID::StoneWall;
+
+	if (id == "Barricade")
+		return EItemID::Barricade;
+
+	if (id == "ConcreteWall")
+		return EItemID::ConcreteWall;
+
+	if (id == "SendBagWall")
+		return EItemID::SendBagWall;
+
+	if (id == "SendBagWall")
+		return EItemID::SendBagWall;
+
+	return EItemID::Turret;
+}
+
+EItemType UItemStoreUI::ConvertStringToItemType(FString type)
+{
+	if (type == "weapon")
+		return EItemType::weapon;
+	
+	else if (type == "ammo")
+		return EItemType::ammo;
+	
+	else	if (type == "items")
+		return EItemType::items;
+
+	return EItemType::None;
+}
+
+void UItemStoreUI::UpdateItemList( )
+{
+	ItemListView->ClearListItems();
+	for (auto Item : ItemObjects) {
+		EItemType currType = Item->itemIfno.itemType;
+		if (currListType == EItemType::None || currType == currListType) {
+			ItemListView->AddItem(Item);
+		}
+	}
 }

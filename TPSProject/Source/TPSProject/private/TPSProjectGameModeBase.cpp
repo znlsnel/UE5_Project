@@ -6,6 +6,7 @@
 #include "EnemyManager.h"
 #include "MySaveGame.h"
 
+#include "ItemStoreUI.h"
 #include "Inventory.h"
 #include "ScreenUI.h"
 #include "InventorySlot.h"
@@ -201,7 +202,7 @@ void ATPSProjectGameModeBase::GetFieldItem(TArray<struct FFieldItem>& fieldItems
 			item.Location = tempItem->GetActorLocation();
 			item.rotation = tempItem->GetActorRotation();
 
-			int itemId = (int)tempItem->buildableItemType + 1000;
+			EItemID itemId = (EItemID)tempItem->buildableItemType;
 
 			item.ItemID = itemId;
 			fieldItems.Add(item);

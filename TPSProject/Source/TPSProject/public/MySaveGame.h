@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ItemStoreUI.h"
 #include "StatueAbilityWidget.h"
 #include "AbilityUpgradeWidget.h"
 #include "PlayerAbilityComp.h"
@@ -24,7 +25,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		FRotator rotation;
 	UPROPERTY(VisibleAnywhere)
-		int ItemID = 0;
+		EItemID ItemID = EItemID::Shotgun;
 };
 
 
