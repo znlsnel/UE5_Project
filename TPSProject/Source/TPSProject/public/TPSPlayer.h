@@ -51,6 +51,7 @@ public:
 	void StartGame();
 	void GetMineralGrace(int mineral, int grace);
 	void UpgradeHp(int addHp);
+	void GameOver();
 #pragma region ServerFunctions
 
 

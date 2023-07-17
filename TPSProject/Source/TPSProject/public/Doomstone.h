@@ -14,20 +14,27 @@ class TPSPROJECT_API ADoomstone : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ADoomstone();
-	UFUNCTION(BlueprintImplementableEvent)
-		void DestoryStatue();
+	void DestoryStatue();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	void OnHitEvent(int Damage);
-	
+	void MakeStatueActor();
 
 public:
+	UPROPERTY(EditAnywhere)
+		class UBoxComponent* boxCollision;
+	UPROPERTY(EditAnywhere)
+		class UGeometryCollectionComponent* statueMesh;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class AGeometryCollectionActor> statueActorFactory;
+	class AGeometryCollectionActor* statueActor;
+
 	UPROPERTY(BlueprintReadWrite)
 		bool isDestory = false;
 

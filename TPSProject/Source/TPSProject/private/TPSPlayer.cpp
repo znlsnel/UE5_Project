@@ -163,6 +163,11 @@ void ATPSPlayer::UpgradeHp(int addHp)
 	playerUI->screenUI->UpdateScreenUI();
 }
 
+void ATPSPlayer::GameOver()
+{
+	playerUI->GameOver();
+}
+
 
 // Called every frame
 void ATPSPlayer::Tick(float DeltaTime)

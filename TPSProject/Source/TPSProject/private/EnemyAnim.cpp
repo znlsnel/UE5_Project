@@ -88,8 +88,9 @@ void UEnemyAnim::PlayDamageAnim(bool IsDeath, AActor* attacker)
 {
 
 	if (IsDeath) {
-		Montage_Stop(0.f, AM_Damaged);
-		Montage_Stop(0.f, AM_Attack);
+		
+		//Montage_Stop(0.f, AM_Damaged);
+		//Montage_Stop(0.f, AM_Attack);
 		Montage_Play(AM_Die);
 		return;
 	}
@@ -128,6 +129,10 @@ void UEnemyAnim::PlayAttackAnim(bool isLongRangeAttack, bool startMotion)
 {
 	if (Montage_IsPlaying(AM_Skill))
 		return;
+
+	if (me->fsm->stoneStatue->isDestory)
+		return;
+
 
 	FRotator LookRot = UKismetMathLibrary::FindLookAtRotation(me->GetActorLocation(), me->fsm->target->GetActorLocation());
 	me->SetActorRotation(FRotator(0, LookRot.Yaw, 0));

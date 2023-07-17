@@ -9,6 +9,7 @@
 #include "BuildableItem.h"
 #include "Doomstone.h"
 #include "EnemyHpBar.h"
+#include "TPSProjectGameModeBase.h"
 
 #include <AIController.h>
 #include <Components/BoxComponent.h>
@@ -35,8 +36,10 @@ UEnemyFSM::UEnemyFSM() : Super()
 void UEnemyFSM::BeginPlay()
 {
 	Super::BeginPlay();
-	// 월드에서 ATPSPlayer 타깃 찾아오기
-	stoneStatue = UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass());
+	//// 월드에서 ATPSPlayer 타깃 찾아오기
+	//stoneStatue = Cast< ATPSProjectGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()))->stoneStatue;
+
+	stoneStatue = Cast<ADoomstone>( UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
 	me = Cast<AEnemy>(GetOwner());
 	anim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
 	ai = Cast<AAIController>(me->GetController());
@@ -52,6 +55,9 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (isActive == false) return;
+
+	if (stoneStatue && stoneStatue->isDestory)
+		mState = EEnemyState::Idle;
 
 	switch (mState)
 	{
@@ -104,6 +110,7 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 
 void UEnemyFSM::IdleState()
 {
+	ai->StopMovement();
 	IdleStartTime += GetWorld()->GetDeltaSeconds();
 	if (IdleStartTime  > idleDelayTime)
 	{
@@ -233,16 +240,21 @@ void UEnemyFSM::DieState()
 
 	if (GetWorld()->GetTimeSeconds() - lastDeadTime > 3.f)
 	{
-		lastDeadTime = 0.f;
-		isActive = false;
-		mState = EEnemyState::Idle;
-
-		me->AddActorLocalOffset(FVector(0, 0, -1000));
-		me->SetActorHiddenInGame(true);
-		if (anim->Montage_IsPlaying(anim->AM_Damaged))
-			anim->Montage_Stop(0, anim->AM_Damaged);
+		Reset();
 	}
 
+}
+
+void UEnemyFSM::Reset()
+{
+	lastDeadTime = 0.f;
+	isActive = false;
+	mState = EEnemyState::Idle;
+
+	me->AddActorLocalOffset(FVector(0, 0, -1000));
+	me->SetActorHiddenInGame(true);
+	if (anim->Montage_IsPlaying(anim->AM_Damaged))
+		anim->Montage_Stop(0, anim->AM_Damaged);
 }
 
 
@@ -298,7 +310,8 @@ void UEnemyFSM::OnDamageProcess(int damage, AActor* attacker,  FName boneName, b
 		return;
 	}
 	else {
-		lastAttackTime = 0.f;
+		if (anim->bHasAbilitySkill == false)
+			lastAttackTime = 0.f;
 
 		anim->PlayDamageAnim(false , attacker);
 	}

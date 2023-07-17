@@ -64,6 +64,9 @@ public:
 		TArray<FStatueAbility> statueAbilitys;
 	UPROPERTY(VisibleAnywhere)
 		float abilityRepairRate = 0.f;
+	UPROPERTY(VisibleAnywhere)
+		int statueHp = 0;
+
 
 	UPROPERTY(VisibleAnywhere)
 		TArray<int> InventoryItemID;

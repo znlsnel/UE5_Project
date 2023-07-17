@@ -43,7 +43,7 @@ public:
 	void AttackState();
 	void DeadEneny(AActor* attacker);
 	void DieState();
-
+	void Reset();
 
 	void OnDamageProcess(int damage, AActor* attacker, FName boneName, bool ignoreHpEvent = false);
 	void RoundInitEnemy(int round);
@@ -56,7 +56,7 @@ public:
 	FTimerHandle UpdateTargetTimer;
 
 	class AActor* target;
-	class AActor* stoneStatue;
+	class ADoomstone* stoneStatue;
 	class UEnemyAnim* anim;
 	class AAIController* ai;
 	class AEnemy* me;

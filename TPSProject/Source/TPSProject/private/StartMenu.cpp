@@ -4,22 +4,28 @@
 #include "StartMenu.h"
 #include "TPSProjectGameModeBase.h"
 
+#include <LevelSequence/Public/LevelSequencePlayer.h>
+#include <Components/PanelWidget.h>
 #include <Components/Button.h>
 #include <Components/Image.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/GameplayStatics.h>
 #include <Engine/Level.h>
 
+void UStartMenu::NativeConstruct()
+{
+	myGameMode = Cast<ATPSProjectGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+}
+
 bool UStartMenu::Initialize()
 {
 	if (Super::Initialize() == false)
 		return false;
 
-	myGameMode = Cast<ATPSProjectGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 
-	UpdateSlotName();
-	UpdateSelectArrow();
 
+
+	OpenWidget(false);
 	StartGameButton->OnClicked.AddDynamic(this, &UStartMenu::ClickStartGameButton);
 	ContinueGameButton->OnClicked.AddDynamic(this, &UStartMenu::ClickContinueGameButton);
 	QuitGameButton->OnClicked.AddDynamic(this, &UStartMenu::ClickQuitGameButton);
@@ -29,6 +35,7 @@ bool UStartMenu::Initialize()
 	ThirdSlot->OnClicked.AddDynamic(this, &UStartMenu::ClickThirdSlotButton);
 	LoadButton->OnClicked.AddDynamic(this, &UStartMenu::ClickLoadButton);
 
+	StartMenuButton->OnClicked.AddDynamic(this, &UStartMenu::ClickStartMenuButton);
 	return true;
 }
 
@@ -88,7 +95,6 @@ void UStartMenu::UpdateSlotName()
 void UStartMenu::ClickStartGameButton()
 {
 	UGameplayStatics::OpenLevel(GetWorld(), FName("Project_T"));
-
 	RemoveFromParent();
 }
 
@@ -115,17 +121,14 @@ void UStartMenu::ClickLoadButton()
 
 void UStartMenu::ClickContinueGameButton()
 {
-	if (IsValid(OpenSaveSlotPanel) == false || IsValid(CloseSaveSlotPanel) == false)
-		return;
-
-	
-	if (isOpenSaveSlotPanel == false) {
-		PlayAnimation(OpenSaveSlotPanel);
+	if (SaveSlotPanel->RenderOpacity == 1.f) {
+		SaveSlotPanel->SetRenderOpacity(0.f);
 	}
 	else {
-		PlayAnimation(CloseSaveSlotPanel);
+		SaveSlotPanel->SetRenderOpacity(1.f);
+
 	}
-	isOpenSaveSlotPanel = isOpenSaveSlotPanel ? false : true;
+
 }
 
 void UStartMenu::ClickQuitGameButton()
@@ -161,6 +164,12 @@ void UStartMenu::ClickThirdSlotButton()
 	UpdateSelectArrow();
 }
 
+void UStartMenu::ClickStartMenuButton()
+{
+	OpenWidget(false);
+
+}
+
 void UStartMenu::UpdateSelectArrow()
 {
 	switch (currSelectSlot) {
@@ -190,4 +199,21 @@ void UStartMenu::UpdateSelectArrow()
 			      break;
 	}
 	
+}
+
+void UStartMenu::OpenWidget(bool GameOver, ULevelSequencePlayer* gameOverSequencePlayer)
+{
+	if (GameOver) {
+		GameOverPanel->SetRenderScale(FVector2D(1));
+		MainPanel->SetRenderScale(FVector2D(0));
+		BackGroundImage->SetRenderOpacity(0.5f);
+		sequencePlayer = gameOverSequencePlayer;
+	}
+	else {
+		GameOverPanel->SetRenderScale(FVector2D(0));
+		MainPanel->SetRenderScale(FVector2D(1));
+		BackGroundImage->SetRenderOpacity(1.f);
+	}
+	UpdateSlotName();
+	UpdateSelectArrow();
 }

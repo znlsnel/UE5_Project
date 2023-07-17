@@ -24,6 +24,7 @@ class TPSPROJECT_API UStartMenu : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	virtual void NativeConstruct()override;
 	virtual bool Initialize()override;
 	void UpdateSlotName();
 
@@ -42,16 +43,19 @@ public:
 	UFUNCTION()
 		void ClickThirdSlotButton();
 
+	UFUNCTION()
+		void ClickStartMenuButton();
 
 	void UpdateSelectArrow();
-
+	UFUNCTION(BlueprintCallable)
+		void OpenWidget(bool GameOver, class ULevelSequencePlayer* gameOverSequencePlayer = nullptr);
 public:
-	UPROPERTY(BlueprintReadOnly, Category = "BindWidgets", meta = (BindWidgetAnim), Transient)
-		UWidgetAnimation* OpenSaveSlotPanel;
-	UPROPERTY(BlueprintReadOnly, Category = "BindWidgets", meta = (BindWidgetAnim), Transient)
-		UWidgetAnimation* CloseSaveSlotPanel;
-
-
+	UPROPERTY(BlueprintReadOnly, Category = "BindWidgets", meta = (BindWidget))
+		class UPanelWidget* MainPanel;
+	UPROPERTY(BlueprintReadOnly, Category = "BindWidgets", meta = (BindWidget))
+		class UPanelWidget* GameOverPanel;
+	UPROPERTY(BlueprintReadOnly, Category = "BindWidgets", meta = (BindWidget))
+		class UPanelWidget* SaveSlotPanel;
 // Buttons
 	UPROPERTY(BlueprintReadOnly, Category = "BindWidgets", meta = (BindWidget))
 		class UButton* StartGameButton;
@@ -67,7 +71,8 @@ public:
 		class UButton* ThirdSlot;
 	UPROPERTY(BlueprintReadOnly, Category = "BindWidgets", meta = (BindWidget))
 		class UButton* LoadButton;
-
+	UPROPERTY(BlueprintReadOnly, Category = "BindWidgets", meta = (BindWidget))
+		class UButton* StartMenuButton;
 // Image
 	UPROPERTY(BlueprintReadOnly, Category = "BindWigets", meta = (BindWidget))
 		class UImage* FirstSlotArrow;
@@ -75,6 +80,8 @@ public:
 		class UImage* SecondSlotArrow;
 	UPROPERTY(BlueprintReadOnly, Category = "BindWigets", meta = (BindWidget))
 		class UImage* ThirdSlotArrow;
+	UPROPERTY(BlueprintReadOnly, Category = "BindWigets", meta = (BindWidget))
+		class UImage* BackGroundImage;
 
 	UPROPERTY(BlueprintReadOnly)
 		FString FirstSaveSlotName = "";
@@ -90,7 +97,6 @@ public:
 		FString ThirdSaveSlotDay = "";
 
 	ESelectSlot currSelectSlot = ESelectSlot::None;
-	bool isOpenSaveSlotPanel = false;
-
 	class ATPSProjectGameModeBase* myGameMode;
+	class ULevelSequencePlayer* sequencePlayer;
 };

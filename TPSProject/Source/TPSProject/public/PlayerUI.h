@@ -19,6 +19,9 @@ public:
 	virtual void BeginPlay()override;
 	virtual void SetupInputBinding(class UInputComponent* PlayerInputComponent)override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const;
+
+	void InitPlayerUI();
+
 	void GetMouseInput();
 	void ToggleMouse();
 	void ToggleMouse(bool ActiveMouse);
@@ -32,7 +35,11 @@ public:
 	void InitializeWidgets();
 	void OnOffOptionWidget();
 
-
+	void ToggleInventory();
+	void ToggleInventory(bool On);
+	
+	void GameOver();
+	void GameOverSequencePauseEvent();
 public:
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<class UScreenUI> ScreenUIFactory;
@@ -65,8 +72,14 @@ public:
 		class UExcOptionWidget* excOptionWidget;
 	bool IsMouseActive = false;
 
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UStartMenu> startMenuFactory;
+	UPROPERTY()
+		class UStartMenu* startMenu;
 
-	// NoneOnOff : 0 -> Toggle, 1 -> On, 2 -> Off
-	void ToggleInventory();
-	void ToggleInventory(bool On);
+	UPROPERTY(EditDefaultsOnly)
+		class ULevelSequence* gameOverSequence;
+	class ALevelSequenceActor* MySequenceActor;
+	class ULevelSequencePlayer* sequencePlayer;
+	FTimerHandle GameOverTimer;
 };

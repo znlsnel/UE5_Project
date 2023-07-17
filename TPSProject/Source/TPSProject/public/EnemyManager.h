@@ -64,7 +64,7 @@ public:
 	bool RecycleEnemy(class AEnemy* enemy, int SpawnIndex);
 
 	void FindSpawnPoints();
-
+	void ResetEnemy();
 
 		TArray<int> preSpawnIndex;
 	UFUNCTION(BlueprintCallable)

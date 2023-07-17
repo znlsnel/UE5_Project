@@ -25,7 +25,10 @@ public class TPSProject : ModuleRules
 			"Networking",
 			"GameplayTasks",
 			"Json",
-			"JsonUtilities"
+			"JsonUtilities",
+			"LevelSequence",
+			"MovieScene",
+			"GeometryCollectionEngine"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

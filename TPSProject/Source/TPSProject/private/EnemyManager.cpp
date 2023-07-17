@@ -19,6 +19,7 @@
 #include <UObject/CoreNet.h>
 #include "Containers/ContainerAllocationPolicies.h"
 #include <GameFramework/Actor.h>
+#include <Components/DirectionalLightComponent.h>
 
 // Sets default values
 AEnemyManager::AEnemyManager()
@@ -226,6 +227,21 @@ void AEnemyManager::FindSpawnPoints()
 			spawnPoints.Add(spawn);
 		}
 	}
+}
+
+void AEnemyManager::ResetEnemy()
+{
+	for (auto enemy : EnemyPool)
+		enemy->fsm->Reset();
+	for (auto enemy : RiktorPool)
+		enemy->fsm->Reset();
+	for (auto enemy : KwangPool)
+		enemy->fsm->Reset();
+
+	UDirectionalLightComponent* temp = Cast<UDirectionalLightComponent>(UGameplayStatics::GetActorOfClass(GetWorld(), UDirectionalLightComponent::StaticClass()));
+
+	if (IsValid(temp))
+		temp->SetWorldRotation(FQuat(FRotator(0, -89, 0)));
 }
 
 

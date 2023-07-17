@@ -13,6 +13,8 @@
 #include "PlayerUI.h"
 #include "BuildableItem.h"
 #include "Weapon.h"
+#include "Doomstone.h"
+#include "Crosshair.h"
 #include "WeaponData.h"
 
 #include <Serialization/JsonWriter.h>
@@ -27,13 +29,14 @@
 
 ATPSProjectGameModeBase::ATPSProjectGameModeBase()
 {
-
 }
 
 void ATPSProjectGameModeBase::InitGame(const FString& mapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(mapName, Options, ErrorMessage);
+	//FString str = mapName + "  " + Options + "  " + ErrorMessage;
 
+	//UKismetSystemLibrary::PrintString(GetWorld(), str);
 	// Create and load a LocalPlayer
 
 }
@@ -75,9 +78,11 @@ bool ATPSProjectGameModeBase::LoadGame(int slotNumber)
 	if (PreSaveFileName == "")
 		return false;
 
-	UGameplayStatics::OpenLevel(GetWorld(), FName("Project_T"), false);
 	UMySaveGame* LoadGameInstance = Cast<UMySaveGame>(UGameplayStatics::LoadGameFromSlot(PreSaveFileName, slotNumber));
 
+	EnemyManager->ResetEnemy();
+	ADoomstone* temp = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
+	temp->MakeStatueActor();
 	SaveFileDuplicate(LoadGameInstance, true);
 	return true;
 }
@@ -102,6 +107,11 @@ void ATPSProjectGameModeBase::SaveFileDuplicate(UMySaveGame* saveGame, bool Load
 
 		myPlayer->currRound = saveGame->currRound;
 		myPlayer->playerUI->screenUI->currDay = saveGame->currRound;
+
+		ADoomstone* temp = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
+		temp->Hp = saveGame->statueHp;
+
+		myPlayer->playerUI->InitPlayerUI();
 		SetFieldItem(saveGame->FieldItemID);
 	}
 
@@ -120,6 +130,11 @@ void ATPSProjectGameModeBase::SaveFileDuplicate(UMySaveGame* saveGame, bool Load
 
 		saveGame->currRound = myPlayer->currRound;
 		GetFieldItem(saveGame->FieldItemID);
+
+		ADoomstone* temp = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
+
+		saveGame->statueHp = temp->Hp;
+
 	}
 }
 

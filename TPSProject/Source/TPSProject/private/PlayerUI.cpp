@@ -15,7 +15,11 @@
 #include "StatueHpWidget.h"
 #include "StatueAbilityWidget.h"
 #include "ExcOptionWidget.h"
+#include "StartMenu.h"
 
+#include <LevelSequence/Public/LevelSequence.h>
+#include <LevelSequence/Public/LevelSequencePlayer.h>
+#include <LevelSequence/Public/LevelSequenceActor.h>
 #include <Blueprint/UserWidget.h>
 #include <Components/WidgetComponent.h>
 #include <Kismet/KismetSystemLibrary.h>
@@ -157,6 +161,17 @@ void UPlayerUI::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	//DOREPLIFETIME(UPlayerUI, storeUI);
 }
 
+void UPlayerUI::InitPlayerUI()
+{
+	if (sequencePlayer)
+		sequencePlayer->Stop();
+
+	screenUI->SetVisibility(ESlateVisibility::Visible);
+	crosshair->SetVisibility(ESlateVisibility::Visible);
+	StatueHpWidget->AddToViewport();
+	StatueHpWidget->UpdateWidgetPos();
+}
+
 void UPlayerUI::InitializeWidgets()
 {
 
@@ -170,6 +185,7 @@ void UPlayerUI::InitializeWidgets()
 	weaponSelectUI = Cast<UWeaponUI>(CreateWidget(GetWorld(), weaponUIFactory));
 	statueAbilityWidget = Cast<UStatueAbilityWidget>(CreateWidget(GetWorld(), statueAbilityWidgetFactory));
 	excOptionWidget = Cast< UExcOptionWidget>(CreateWidget(GetWorld(), excOptionWidgetFactory));
+	startMenu = Cast< UStartMenu>(CreateWidget(GetWorld(), startMenuFactory));
 }
 
 void UPlayerUI::OnOffOptionWidget()
@@ -229,4 +245,27 @@ void UPlayerUI::ToggleInventory()
 void UPlayerUI::ToggleInventory(bool OnOff)
 {
 	screenUI->ToggleInventory(OnOff);
+}
+
+void UPlayerUI::GameOver()
+{
+	if (IsValid(MySequenceActor) == false)
+		MySequenceActor = GetWorld()->SpawnActor<ALevelSequenceActor>(ALevelSequenceActor::StaticClass());
+
+	FMovieSceneSequencePlaybackSettings set;
+	sequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), gameOverSequence, set, MySequenceActor);
+
+	sequencePlayer->Play();
+	GetWorld()->GetTimerManager().SetTimer(GameOverTimer, FTimerDelegate::CreateLambda([&]() {
+		GameOverSequencePauseEvent();
+		}), 5.f, false);
+	screenUI->SetVisibility(ESlateVisibility::Collapsed);
+	crosshair->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void UPlayerUI::GameOverSequencePauseEvent()
+{
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Stop!"));
+	startMenu->AddToViewport();
+	startMenu->OpenWidget(true);
 }

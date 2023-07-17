@@ -2,22 +2,45 @@
 
 
 #include "Doomstone.h"
+#include "TPSPlayer.h"
+
+#include <Components/BoxComponent.h>
+#include <Camera/CameraComponent.h>
+#include <Camera/CameraActor.h>
+#include <Camera/PlayerCameraManager.h>
+#include <Kismet/GameplayStatics.h>
+#include <GeometryCollection/GeometryCollectionComponent.h>
+#include <GeometryCollection/GeometryCollection.h>
+#include <GeometryCollection/GeometryCollectionActor.h>
+
 // Sets default values
 ADoomstone::ADoomstone()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	boxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
+	statueMesh = CreateDefaultSubobject<UGeometryCollectionComponent>(TEXT("statueMesh"));
+
+	statueMesh->SetupAttachment(boxCollision);
+	statueMesh->AttachToComponent(boxCollision, FAttachmentTransformRules::KeepRelativeTransform);
 	PrimaryActorTick.bCanEverTick = true;
 	Tags.Add("DoomStone");
 	Tags.Add("EnemysTarget");
+}
+
+void ADoomstone::DestoryStatue()
+{
+	if (statueActor)
+		statueActor->GeometryCollectionComponent->SetSimulatePhysics(true);
 }
 
 // Called when the game starts or when spawned
 void ADoomstone::BeginPlay()
 {
 	Super::BeginPlay();
-
 	Tags.Add("DoomStone");
 	Tags.Add("EnemysTarget");
+	statueMesh->SetHiddenInGame(true);
+	MakeStatueActor();
 
 	Hp = MaxHp;
 //	hpWidget->parent = this;
@@ -34,16 +57,33 @@ void ADoomstone::Tick(float DeltaTime)
 
 void ADoomstone::OnHitEvent(int Damage)
 {
-	Hp -= Damage;
-	if (Hp < 0) Hp = 0;
+	if (Hp < 0) return;
+
+	Damage = 1000;
+	Hp = FMath::Max(Hp - Damage, 0);
 
 	HpPercent = (float)Hp / (float)MaxHp;
-
 
 	if (Hp == 0) {
 		DestoryStatue();
 		isDestory = true;
+		Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))->GameOver();
 	}
 
 }
+
+void ADoomstone::MakeStatueActor()
+{
+	if (statueActor)
+		statueActor->Destroy();
+	isDestory = false;
+	statueActor = Cast<AGeometryCollectionActor>(GetWorld()->SpawnActor(statueActorFactory));
+	statueActor->GeometryCollectionComponent->SetSimulatePhysics(false);
+
+	FVector loc = GetActorLocation();
+	loc.Z = -20;
+	statueActor->SetActorLocation(loc);
+	statueActor->SetActorRotation(GetActorRotation());
+}
+
 
