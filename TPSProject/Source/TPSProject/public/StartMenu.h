@@ -99,4 +99,9 @@ public:
 	ESelectSlot currSelectSlot = ESelectSlot::None;
 	class ATPSProjectGameModeBase* myGameMode;
 	class ULevelSequencePlayer* sequencePlayer;
+
+	UPROPERTY(EditDefaultsOnly)
+		class USoundBase* startMusic;
+	UPROPERTY()
+		class UAudioComponent* startMusicAudio;
 };

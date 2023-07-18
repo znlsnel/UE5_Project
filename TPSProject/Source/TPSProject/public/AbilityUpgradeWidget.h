@@ -16,21 +16,33 @@ struct TPSPROJECT_API FUpgradeInfo
 {
 	GENERATED_BODY()
 public:
-	int32 Unlock_SecondSection = 5;
-	int32 Unlock_ThirdSection = 5;
-	int32 Unlock_FourthSection = 5;
+	UPROPERTY()
+		int32 Unlock_SecondSection = 5;
+	UPROPERTY()
+		int32 Unlock_ThirdSection = 5;
+	UPROPERTY()
+		int32 Unlock_FourthSection = 5;
 
-	int32 used_FirstSection = 0;
-	int32 used_SecondSection = 0;
-	int32 used_ThirdSection = 0;
+	UPROPERTY()
+		int32 used_FirstSection = 0;
+	UPROPERTY()
+		int32 used_SecondSection = 0;
+	UPROPERTY()
+		int32 used_ThirdSection = 0;
 
-	int32 RemainingSecondSkillCount = 5;
-	int32 RemainingThirdSkillCount = 10;
-	int32 RemainingFourthSkillCount = 15;
+	UPROPERTY()
+		int32 RemainingSecondSkillCount = 5;
+	UPROPERTY()
+		int32 RemainingThirdSkillCount = 10;
+	UPROPERTY()
+		int32 RemainingFourthSkillCount = 15;
 
-	float toSecondSectionRate = 0.f;
-	float toThirdSectionRate = 0.f;
-	float toFourthSectionRate = 0.f;
+	UPROPERTY()
+		float toSecondSectionRate = 0.f;
+	UPROPERTY()
+		float toThirdSectionRate = 0.f;
+	UPROPERTY()
+		float toFourthSectionRate = 0.f;
 };
 
 
@@ -73,7 +85,10 @@ public:
 		class UAbilityInfo* abliltyInfo;
 
 	UPROPERTY(BlueprintReadOnly)
-		int currSkillCoin = 1;
+		int currSkillCoin = 10;
+
+	UPROPERTY(BlueprintReadWrite)
+		TArray<class USkillStateWidget*> skillButtons;
 
 	int32 Unlock_SecondSection = 5;
 	int32 Unlock_ThirdSection = 5;

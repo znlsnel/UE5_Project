@@ -2,6 +2,7 @@
 
 
 #include "Doomstone.h"
+#include "Enemy.h"
 #include "TPSPlayer.h"
 
 #include <Components/BoxComponent.h>
@@ -31,6 +32,12 @@ void ADoomstone::DestoryStatue()
 {
 	if (statueActor)
 		statueActor->GeometryCollectionComponent->SetSimulatePhysics(true);
+
+	TArray<AActor*> enemys;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), enemys);
+	for (auto enemy : enemys) {
+		Cast<AEnemy>(enemy)->StopMove();
+	}
 }
 
 // Called when the game starts or when spawned
@@ -57,9 +64,8 @@ void ADoomstone::Tick(float DeltaTime)
 
 void ADoomstone::OnHitEvent(int Damage)
 {
-	if (Hp < 0) return;
+	if (Hp <= 0) return;
 
-	Damage = 1000;
 	Hp = FMath::Max(Hp - Damage, 0);
 
 	HpPercent = (float)Hp / (float)MaxHp;

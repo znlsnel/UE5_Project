@@ -3,3 +3,11 @@
 
 #include "SkillStateWidget.h"
 #include "AbilityUpgradeWidget.h"
+
+void USkillStateWidget::UpdateCurrPoint()
+{
+	if (parent == nullptr)
+		return;
+
+	skillPoint = parent->abilityComp->GetSkillInfo(skillType)->point;
+}

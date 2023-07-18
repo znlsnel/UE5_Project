@@ -76,8 +76,6 @@ public:
 		float dieSpeed = 10.0f;
 	float lastDeadTime = 0.f;
 
-
-
 	UPROPERTY(EditDefaultsOnly, Category = Hp)
 		int InitHp = 10;
 	int hp = 10;

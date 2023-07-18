@@ -9,8 +9,8 @@
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FInputBindingDelegate, class UInputComponent*);
 DECLARE_MULTICAST_DELEGATE(FTickUpdateFunctions);
-
 DECLARE_DELEGATE(FInteractionObject);
+DECLARE_DELEGATE_OneParam(FItemBuyResultButtonFunction, bool result);
 
 UCLASS()
 class TPSPROJECT_API ATPSPlayer : public ACharacter
@@ -22,6 +22,7 @@ public:
 	FInputBindingDelegate onInputBindingDelegate;
 	FTickUpdateFunctions tickUpdateFunctions;
 	FInteractionObject InteractionDelegate;
+	FItemBuyResultButtonFunction ItemBuyResultDelegate;
 
 protected:
 	// Called when the game starts or when spawned
@@ -161,6 +162,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = PlayerAnim)
 		class USoundBase* heartSound;
+
+	UPROPERTY()
 		class UAudioComponent* heartAudio;
 // ===========================================================================
 // 
@@ -187,8 +190,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 		int Mineral = 10000;
-	UPROPERTY()
-		int currRound = 0;
 
 	int respawnTime = 10;
 	UPROPERTY(Replicated)
@@ -202,10 +203,11 @@ public:
 
 
 // ÇÔ¼ö========================================================================
-	UFUNCTION(BlueprintCallable)
-		void BuyItem(EItemID itemId, int ItemGrace, int ItemMineral, int32 ItemCount, bool& result);
-	void CreateItem(TArray<ABuildableItem*>& items, EItemID itemId, int count = 1);
 
+	UFUNCTION()
+		void BuyItem(EItemID itemId, int ItemGrace, int ItemMineral, int32 ItemCount);
+	void CreateItem(TArray<ABuildableItem*>& items, EItemID itemId, int count = 1);
+	bool isBuy = false;
 	void OnPlayerDie();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Initialization)

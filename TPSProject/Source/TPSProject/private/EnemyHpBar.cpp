@@ -41,8 +41,8 @@ void UEnemyHpBar::SetLocationLoop()
 
 	FVector2D EnemyScreenPosition = FVector2D(0);
 
-	FVector enemyPos = myEnemy->GetActorLocation();
-	enemyPos.Z += (myEnemy->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2) + 50;
+	FVector enemyPos = myEnemy->GetMesh()->GetSocketLocation(FName("HeadWidgetSocket"));
+
 
 	UGameplayStatics::ProjectWorldToScreen(playerController,
 		enemyPos,

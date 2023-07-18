@@ -224,10 +224,12 @@ void UPlayerAbilityComp::SetSkillInfoArr(TArray<FSkillInfo> setSkillInfos)
 		return;
 	}
 
-	skillInfos.Empty();
 	for (auto skillInfo : setSkillInfos) {
-		skillInfos.Add(&skillInfo);
-		UpdateValue(&skillInfo);
+		FSkillInfo* temp = GetSkillInfo(skillInfo.skillType);
+		if (temp) {
+			temp->point = skillInfo.point;
+			UpdateValue(temp);
+		}
 	}
 }
 

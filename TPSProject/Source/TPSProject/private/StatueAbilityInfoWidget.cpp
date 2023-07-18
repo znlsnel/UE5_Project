@@ -16,7 +16,4 @@ void UStatueAbilityInfoWidget::InitWidget(FStatueAbility* ability)
 	else if (ability->abilityType == AbilityType::HPUpgrade) {
 		Value = FString("HP: ") + FString::Printf(TEXT("%d"), ability->point * 50) + " % ";
 	}
-
-	// 조선인의 인권을 위해서 움직였습니다.
-	
 }

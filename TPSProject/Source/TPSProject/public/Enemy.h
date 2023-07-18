@@ -36,9 +36,10 @@ public:
 
 	bool isOverlapingTargets();
 	void OnAttackTargets(TArray<AActor*> actors);
-
+	void StopMove();
 public:
 	FTimerHandle DeathDelayTimer;
+	FTimerHandle damageWidgetInitTimer;
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* targetSensor;
 
@@ -58,4 +59,6 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UParticleSystemComponent* damageEffect;
 
+	UPROPERTY()
+		class UDamageWidget* damageWidget;
 };

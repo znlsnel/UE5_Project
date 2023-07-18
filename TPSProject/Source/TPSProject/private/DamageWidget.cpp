@@ -5,26 +5,43 @@
 
 #include <Kismet/GameplayStatics.h>
 
+bool UDamageWidget::isLeftAnim = true;
 UDamageWidget::UDamageWidget(const FObjectInitializer& ObjectInitialize) : Super(ObjectInitialize)
 {
 	
 	playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
 }
 
-void UDamageWidget::InitDamageWidget(FVector EnemyWorldLocation, int damage)
+void UDamageWidget::InitDamageWidget(FVector EnemyWorldLocation, int damage, bool isRecycle)
 {
+	if (IsInViewport() == false)
+		AddToViewport();
+
 	EnemyPos = EnemyWorldLocation;
-	this->Damage = damage;
+	if (isRecycle)
+		this->Damage += damage;
+	else
+		this->Damage = damage;
+
 	isInView = true;
 	//hpPercent = currHp;
 	//DisappearHp = preHp;
 
 
 	SetLocationLoop();
-	OpenWidget();
+	StopAllAnimations();
 
+	if(UDamageWidget::isLeftAnim)
+		PlayAnimation(play_Left);
+	else
+		PlayAnimation(play_Right);
+	UDamageWidget::isLeftAnim = UDamageWidget::isLeftAnim ? false : true;
+
+	GetWorld()->GetTimerManager().ClearTimer(initTimer);
 	GetWorld()->GetTimerManager().SetTimer(initTimer, FTimerDelegate::CreateLambda([&]() {
 		isInView = false;
+		RemoveFromParent();
 		}), 2.f, false);
 }
 

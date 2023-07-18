@@ -80,6 +80,8 @@ ATPSPlayer::ATPSPlayer()
 	DamageEffect->SetupAttachment(GetMesh());
 	DamageEffect->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 
+	SpawnEffect->SetupAttachment(GetMesh());
+	SpawnEffect->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 
 	myController = Cast<ATPSPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
@@ -111,8 +113,7 @@ void ATPSPlayer::BeginPlay()
 	SpawnEffect->Deactivate();
 	DamageEffect->Deactivate();
 
-	heartAudio = UGameplayStatics::SpawnSound2D(GetWorld(), heartSound);
-	heartAudio->Stop();
+
 	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
 	hp = maxHp;
 	if (playerUI->screenUI)
@@ -130,7 +131,6 @@ void ATPSPlayer::BeginPlay()
 		UDamageWidget* tempDamageWidget = CreateWidget<UDamageWidget>(GetWorld(), damageWidgetFactory);
 
 		if (tempDamageWidget) {
-			tempDamageWidget->AddToViewport();
 			damageWidgets.Add(tempDamageWidget);
 		}
 	}
@@ -316,19 +316,15 @@ void ATPSPlayer::InteractionObject()
 
 void ATPSPlayer::AbilityWidget()
 {
-	if (myAbilityWidget->IsInViewport() == false) {
+	if (myAbilityWidget == nullptr) return;
 
-		myAbilityWidget->AddToViewport();
+	if (myAbilityWidget->isOpen) {
+		myAbilityWidget->CloseWidget();
 	}
-
-	if (myAbilityWidget) {
-		if (myAbilityWidget->isOpen) {
-			myAbilityWidget->CloseWidget();
-		}
-		else {
-			myAbilityWidget->OpenWidget();
-		}
+	else {
+		myAbilityWidget->OpenWidget();
 	}
+	
 }
 
 UDamageWidget* ATPSPlayer::GetDamageWidget()
@@ -380,8 +376,7 @@ void ATPSPlayer::OnHitEvent(int damage, FVector enemyPos)
 
 	lastHitTime = GetWorld()->GetTimeSeconds();
 	int randDamage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));
-
-	randDamage = 1;
+	randDamage = 30;
 	DamageEffect->Activate(true);
 	int temphp = hp - randDamage;
 	hp = FMath::Max(temphp, 0);
@@ -392,11 +387,16 @@ void ATPSPlayer::OnHitEvent(int damage, FVector enemyPos)
 	}
 
 	if (hp < maxHp / 5) {
-		if (IsValid(heartAudio)) {
+		if (IsValid(heartAudio) == false) {
+			heartAudio = UGameplayStatics::SpawnSound2D(GetWorld(), heartSound);
 			heartAudio->Stop();
+		}
+		if (IsValid(heartAudio) && heartAudio->IsPlaying() == false) {
 			heartAudio->Play();
 		}
-
+		else {
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("heartAudio null"));
+		}
 	}
 
 	if (hp <= 0)
@@ -436,92 +436,110 @@ void ATPSPlayer::OnHitEvent(int damage, FVector enemyPos)
 }
 
 
-void ATPSPlayer::BuyItem(EItemID itemId, int ItemGrace, int ItemMineral, int32 ItemCount, bool& result)
+void ATPSPlayer::BuyItem(EItemID itemId, int ItemGrace, int ItemMineral, int32 ItemCount)
 {
-	result = false;
+	isBuy = false;
 
-	if (Grace < ItemGrace * ItemCount || Mineral < ItemMineral * ItemCount)
+	if (Grace < ItemGrace * ItemCount || Mineral < ItemMineral * ItemCount) {
+		ItemBuyResultDelegate.ExecuteIfBound(false);
 		return;
+	}
 
 	for (int i = 0; i < ItemCount; i++) {
 		switch (itemId) {
 		case EItemID::Pistol:
 			if (playerFire->weapon_Pistol == nullptr) {
+				isBuy = true;
 				playerFire->SetWeapon(WeaponType::Pistol, true);
-				result = true;
 			}
 			break;
 		case EItemID::Shotgun:
 			if (playerFire->weapon_Shotgun == nullptr) {
+				isBuy = true;
 				playerFire->SetWeapon(WeaponType::Shotgun, true);
-				result = true;
 			}
 			break;
 		case EItemID::Rifle:
 			if (playerFire->weapon_Rifle == nullptr) {
+				isBuy = true;
 				playerFire->SetWeapon(WeaponType::Rifle, true);
-				result = true;
 			}
 			break;
 		case EItemID::Bow:
 			if (playerFire->weapon_Bow == nullptr) {
+				isBuy = true;
 				playerFire->SetWeapon(WeaponType::Bow, true);
-				result = true;
 			}
 			break;
 
+
+			////////////////////
 		case EItemID::PistolAmmo:
 			if (playerFire->weapon_Pistol) {
+				isBuy = true;
 				playerFire->weapon_Pistol->Ammo += (12);
-				result = true;
 			}
 			break;
 		case EItemID::ShotgunAmmo:
 			if (playerFire->weapon_Shotgun) {
+				isBuy = true;
 				playerFire->weapon_Shotgun->Ammo += (8);
-				result = true;
 			}
 			break;
 		case EItemID::RifleAmmo:
 			if (playerFire->weapon_Rifle) {
+				isBuy = true;
 				playerFire->weapon_Rifle->Ammo += (30);
-				result = true;
 			}
 			break;
 		case EItemID::Arrow:
 			if (playerFire->weapon_Bow) {
+				isBuy = true;
 				playerFire->weapon_Bow->currAmmo += (20);
-				result = true;
 			}
 			break;
 
+
+			///////////////
 		case EItemID::StoneWall:	{
+			isBuy = true;
 			ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->StoneWall)));
-			result = true;
 		}
 			break;
 		case EItemID::SendBagWall: {
+			isBuy = true;
 			ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Sandbag)));
-			result = true;
 		}
 			break;
 		case EItemID::ConcreteWall:	{
+			isBuy = true;
 			ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->BrokenWalll)));
-			result = true;
 		}
 			break;
 		case EItemID::Barricade: {
+			isBuy = true;
 			ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Barricade)));
-			result = true;
 		}
 			break;
 		
 		case EItemID::Turret: {
+			isBuy = true;
 			ItemArr.Add(Cast<ABuildableItem>(GetWorld()->SpawnActor(itemFactory->Turret)));
-			result = true;
 		}
 			break;
 		}
+	}
+
+	if (isBuy) {
+		Grace -= ItemGrace * ItemCount;
+		Mineral -= ItemMineral * ItemCount;
+		ItemBuyResultDelegate.ExecuteIfBound(true);
+
+	}
+	else {
+		ItemBuyResultDelegate.ExecuteIfBound(false);
+
+
 	}
 
 	GetWorldTimerManager().ClearTimer(addItemTimer);
@@ -534,10 +552,8 @@ void ATPSPlayer::BuyItem(EItemID itemId, int ItemGrace, int ItemMineral, int32 I
 		}
 	}), 1.f, false);
 
-	if (result) {
-		Grace -= ItemGrace * ItemCount;
-		Mineral -= ItemMineral * ItemCount;
-	}
+	return;
+
 }
 
 void ATPSPlayer::CreateItem(TArray<ABuildableItem*>& items, EItemID itemId, int count)
@@ -587,6 +603,7 @@ void ATPSPlayer::OnPlayerDie()
 	playerUI->screenUI->RespawnEvent(true);
 	playerUI->screenUI->RespawnTime = respawnTime;
 	playerUI->screenUI->RespawnTimeLoop();
+	isMovable = false;
 	if (heartAudio)
 		heartAudio->Stop();
 
@@ -594,6 +611,7 @@ void ATPSPlayer::OnPlayerDie()
 		isDie = false;
 		AddHP(maxHp);
 		PlayMontage(AM_Spawn);
+		isMovable = true;
 		SpawnEffect->Activate(true);
 		}), respawnTime, false);
 }

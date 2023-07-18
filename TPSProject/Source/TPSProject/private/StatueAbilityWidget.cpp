@@ -44,18 +44,30 @@ void UStatueAbilityWidget::LoadJson()
 
 bool UStatueAbilityWidget::UpgradeAbility(AbilityType type)
 {
-	if (parent == nullptr || player == nullptr) {
+	FStatueAbility* ability = GetAbility(type);
+
+	bool nullCheck = parent == nullptr || player == nullptr || ability == nullptr;
+	bool costCheck = player->Grace < ability->cost;
+
+	if (nullCheck || costCheck)
 		return false;
+	
+	if  (UpgradeAbility(ability)) {
+		player->Grace -= ability->cost;
+		ability->point++;
+
+		abilityInfo->InitWidget(ability);
+		return true;
 	}
 
-	FStatueAbility* tempAbility = GetAbility(type);
-	if (tempAbility && player->Grace < tempAbility->cost) {
-		return false;
-	}
+	return false;
+}
 
-	if (tempAbility->abilityType == AbilityType::StatueRepair)
+bool UStatueAbilityWidget::UpgradeAbility(FStatueAbility* ability)
+{
+	if (ability->abilityType == AbilityType::StatueRepair)
 	{
-		if(parent->Hp >= parent->MaxHp)
+		if (parent->Hp >= parent->MaxHp)
 			return false;
 
 		int recoverHp = parent->MaxHp / 10;
@@ -63,9 +75,10 @@ bool UStatueAbilityWidget::UpgradeAbility(AbilityType type)
 		if (parent->Hp > parent->MaxHp)
 			parent->Hp = parent->MaxHp;
 	}
-	else if (tempAbility->abilityType == AbilityType::SealRepair) {
+	else if (ability->abilityType == AbilityType::SealRepair) {
+		
 		isUpdateRepairRate = true;
-		NextRepairRate += 1.f / repairCondition;
+		NextRepairRate = (1.f * ability->point) / repairCondition;
 		UpdateRepairRate();
 
 		GetWorld()->GetTimerManager().ClearTimer(repairRateEndTimer);
@@ -74,18 +87,12 @@ bool UStatueAbilityWidget::UpgradeAbility(AbilityType type)
 				isUpdateRepairRate = false;
 			}), 3.f, false);
 	}
-	else if (tempAbility->abilityType == AbilityType::HPUpgrade) {
+	else if (ability->abilityType == AbilityType::HPUpgrade) {
 		int preHp = parent->MaxHp;
-		parent->MaxHp = parent->initHp + (tempAbility->point + 5) * 100;
+		parent->MaxHp = parent->initHp + (ability->point * 5) * 100;
 
 		parent->Hp += parent->MaxHp - preHp;
 	}
-
-	player->Grace -= tempAbility->cost;
-	tempAbility->point++;	
-
-	abilityInfo->InitWidget(tempAbility);
-
 	return true;
 }
 
@@ -99,6 +106,15 @@ void UStatueAbilityWidget::HorverButton(bool isHorver, AbilityType type, FVector
 	}
 	abilityInfo->SetPositionInViewport(pos);
 	FStatueAbility* tempAbility = GetAbility(type);
+
+	if (tempAbility == nullptr) {
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No Ability"));
+		return;
+	}
+	if (abilityInfo == nullptr) {
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No abilityInfo"));
+		return;
+	}
 
 	abilityInfo->InitWidget(tempAbility);
 	abilityInfo->OpenWidget();
@@ -120,9 +136,12 @@ void UStatueAbilityWidget::UpdateRepairRate()
 void UStatueAbilityWidget::SetGetStatueAbilityArr(TArray<FStatueAbility>& arr, float& m_repairRate, bool Set)
 {
 	if (Set) {
-		statueAbilitys.Empty();
 		for (auto ability : arr) {
-			statueAbilitys.Add(&ability);
+			FStatueAbility* temp = GetAbility(ability.abilityType);
+			if (temp) {
+				temp->cost = ability.cost;
+				UpgradeAbility(temp);
+			}
 		}
 		repairRate = m_repairRate;
 		return;

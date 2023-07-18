@@ -8,6 +8,7 @@
 #include <Components/PanelWidget.h>
 #include <Components/Button.h>
 #include <Components/Image.h>
+#include <Components/AudioComponent.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/GameplayStatics.h>
 #include <Engine/Level.h>
@@ -21,9 +22,6 @@ bool UStartMenu::Initialize()
 {
 	if (Super::Initialize() == false)
 		return false;
-
-
-
 
 	OpenWidget(false);
 	StartGameButton->OnClicked.AddDynamic(this, &UStartMenu::ClickStartGameButton);
@@ -95,6 +93,8 @@ void UStartMenu::UpdateSlotName()
 void UStartMenu::ClickStartGameButton()
 {
 	UGameplayStatics::OpenLevel(GetWorld(), FName("Project_T"));
+	if (startMusicAudio && startMusicAudio->IsPlaying())
+		startMusicAudio->Stop();
 	RemoveFromParent();
 }
 
@@ -115,6 +115,9 @@ void UStartMenu::ClickLoadButton()
 	default:
 		return;
 	} 
+	if (startMusicAudio && startMusicAudio->IsPlaying())
+		startMusicAudio->Stop();
+
 	if (myGameMode->LoadGame(slotNum))
 		RemoveFromParent();
 }
@@ -213,6 +216,13 @@ void UStartMenu::OpenWidget(bool GameOver, ULevelSequencePlayer* gameOverSequenc
 		GameOverPanel->SetRenderScale(FVector2D(0));
 		MainPanel->SetRenderScale(FVector2D(1));
 		BackGroundImage->SetRenderOpacity(1.f);
+
+		if (IsInViewport()) {
+			if (startMusicAudio == nullptr)
+				startMusicAudio = UGameplayStatics::SpawnSound2D(GetWorld(), startMusic);
+			if (startMusicAudio && startMusicAudio->IsPlaying() == false)
+				startMusicAudio->Play();
+		}
 	}
 	UpdateSlotName();
 	UpdateSelectArrow();

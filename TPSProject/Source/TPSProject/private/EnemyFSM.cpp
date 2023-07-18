@@ -110,7 +110,6 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 
 void UEnemyFSM::IdleState()
 {
-	ai->StopMovement();
 	IdleStartTime += GetWorld()->GetDeltaSeconds();
 	if (IdleStartTime  > idleDelayTime)
 	{

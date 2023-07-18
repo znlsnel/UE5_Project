@@ -1,31 +1,30 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 
-#include "TPSProjectGameModeBase.h"
-#include "TPSPlayer.h"
-#include "EnemyManager.h"
-#include "MySaveGame.h"
 
-#include "ItemStoreUI.h"
-#include "Inventory.h"
-#include "ScreenUI.h"
-#include "InventorySlot.h"
 #include "PlayerUI.h"
-#include "BuildableItem.h"
 #include "Weapon.h"
-#include "Doomstone.h"
 #include "Crosshair.h"
+#include "ScreenUI.h"
+#include "Inventory.h"
+#include "TPSPlayer.h"
+#include "Doomstone.h"
+#include "ItemStoreUI.h"
 #include "WeaponData.h"
+#include "InventorySlot.h"
+#include "MySaveGame.h"
+#include "BuildableItem.h"
+#include "EnemyManager.h"
+#include "TPSProjectGameModeBase.h"
 
+#include<Blueprint/UserWidget.h>
 #include <Serialization/JsonWriter.h>
+#include <Kismet/GameplayStatics.h>
+#include <Kismet/KismetSystemLibrary.h>
 #include <GameFramework/GameState.h>
 #include <GameFramework/PlayerController.h>
-#include <Kismet/GameplayStatics.h>
-#include<Blueprint/UserWidget.h>
-#include <Kismet/KismetSystemLibrary.h>
-
-
-#include <Net/UnrealNetwork.h>
+#include <Components/DirectionalLightComponent.h>
+#include <Engine/DirectionalLight.h>
 
 ATPSProjectGameModeBase::ATPSProjectGameModeBase()
 {
@@ -80,10 +79,18 @@ bool ATPSProjectGameModeBase::LoadGame(int slotNumber)
 
 	UMySaveGame* LoadGameInstance = Cast<UMySaveGame>(UGameplayStatics::LoadGameFromSlot(PreSaveFileName, slotNumber));
 
+	SaveFileDuplicate(LoadGameInstance, true);
 	EnemyManager->ResetEnemy();
+
 	ADoomstone* temp = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
 	temp->MakeStatueActor();
-	SaveFileDuplicate(LoadGameInstance, true);
+
+	ADirectionalLight* tempLight = Cast<ADirectionalLight>(UGameplayStatics::GetActorOfClass(GetWorld(), ADirectionalLight::StaticClass()));
+
+	if (IsValid(tempLight))
+		tempLight->SetActorRotation(FRotator(-89, 0, 0));
+
+
 	return true;
 }
 
@@ -97,16 +104,15 @@ void ATPSProjectGameModeBase::SaveFileDuplicate(UMySaveGame* saveGame, bool Load
 		myPlayer->Grace = saveGame->playerGrace;
 
 		myPlayer->Mineral = saveGame->playerMineral;
-		myPlayer->myAbilityWidget->SetAbilityInfo(saveGame->upgradeInfo);
 		myPlayer->SetActorLocation(saveGame->Location);
 		myPlayer->playerFire->SetOwnWeapons(saveGame->ownWeapon);
 
 		myPlayer->abilityComp->SetSkillInfoArr(saveGame->skillInfos);
 		myPlayer->playerUI->statueAbilityWidget->SetGetStatueAbilityArr(saveGame->statueAbilitys, saveGame->abilityRepairRate, true);
 		myPlayer->playerUI->screenUI->inventory->SetInventorySlot(saveGame->InventoryItemID);
+		myPlayer->myAbilityWidget->SetAbilityInfo(saveGame->upgradeInfo);
 
-		myPlayer->currRound = saveGame->currRound;
-		myPlayer->playerUI->screenUI->currDay = saveGame->currRound;
+		currRound = saveGame->currRound;
 
 		ADoomstone* temp = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
 		temp->Hp = saveGame->statueHp;
@@ -121,20 +127,20 @@ void ATPSProjectGameModeBase::SaveFileDuplicate(UMySaveGame* saveGame, bool Load
 		saveGame->ownWeapon = myPlayer->playerFire->GetOwnWeapons();
 
 		saveGame->Location = myPlayer->GetActorLocation();
+		myPlayer->playerUI->statueAbilityWidget->SetGetStatueAbilityArr(saveGame->statueAbilitys, saveGame->abilityRepairRate, false);
+
 		saveGame->skillInfos = myPlayer->abilityComp->GetSkillInfoArr();
 
-		myPlayer->playerUI->statueAbilityWidget->SetGetStatueAbilityArr(saveGame->statueAbilitys, saveGame->abilityRepairRate, false);
 
 		saveGame->upgradeInfo = myPlayer->myAbilityWidget->GetAbilityInfo();
 		myPlayer->playerUI->screenUI->inventory->GetInventorySlot(saveGame->InventoryItemID);
 
-		saveGame->currRound = myPlayer->currRound;
+		saveGame->currRound = currRound;
 		GetFieldItem(saveGame->FieldItemID);
 
 		ADoomstone* temp = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
 
 		saveGame->statueHp = temp->Hp;
-
 	}
 }
 
@@ -159,7 +165,7 @@ void ATPSProjectGameModeBase::UpdateJsonFile(FString SaveSlotName, int slotNumbe
 			FString slotDay = slotName + "Day";
 
 			jsonValueObject->SetStringField(slotName, SaveSlotName);
-			jsonValueObject->SetNumberField(slotDay, currDay + 1);
+			jsonValueObject->SetNumberField(slotDay, currDay);
 
 			firstSaveSlotName = jsonValueObject->GetStringField(TEXT("FirstSlot"));
 			SecondSaveSlotName = jsonValueObject->GetStringField(TEXT("SecondSlot"));

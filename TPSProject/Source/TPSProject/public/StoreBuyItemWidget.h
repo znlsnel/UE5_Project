@@ -51,4 +51,6 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FString resultString = "";
 
+	int tempPreGrace = 0;
+	float lastCreateItemButtonClickTime = 0.f;
 };

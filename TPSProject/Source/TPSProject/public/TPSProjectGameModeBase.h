@@ -37,17 +37,14 @@ public:
 	FTimerHandle LoadTimer;
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class AEnemyManager> enemyManagerFactory;
-	UPROPERTY(EditAnywhere, blueprintReadOnly, Category = SpawnSettings)
-		TSubclassOf<class AMonster> monsterFactory;
-		AActor* tempActor;
+	UPROPERTY(BlueprintReadOnly)
+		class AEnemyManager* EnemyManager;
 
 	//UPROPERTY(Replicated)
 	TArray<AActor*> managedActors;
 	TArray<class ABuildableItem*> loadActors;
 
 
-	UPROPERTY(Replicated, BlueprintReadOnly)
-		class AEnemyManager* EnemyManager;
 	FTimerHandle StartTimer;
 	class ATPSPlayer* myPlayer;
 
@@ -55,4 +52,6 @@ public:
 	FString SecondSaveSlotName = "";
 	FString ThirdSaveSlotName = "";
 
+	UPROPERTY(BlueprintReadWrite)
+		int currRound = 1;
 };

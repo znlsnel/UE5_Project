@@ -8,6 +8,7 @@
 #include "RoundUI.h"
 #include "TPSPlayer.h"
 #include "AbilityUpgradeWidget.h"
+#include "TPSProjectGameModeBase.h"
 #include "myGameStateBase.h"
 
 
@@ -35,7 +36,7 @@ void AEnemyManager::BeginPlay()
 {
 	Super::BeginPlay();
 	player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-
+	myGameMode = Cast<ATPSProjectGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	myGameState = Cast<AmyGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
 	if (myGameState == nullptr)
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("No State"));
@@ -184,7 +185,7 @@ void AEnemyManager::AddEnemy(FVector location, TArray<AEnemy*>& pool)
 		}
 
 
-		tempEnemy->fsm->RoundInitEnemy(currRound);
+		tempEnemy->fsm->RoundInitEnemy(myGameMode->currRound);
 		tempEnemy->fsm->InitializeEnemy(location);
 
 
@@ -202,7 +203,7 @@ bool AEnemyManager::RecycleEnemy(AEnemy* enemy, int SpawnIndex)
 	FVector genPos = spawnPoints[SpawnIndex]->GetActorLocation();
 	genPos.Z += 150;
 
-	enemy->fsm->RoundInitEnemy( currRound);
+	enemy->fsm->RoundInitEnemy(myGameMode->currRound);
 	enemy->fsm->InitializeEnemy(genPos);
 
 	return true;
@@ -238,24 +239,29 @@ void AEnemyManager::ResetEnemy()
 	for (auto enemy : KwangPool)
 		enemy->fsm->Reset();
 
-	UDirectionalLightComponent* temp = Cast<UDirectionalLightComponent>(UGameplayStatics::GetActorOfClass(GetWorld(), UDirectionalLightComponent::StaticClass()));
+	isbreakTime = true;
+	jumpRoundEvent = true;
+	GetWorld()->GetTimerManager().ClearTimer(spawnTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(bossSpawnTimerHandle);
 
-	if (IsValid(temp))
-		temp->SetWorldRotation(FQuat(FRotator(0, -89, 0)));
+	GetWorld()->GetTimerManager().SetTimer(resetTimer, FTimerDelegate::CreateLambda(
+		[&]() {
+			jumpRoundEvent = false;
+		}
+	), 1.f, false);
 }
 
 
 void AEnemyManager::RoundEvent(bool start)
 {
+	if (jumpRoundEvent) return;
+
 	if (start)
 	{
 		isbreakTime = false;
 
-		currRound = player->currRound;
-		currRound++;
-		
-		currMonsterSpawnTimer = InitMonsterSpawnTime - (0.3f * currRound);
-		BossSpawnTime = (myGameState->DaySecond / (currRound / 3) + 1);
+		currMonsterSpawnTimer = InitMonsterSpawnTime - (0.3f * myGameMode->currRound);
+		BossSpawnTime = (myGameState->DaySecond / (myGameMode->currRound / 3) + 1);
 
 		// All Enemy Die
 
@@ -266,7 +272,7 @@ void AEnemyManager::RoundEvent(bool start)
 	{
 		if (player->myAbilityWidget)
 			player->myAbilityWidget->currSkillCoin++;
-		player->currRound = currRound;
+		myGameMode->currRound++;
 		isbreakTime = true;
 
 		GetWorld()->GetTimerManager().ClearTimer(spawnTimerHandle);

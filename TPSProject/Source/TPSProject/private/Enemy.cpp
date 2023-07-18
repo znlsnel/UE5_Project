@@ -11,6 +11,7 @@
 #include "TPSPlayer.h"
 #include "EnemyHpBar.h"
 #include "DamageWidget.h"
+#include "AIController.h"
 
 #include <Components/BoxComponent.h>
 #include <Components/AudioComponent.h>
@@ -91,15 +92,25 @@ void AEnemy::AddWorldDamageUI(int Damage, float currHpPercent, float preHpPercen
 	if (player == nullptr)
 		player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-	FVector pos = GetActorLocation();
-	pos.Z += (GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2) + 30;
+	FVector pos = GetMesh()->GetSocketLocation(FName("HeadWidgetSocket")) + 40;
 
 
-	UDamageWidget* tempWidget = player->GetDamageWidget();
-	if (IsValid(tempWidget)) {
-		tempWidget->InitDamageWidget(pos, Damage);
+	bool isRecycle = true;
+	if (damageWidget == nullptr) {
+		damageWidget = player->GetDamageWidget();
+		isRecycle = false;
 	}
+
+	if (IsValid(damageWidget)) {
+		damageWidget->InitDamageWidget(pos, Damage, isRecycle);
+	}
+
 	hpBar->InitHpWidget(this, currHpPercent, preHpPercent);
+
+	GetWorld()->GetTimerManager().ClearTimer(damageWidgetInitTimer);
+	GetWorld()->GetTimerManager().SetTimer(damageWidgetInitTimer, FTimerDelegate::CreateLambda([&]() {
+		damageWidget = nullptr;
+		}), 1.f, false);
 }
 
 
@@ -158,6 +169,10 @@ void AEnemy::OnAttackTargets(TArray<AActor*> actors)
 {
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("OnAttackTargets"));
 	fsm->anim->AttackToTargets(actors, fsm->anim->AttackDamage * 2);
+}
+void AEnemy::StopMove()
+{
+	fsm->ai->StopMovement();
 }
 
 

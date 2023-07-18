@@ -41,6 +41,7 @@ public:
 
 	void LoadJson();
 	bool UpgradeAbility(AbilityType type);
+	bool UpgradeAbility(FStatueAbility* ability);
 	void HorverButton(bool isHorver, AbilityType type, FVector2D pos);
 	void UpdateRepairRate();
 

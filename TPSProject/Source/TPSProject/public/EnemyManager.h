@@ -77,9 +77,10 @@ public:
 	FTimerHandle spawnTimerHandle;
 	FTimerHandle bossSpawnTimerHandle;
 	FTimerHandle SpawnWaitTimer;
+	FTimerHandle resetTimer;
 
+	bool jumpRoundEvent = false;
 	bool isbreakTime = true;
-	int currRound = 0;
 
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
 		float InitMonsterSpawnTime = 7.f;
@@ -118,4 +119,5 @@ public:
 	bool spawnRiktor = true;
 
 	class AmyGameStateBase* myGameState;
+	class ATPSProjectGameModeBase* myGameMode;
 };

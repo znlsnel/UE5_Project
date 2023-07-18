@@ -18,6 +18,8 @@ class TPSPROJECT_API USkillStateWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	UFUNCTION(BlueprintCallable)
+		void UpdateCurrPoint();
 
 public:
 	UPROPERTY(BlueprintReadWrite)
@@ -28,5 +30,7 @@ public:
 		SkillSectionType skillSectionType = SkillSectionType::None;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		UTexture2D* skillTexture;
+	UPROPERTY(BlueprintReadOnly)
+		int skillPoint = 0;
 
 };

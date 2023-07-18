@@ -23,10 +23,16 @@ public:
 		void OpenWidget();
 
 	//void InitDamageWidget(FVector EnemyWorldLocation, int damage, float currHp, float preHp);
-	void InitDamageWidget(FVector EnemyWorldLocation, int damage);
+	void InitDamageWidget(FVector EnemyWorldLocation, int damage, bool isRecycle = false);
 	void SetLocationLoop();
 
 public:
+	UPROPERTY(BlueprintReadOnly, Category = "BindAnimation", meta = (BindWidgetAnim), Transient)
+		UWidgetAnimation* play_Left;
+
+	UPROPERTY(BlueprintReadOnly, Category = "BindAnimation", meta = (BindWidgetAnim), Transient)
+		UWidgetAnimation* play_Right;
+
 	FTimerHandle loopSetPositionTimer;
 	FTimerHandle initTimer;
 	class APlayerController* playerController;
@@ -45,4 +51,5 @@ public:
 	//	float DisappearHp = 0.f;
 
 	float uiRenderTime = 2.f;
+	static bool isLeftAnim;
 };

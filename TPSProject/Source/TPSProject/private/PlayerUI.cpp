@@ -209,23 +209,13 @@ void UPlayerUI::ATVWidgets()
 		StatueHpWidget->AddToViewport();
 	}
 
-
-	int a = 4;
-
 	if (crosshair) {
 		crosshair->ATVWidget();
 	}
 
-	int c = 4;
-
-
-
 	if (screenUI) {
 		screenUI->ATVWidget();
 	}
-
-
-
 
 	if (weaponSelectUI && weaponSelectUI->IsInViewport() == false) {
 		weaponSelectUI->AddToViewport();

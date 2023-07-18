@@ -5,7 +5,9 @@
 #include "Inventory.h"
 #include "Weapon.h"
 #include "PlayerAbilityComp.h"
+#include "TPSProjectGameModeBase.h"
 
+#include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Components/Image.h>
 
@@ -49,6 +51,7 @@ void UScreenUI::Initialization(ATPSPlayer* player)
 	inventory->Initialization(myPlayer);
 	myAbilityComp = myPlayer->abilityComp;
 	myAbilityComp->myScreenUI = this;
+	myGameMode = Cast<ATPSProjectGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 }
 
 

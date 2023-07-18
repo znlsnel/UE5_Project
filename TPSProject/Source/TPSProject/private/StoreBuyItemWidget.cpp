@@ -37,18 +37,17 @@ void UStoreBuyItemWidget::OpenWidget(UStoreListItem* item)
 
 void UStoreBuyItemWidget::ClickCreateItemButton()
 {
+	if (GetWorld()->GetTimeSeconds() - lastCreateItemButtonClickTime < 1.f)
+		return;
+
+	lastCreateItemButtonClickTime = GetWorld()->GetTimeSeconds();
+
 	player = Cast< ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	FStoreItem temp = parentItem->ItemInfo;
 
-	bool result = false;
-	player->BuyItem(temp.ItemID, temp.GraceCost, temp.MineralCost, parentItem->ItemCount, result);
+	player->ItemBuyResultDelegate.BindUObject(this, &UStoreBuyItemWidget::OpenResultButton);
+	player->BuyItem(temp.ItemID, temp.GraceCost, temp.MineralCost, parentItem->ItemCount);
 
-	OpenResultButton(result);
-	//GetWorld()->GetTimerManager().ClearTimer(buyItemTimer);
-	//GetWorld()->GetTimerManager().SetTimer(buyItemTimer, FTimerDelegate::CreateLambda(
-	//	[&]() {
-	//	}
-	//), 0.2f, false);
 }
 
 void UStoreBuyItemWidget::ClickCancelButton()

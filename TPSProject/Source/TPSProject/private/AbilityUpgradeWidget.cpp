@@ -5,6 +5,7 @@
 #include "TPSPlayer.h"
 #include "PlayerAbilityComp.h"
 #include "AbilityInfo.h"
+#include "SkillStateWidget.h"
 
 #include <Kismet/GameplayStatics.h>
 
@@ -171,4 +172,8 @@ void UAbilityUpgradeWidget::SetAbilityInfo(FUpgradeInfo upgradeInfo)
 	toSecondSectionRate =upgradeInfo. toSecondSectionRate;
 	toThirdSectionRate = upgradeInfo.toThirdSectionRate;
 	toFourthSectionRate =upgradeInfo. toFourthSectionRate;
+
+	for (auto skill : skillButtons) {
+		skill->UpdateCurrPoint();
+	}
 }

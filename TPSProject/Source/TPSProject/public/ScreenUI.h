@@ -99,6 +99,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 		int currDay = 1;
 
+	UPROPERTY(BlueprintReadOnly)
+		class ATPSProjectGameModeBase* myGameMode;
+
 	UPROPERTY(EditAnywhere)
 		UTexture2D* PistolUI;
 	UPROPERTY(EditAnywhere)
