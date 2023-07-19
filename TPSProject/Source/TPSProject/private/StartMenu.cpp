@@ -34,6 +34,7 @@ bool UStartMenu::Initialize()
 	LoadButton->OnClicked.AddDynamic(this, &UStartMenu::ClickLoadButton);
 
 	StartMenuButton->OnClicked.AddDynamic(this, &UStartMenu::ClickStartMenuButton);
+
 	return true;
 }
 
@@ -118,8 +119,9 @@ void UStartMenu::ClickLoadButton()
 	if (startMusicAudio && startMusicAudio->IsPlaying())
 		startMusicAudio->Stop();
 
-	if (myGameMode->LoadGame(slotNum))
+	if (myGameMode->LoadGame(slotNum) ){
 		RemoveFromParent();
+	}
 }
 
 void UStartMenu::ClickContinueGameButton()
@@ -227,3 +229,4 @@ void UStartMenu::OpenWidget(bool GameOver, ULevelSequencePlayer* gameOverSequenc
 	UpdateSlotName();
 	UpdateSelectArrow();
 }
+

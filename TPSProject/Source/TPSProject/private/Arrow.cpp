@@ -16,6 +16,7 @@
 #include <GameFramework/ProjectileMovementComponent.h>
 #include <Components/PointLightComponent.h>
 #include <NiagaraDataInterfaceArrayFunctionLibrary.h>
+#include <particles/ParticleSystemComponent.h>
 
 // Sets default values
 AArrow::AArrow()
@@ -36,10 +37,8 @@ AArrow::AArrow()
 
 	ProjectileMovementComp = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("PMComp"));
 
-	ArrowEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Niagara"));
-	ArrowEffect->SetRelativeScale3D(FVector(0.2, 0.2, 0.2));
+	ArrowEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Niagara"));
 	SetActorHiddenInGame(true);
-	ArrowEffect->SetHiddenInGame(true);
 	ArrowEffect->SetupAttachment(ArrowMesh);
 
 	ArrowMesh->SetSimulatePhysics(false);
@@ -54,6 +53,7 @@ void AArrow::BeginPlay()
 {
 	Super::BeginPlay();
 	Light->SetVisibility(false);
+	ArrowEffect->Deactivate();
 
 
 }
@@ -85,9 +85,9 @@ void AArrow::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimi
 
 	}
 	// Actor에 SetAttack~~ 해버리기 
-	ArrowEffect->SetHiddenInGame(true);
 	ArrowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	ArrowEffect->Deactivate();
 	UNiagaraComponent* tempImpact = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
 
 	FHitResult k = Hit;
@@ -106,7 +106,7 @@ void AArrow::ReturnObject(float returnTime)
 		}), returnTime, false);
 }
 
-void AArrow::InitArrow(FVector ArrowHeadSocketPos)
+void AArrow::InitArrow(FVector ArrowHeadSocketPos, int damage)
 {
 	SetActorHiddenInGame(false);
 	
@@ -115,11 +115,11 @@ void AArrow::InitArrow(FVector ArrowHeadSocketPos)
 	SetActorRotation(UKismetMathLibrary::FindLookAtRotation(pos, ArrowHeadSocketPos));
 	bIsUsed = true;
 	AddActorLocalRotation(FRotator(-90, 0, 0));
-	ArrowEffect->SetHiddenInGame(true);
-	ArrowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	ArrowEffect->ResetSystem();
-	Light->SetVisibility(true);
 
+	ArrowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ArrowEffect->Deactivate();
+	Light->SetVisibility(true);
+	attackDamage = damage;
 
 }
 
@@ -146,9 +146,8 @@ bool AArrow::ShootArrow(FVector target, float power)
 	ProjectileMovementComp->Bounciness = 0.3f;
 	ProjectileMovementComp->Velocity = rot.Vector() * ProjectileMovementComp->InitialSpeed;
 
-	ArrowEffect->ReinitializeSystem();
-	ArrowEffect->SetHiddenInGame(false);
 	ArrowMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	ArrowEffect->Activate(true);
 
 
 	ReturnObject(5.0f);
@@ -193,7 +192,7 @@ void AArrow::CancelArrow()
 	bIsUsed = false;
 	SetActorHiddenInGame(true);
 	ProjectileMovementComp->SetUpdatedComponent(NULL);
-	ArrowEffect->SetHiddenInGame(true);
+	ArrowEffect->Deactivate();
 	Light->SetVisibility(false);
 }
 

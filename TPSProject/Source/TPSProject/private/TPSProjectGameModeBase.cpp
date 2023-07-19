@@ -37,6 +37,7 @@ void ATPSProjectGameModeBase::InitGame(const FString& mapName, const FString& Op
 
 	//UKismetSystemLibrary::PrintString(GetWorld(), str);
 	// Create and load a LocalPlayer
+	loadingScreen = CreateWidget(GetWorld(), loadingScreenFactory);
 
 }
 
@@ -89,7 +90,7 @@ bool ATPSProjectGameModeBase::LoadGame(int slotNumber)
 
 	if (IsValid(tempLight))
 		tempLight->SetActorRotation(FRotator(-89, 0, 0));
-
+	OpenLoadingScreen();
 
 	return true;
 }
@@ -244,6 +245,17 @@ void ATPSProjectGameModeBase::SetFieldItem(TArray<struct FFieldItem>& fieldItems
 		}
 		loadActors.Empty();
 	}
+}
+
+void ATPSProjectGameModeBase::OpenLoadingScreen()
+{
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("OpenLoadingScreen"));
+	loadingScreen->AddToViewport();
+
+	GetWorld()->GetTimerManager().SetTimer(loadingScreenTimer, FTimerDelegate::CreateLambda(
+		[&]() {
+			loadingScreen->RemoveFromParent();
+		}), 3.f, false);
 }
 
 

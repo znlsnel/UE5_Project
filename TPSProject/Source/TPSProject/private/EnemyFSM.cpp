@@ -309,8 +309,11 @@ void UEnemyFSM::OnDamageProcess(int damage, AActor* attacker,  FName boneName, b
 		return;
 	}
 	else {
-		if (anim->bHasAbilitySkill == false)
+		if (anim->bHasAbilitySkill == false) {
 			lastAttackTime = 0.f;
+			mState = EEnemyState::Idle;
+			ai->StopMovement();
+		}
 
 		anim->PlayDamageAnim(false , attacker);
 	}

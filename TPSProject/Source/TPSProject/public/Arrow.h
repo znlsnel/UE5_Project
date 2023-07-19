@@ -25,7 +25,7 @@ protected:
 	class AEnemy* tempEnemy;
 public:
 	void ReturnObject(float returnTime);
-	void InitArrow(FVector LookVec);
+	void InitArrow(FVector LookVec, int damage);
 	bool ShootArrow(FVector target, float power);
 	void CreateDecal(class UNiagaraComponent* tempDecal, FHitResult& pHitResult);
 	void CancelArrow();
@@ -39,11 +39,10 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UProjectileMovementComponent* ProjectileMovementComp;
 	UPROPERTY(EditAnywhere)
-		class UNiagaraComponent* ArrowEffect;
+		class UParticleSystemComponent* ArrowEffect;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Niagara)
+	UPROPERTY(EditDefaultsOnly)
 		class UNiagaraSystem* ImpactEffect;
-
 
 	int attackDamage = 50;
 	int addDamage = 0;

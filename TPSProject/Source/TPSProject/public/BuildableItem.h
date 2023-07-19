@@ -63,9 +63,6 @@ public:
 	//UPROPERTY(EditAnywhere)
 	//	TSubclassOf<class UBuildableItemCheckUI> CheckWidgetTS;
 
-	UPROPERTY()
-		class UBuildableItemCheckUI* CheckUI;
-
 	//UPROPERTY(EditAnywhere)
 		//class UArrowComponent* arrowComp;
 

@@ -26,10 +26,10 @@ bool UBuildableItemCheckUI::Initialize()
 
 void UBuildableItemCheckUI::OpenCheckUI()
 {
-	if (IsInViewport() && IsValid(OpenAnim)) {
-		PlayAnimation(OpenAnim);
-	}
+	AddToViewport();
+	PlayAnimation(OpenAnim);
 }
+
 
 void UBuildableItemCheckUI::ClickButton(ButtonType type)
 {
@@ -54,7 +54,7 @@ void UBuildableItemCheckUI::ClickButton(ButtonType type)
 		GetWorld()->GetTimerManager().SetTimer(removeTimer, FTimerDelegate::CreateLambda([&]() {
 			if (IsInViewport())
 				RemoveFromParent();
-			}), 1.f, false);
+			}), 0.5f, false);
 	}
 
 }

@@ -119,9 +119,7 @@ void AWeapon_Bow::SetArrow()
 
 	arrow->AttachToComponent(weaponMeshComp, FAttachmentTransformRules::KeepWorldTransform, "ArrowTailSocket");
 
-
-	
-	arrow->InitArrow(weaponMeshComp->GetSocketLocation("ArrowHeadSocket"));
+	arrow->InitArrow(weaponMeshComp->GetSocketLocation("ArrowHeadSocket"), weapDamage);
 }
 
 
@@ -175,8 +173,5 @@ AArrow* AWeapon_Bow::GetArrow()
 		if (arw->bIsUsed == false)
 			return arw;
 	}
-	
-	
-
 	return nullptr;
 }

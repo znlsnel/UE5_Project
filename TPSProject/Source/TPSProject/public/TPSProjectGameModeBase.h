@@ -32,7 +32,7 @@ public:
 	FString GetSlotName(int SlotNumber);
 	void GetFieldItem(TArray<struct FFieldItem>& fieldItems);
 	void SetFieldItem(TArray<struct FFieldItem>& fieldItems);
-
+	void OpenLoadingScreen();
 public:
 	FTimerHandle LoadTimer;
 	UPROPERTY(EditAnywhere)
@@ -54,4 +54,11 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 		int currRound = 1;
+
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UUserWidget> loadingScreenFactory;
+	UPROPERTY()
+		class UUserWidget* loadingScreen;
+	FTimerHandle loadingScreenTimer;
+
 };

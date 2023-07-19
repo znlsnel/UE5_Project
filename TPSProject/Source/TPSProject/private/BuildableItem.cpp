@@ -62,11 +62,6 @@ void ABuildableItem::UseItem(UInventorySlot* inventorySlot)
 	isSetLocation = true;
 	isBuild = true;
 
-	if (IsValid(CheckUI) == false)
-	{
-		CheckUI = myPlayer->BuildableItemCheckUI;
-	}
-
 	myPlayer->playerUI->ToggleInventory(false);
 	myPlayer->playerUI->ToggleMouse(false);
 
@@ -83,13 +78,11 @@ void ABuildableItem::GetMouseInput(bool isPressed)
 	{
 		if (GetWorld()->GetTimeSeconds() -lastClickTime < 0.2) {
 
-			if (IsValid(CheckUI)) {
-				myPlayer->playerUI->ToggleMouse(true);
-				CheckUI->parentItem = this;
-				CheckUI->AddToViewport();
-				CheckUI->OpenCheckUI();
-				isBuild = false;
-			}
+			myPlayer->playerUI->ToggleMouse(true);
+			myPlayer->BuildableItemCheckUI->parentItem = this;
+			myPlayer->BuildableItemCheckUI->OpenCheckUI();
+			isBuild = false;
+			
 
 		}
 		else
@@ -171,7 +164,6 @@ void ABuildableItem::completeBuilding(bool decide)
 		isSetLocation = true;
 	}
 	myPlayer->playerUI->ToggleMouse(false);
-	CheckUI->RemoveFromParent();
 }
 
 

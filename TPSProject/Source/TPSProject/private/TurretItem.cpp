@@ -61,7 +61,7 @@ void ATurretItem::Tick(float DeltaSecond)
 		LookVector.Roll = 0;
 
 		FRotator currRot = myCylinder->GetComponentRotation();
-		myCylinder->SetWorldRotation(FMath::RInterpTo(currRot, LookVector, DeltaSecond, 1.f));
+		myCylinder->SetWorldRotation(FMath::RInterpTo(currRot, LookVector, DeltaSecond, turretRotationSpeed));
 		
 		float offset = FMath::Abs(LookVector.Yaw - currRot.Yaw);
 		isFireable = offset < 1;

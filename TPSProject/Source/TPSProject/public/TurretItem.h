@@ -36,6 +36,9 @@ public:
 
 
 	int targetId = 0;
+	
+	UPROPERTY(EditDefaultsOnly)
+		float turretRotationSpeed = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		class USphereComponent* enemySensorComp;

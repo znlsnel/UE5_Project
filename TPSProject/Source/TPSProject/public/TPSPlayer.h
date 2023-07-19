@@ -186,10 +186,10 @@ public:
 	bool isMovable = true;
 	bool isRotatable = true;
 	UPROPERTY(BlueprintReadWrite)
-		int Grace = 10000;
+		int Grace = 100000;
 
 	UPROPERTY(BlueprintReadWrite)
-		int Mineral = 10000;
+		int Mineral = 100000;
 
 	int respawnTime = 10;
 	UPROPERTY(Replicated)
