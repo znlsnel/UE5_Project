@@ -15,16 +15,21 @@
 #include <Components/BoxComponent.h>
 #include <Components/ArrowComponent.h>
 #include <NavigationSystem.h>
+#include <particles/ParticleSystemComponent.h>
 
 ABuildableItem::ABuildableItem() : Super()
 {
-//	arrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
+	//	arrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
 	SetReplicates(true);
 	Tags.Add(TEXT("BuildableItem"));
 	myPlayer = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	boxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 
 	PrimaryActorTick.bCanEverTick = true;
+
+	destroyEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("destroyEffect"));
+	destroyEffect->SetupAttachment(boxCollision);
+	destroyEffect->AttachToComponent(boxCollision, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 ABuildableItem::~ABuildableItem()
@@ -42,6 +47,7 @@ void ABuildableItem::BeginPlay()
 {
 	Super::BeginPlay();
 	initItem();
+	destroyEffect->Deactivate();
 }
 
 
@@ -51,7 +57,7 @@ void ABuildableItem::UseItem(UInventorySlot* inventorySlot)
 	SetActorHiddenInGame(false);
 
 	boxCollision->SetCollisionResponseToChannel
-		(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+	(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	boxCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	RootComponent = boxCollision;
@@ -76,13 +82,13 @@ void ABuildableItem::GetMouseInput(bool isPressed)
 	}
 	else
 	{
-		if (GetWorld()->GetTimeSeconds() -lastClickTime < 0.2) {
+		if (GetWorld()->GetTimeSeconds() - lastClickTime < 0.2) {
 
 			myPlayer->playerUI->ToggleMouse(true);
 			myPlayer->BuildableItemCheckUI->parentItem = this;
 			myPlayer->BuildableItemCheckUI->OpenCheckUI();
 			isBuild = false;
-			
+
 
 		}
 		else
@@ -122,7 +128,7 @@ FHitResult ABuildableItem::LineTrace(FVector StartPoint, FVector EndPoint)
 
 		float traceLength = 10000.f;
 		LineTraceEnd = TraceStartPoint + TraceStartRotation.Vector() * traceLength;
-	} 
+	}
 	else {
 		TraceStartPoint = StartPoint;
 		LineTraceEnd = EndPoint;
@@ -200,7 +206,7 @@ void ABuildableItem::SyncTranceform()
 			Cast<ABuildableItem>(myInventorySlot->Items.Last())->UseItem(myInventorySlot);
 		}
 	}
-	
+
 	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 }
 
@@ -209,10 +215,15 @@ void ABuildableItem::DamageProcess(int Damage)
 {
 	if (isDestroy) return;
 
-	shield -= Damage;
-	if (shield == 0)
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage"));
+
+	shield -= 1;
+	if (shield <= 0)
 	{
-		boxCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		DestroyActor();
+		isDestroy = true;
+		destroyEffect->Activate(true);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), destroySound, GetActorLocation());
+
+		DestroyEvent();
 	}
 }

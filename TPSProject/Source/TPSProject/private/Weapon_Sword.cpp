@@ -6,6 +6,7 @@
 #include "PlayerUI.h"
 #include "PlayerAbilityComp.h"
 #include "ScreenUI.h"
+#include "EnemyFSM.h"
 
 #include <particles/ParticleSystemComponent.h>
 #include <Kismet/GameplayStatics.h>
@@ -80,45 +81,26 @@ void AWeapon_Sword::Attack()
 	FName attackSection = "";
 	if (myPlayer->GetMovementComponent()->IsFalling())
 	{
-		currCombo = 0;
-		attackSection = Attack_Air;
+		currCombo = 1;
+		myPlayer->PlayMontage(CharacterFireAM, "Attack_Air");
 	}
 	else
 	{
-		if (lastAttackTime == 0.f){
-			lastAttackTime = GetWorld()->GetTimeSeconds();
-			currCombo = 0;
-		}
-		else if (GetWorld()->GetTimeSeconds() - lastAttackTime < nextComboDelay){
+		if (GetWorld()->GetTimeSeconds() - lastAttackTime < nextComboDelay){
 			++currCombo;
-			if (currCombo > 3) 
-				currCombo = 0;
-			lastAttackTime = GetWorld()->GetTimeSeconds();
 		}
-
 		else{
-			lastAttackTime = 0.f;
-			currCombo = 0;
+			currCombo = 1;
 		}
 
+		lastAttackTime = GetWorld()->GetTimeSeconds();
+		if (currCombo > 4)
+			currCombo = 1;
 
-		switch (currCombo)
-		{
-		case 0:
-			attackSection = Attack_1;
-			break;
-		case 1:
-			attackSection = Attack_2;
-			break;
-		case 2:
-			attackSection = Attack_3;
-			break;
-		case 3:
-			attackSection = Attack_4;
-			break;
-		}
+		FName sect = FName(FString::Printf(TEXT("Attack_%d"), currCombo));
+		myPlayer->PlayMontage(CharacterFireAM, sect);
 	}
-	myPlayer->PlayMontage(CharacterFireAM, attackSection);
+
 
 	TArray<AActor*> overlappingAcotrs;
 	myPlayer->meleeAttackSensor->GetOverlappingActors(overlappingAcotrs);
@@ -201,7 +183,7 @@ void AWeapon_Sword::OnBlocking(bool On)
 				myPlayer->isMovable = true;
 				isBlocking = false;
 			}
-		}), 1.5f, false);
+		}), 1.f, false);
 
 
 	if (isBlocking) {
@@ -217,5 +199,15 @@ void AWeapon_Sword::OnBlocking(bool On)
 	else {
 		ShieldEffect->Deactivate();
 	}
+}
+
+void AWeapon_Sword::ReflectAttack(AEnemy* enemy)
+{
+	float rand = FMath::FRandRange(0.25f, 0.45f);
+	int damage = (int)((float)(enemy->fsm->maxHp) * rand);
+
+	enemy->OnDamage(damage, "", myPlayer);
+	BlockEffect->Activate(true);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), BlockSound, GetActorLocation());
 }
 

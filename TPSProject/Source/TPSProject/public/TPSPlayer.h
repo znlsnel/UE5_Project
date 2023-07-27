@@ -53,6 +53,7 @@ public:
 	void GetMineralGrace(int mineral, int grace);
 	void UpgradeHp(int addHp);
 	void GameOver();
+	void UpdateHeartSound();
 #pragma region ServerFunctions
 
 
@@ -186,10 +187,10 @@ public:
 	bool isMovable = true;
 	bool isRotatable = true;
 	UPROPERTY(BlueprintReadWrite)
-		int Grace = 100000;
+		int Grace = 0;
 
 	UPROPERTY(BlueprintReadWrite)
-		int Mineral = 100000;
+		int Mineral = 0;
 
 	int respawnTime = 10;
 	UPROPERTY(Replicated)

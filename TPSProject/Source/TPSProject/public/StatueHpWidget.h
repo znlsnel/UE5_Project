@@ -19,6 +19,7 @@ public:
 	UStatueHpWidget(const FObjectInitializer& ObjectInitialize);
 	virtual void NativeConstruct()override;
 	void UpdateWidgetPos();
+	void InitHpWidget();
 public:
 	class APlayerController* playerCtrl;
 	class ADoomstone* parent;

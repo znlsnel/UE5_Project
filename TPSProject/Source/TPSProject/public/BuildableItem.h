@@ -37,7 +37,7 @@ public:
 	void CancelBuilding();
 
 	UFUNCTION(BlueprintImplementableEvent)
-		void DestroyActor();
+		void DestroyEvent();
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void initItem();
@@ -47,10 +47,13 @@ public:
 	
 	void SyncTranceform();
 
-	virtual void DamageProcess(int Damage);
-
+	void DamageProcess(int Damage);
 
 public:
+
+
+	FTimerHandle destroyHandle;
+
 	class UInventorySlot* myInventorySlot;
 	UPROPERTY(BlueprintReadWrite)
 		bool isBuild = false;
@@ -68,7 +71,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		class UBoxComponent* boxCollision;
-
+	UPROPERTY(EditAnywhere)
+		class UParticleSystemComponent* destroyEffect;
+	UPROPERTY(EditDefaultsOnly)
+		class USoundBase* destroySound;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		int shield = 100;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -16,6 +16,7 @@
 #include "TPSPlayerController.h"
 #include "StoreUI.h"
 #include "BuildableItem.h"
+#include "Arrow.h"
 #include "PlayerAbilityComp.h"
 
 #include <Blueprint/UserWidget.h>
@@ -106,7 +107,7 @@ void UPlayerFire::InputFire(bool isPressed)
 void UPlayerFire::LoopFire()
 {
 
-	if (isFire == false) return;
+	if (isFire == false || me->isDie ) return;
 
 	if (lastShotTime == 0.f)
 		lastShotTime = GetWorld()->GetTimeSeconds();
@@ -149,12 +150,16 @@ void UPlayerFire::SniperAim(bool isPressed)
 	}
 
 	if (isPressed) {
-		zoomCameraValue = 45.f;
+		zoomCameraValue = 60.f;
+		if (currWeapon)
+			currWeapon->FireSpread = currWeapon->InitFireSpread * 0.3;
 		zoomCamera();
 	}
 		/*me->tpsCamComp->SetFieldOfView(45.0f);*/
 	else {
 		zoomCameraValue = 90.f;
+		if (currWeapon)
+			currWeapon->FireSpread = currWeapon->InitFireSpread;
 		zoomCamera();
 	}
 
@@ -168,7 +173,7 @@ void UPlayerFire::zoomCamera()
 		return;
 	}
 
-	me->tpsCamComp->SetFieldOfView(FMath::FInterpTo(me->tpsCamComp->FieldOfView, zoomCameraValue,GetWorld()->GetDeltaSeconds(), 3.f));
+	me->tpsCamComp->SetFieldOfView(FMath::FInterpTo(me->tpsCamComp->FieldOfView, zoomCameraValue,GetWorld()->GetDeltaSeconds(), 10.f));
 
 	GetWorld()->GetTimerManager().SetTimer(ZoomTimer, this, &UPlayerFire::zoomCamera, 0.01f, false);
 }
@@ -177,6 +182,14 @@ void UPlayerFire::zoomCamera()
 void UPlayerFire::EquipWeapon(WeaponType weaponType)
 {
 	nextWeapon = GetWeapon(weaponType);
+	if (IsValid(currWeapon)) {
+		if (currWeapon->weaponType == WeaponType::Bow)
+		{
+			AWeapon_Bow* temp = Cast<AWeapon_Bow>(currWeapon);
+			if (temp->arrow)
+				temp->arrow->CancelArrow();
+		}
+	}
 	if (IsValid(nextWeapon)) {
 		me->PlayMontage(nextWeapon->CharacterEquipAM);
 	}

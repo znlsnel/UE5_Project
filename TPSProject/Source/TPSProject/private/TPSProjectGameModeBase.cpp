@@ -2,6 +2,7 @@
 
 
 
+#include "TPSProjectGameModeBase.h"
 #include "PlayerUI.h"
 #include "Weapon.h"
 #include "Crosshair.h"
@@ -15,7 +16,6 @@
 #include "MySaveGame.h"
 #include "BuildableItem.h"
 #include "EnemyManager.h"
-#include "TPSProjectGameModeBase.h"
 
 #include<Blueprint/UserWidget.h>
 #include <Serialization/JsonWriter.h>
@@ -28,6 +28,42 @@
 
 ATPSProjectGameModeBase::ATPSProjectGameModeBase()
 {
+}
+
+ATPSProjectGameModeBase::~ATPSProjectGameModeBase()
+{
+	FString JsonString;
+	FString filepath = FPaths::ProjectContentDir() + "\\Assets\\Json\\SaveFile.json";
+	FFileHelper::LoadFileToString(JsonString, *filepath);
+
+	TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<TCHAR>::Create(JsonString);
+
+	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject());
+
+	if (FJsonSerializer::Deserialize(JsonReader, JsonObject) && JsonObject.IsValid())
+	{
+		TArray<TSharedPtr<FJsonValue>> JsonValueArray = JsonObject->GetArrayField(TEXT("SaveFiles"));
+
+		for (auto jsonValue : JsonValueArray) {
+			TSharedPtr<FJsonObject> jsonValueObject = jsonValue->AsObject();
+
+			jsonValueObject->SetStringField("FirstSlot", "");
+			jsonValueObject->SetNumberField("FirstSlotDay", 0);
+
+			jsonValueObject->SetStringField("SecondSlot", "");
+			jsonValueObject->SetNumberField("SecondSlotDay", 0);
+
+			jsonValueObject->SetStringField("ThirdSlot", "");
+			jsonValueObject->SetNumberField("ThirdSlotDay", 0);
+		}
+	}
+
+	FString jsonFormattedString;
+	TSharedRef<TJsonWriter<TCHAR>> jsonWriter = TJsonWriterFactory<TCHAR>::Create(&jsonFormattedString);
+	if (FJsonSerializer::Serialize(JsonObject.ToSharedRef(), jsonWriter))
+	{
+		FFileHelper::SaveStringToFile(jsonFormattedString, *filepath);
+	}
 }
 
 void ATPSProjectGameModeBase::InitGame(const FString& mapName, const FString& Options, FString& ErrorMessage)
@@ -82,14 +118,16 @@ bool ATPSProjectGameModeBase::LoadGame(int slotNumber)
 
 	SaveFileDuplicate(LoadGameInstance, true);
 	EnemyManager->ResetEnemy();
+	EnemyManager->PlayGameAudio(false, true);
 
-	ADoomstone* temp = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
-	temp->MakeStatueActor();
 
 	ADirectionalLight* tempLight = Cast<ADirectionalLight>(UGameplayStatics::GetActorOfClass(GetWorld(), ADirectionalLight::StaticClass()));
 
 	if (IsValid(tempLight))
 		tempLight->SetActorRotation(FRotator(-89, 0, 0));
+	
+	if (UGameplayStatics::IsGamePaused(GetWorld()))
+		UGameplayStatics::SetGamePaused(GetWorld(), false);
 	OpenLoadingScreen();
 
 	return true;
@@ -105,18 +143,17 @@ void ATPSProjectGameModeBase::SaveFileDuplicate(UMySaveGame* saveGame, bool Load
 		myPlayer->Grace = saveGame->playerGrace;
 
 		myPlayer->Mineral = saveGame->playerMineral;
+		myPlayer->hp = saveGame->playerHp;
+		myPlayer->UpdateHeartSound();
 		myPlayer->SetActorLocation(saveGame->Location);
 		myPlayer->playerFire->SetOwnWeapons(saveGame->ownWeapon);
 
 		myPlayer->abilityComp->SetSkillInfoArr(saveGame->skillInfos);
-		myPlayer->playerUI->statueAbilityWidget->SetGetStatueAbilityArr(saveGame->statueAbilitys, saveGame->abilityRepairRate, true);
+		myPlayer->playerUI->statueAbilityWidget->SetGetStatueAbilityArr(saveGame->statueAbilitys, saveGame->abilityRepairRate, true, saveGame->statueHp);
 		myPlayer->playerUI->screenUI->inventory->SetInventorySlot(saveGame->InventoryItemID);
 		myPlayer->myAbilityWidget->SetAbilityInfo(saveGame->upgradeInfo);
 
 		currRound = saveGame->currRound;
-
-		ADoomstone* temp = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
-		temp->Hp = saveGame->statueHp;
 
 		myPlayer->playerUI->InitPlayerUI();
 		SetFieldItem(saveGame->FieldItemID);
@@ -125,10 +162,11 @@ void ATPSProjectGameModeBase::SaveFileDuplicate(UMySaveGame* saveGame, bool Load
 	else {
 		saveGame->playerGrace = myPlayer->Grace;
 		saveGame->playerMineral = myPlayer->Mineral;
+		saveGame->playerHp = myPlayer->hp;
 		saveGame->ownWeapon = myPlayer->playerFire->GetOwnWeapons();
 
 		saveGame->Location = myPlayer->GetActorLocation();
-		myPlayer->playerUI->statueAbilityWidget->SetGetStatueAbilityArr(saveGame->statueAbilitys, saveGame->abilityRepairRate, false);
+		myPlayer->playerUI->statueAbilityWidget->SetGetStatueAbilityArr(saveGame->statueAbilitys, saveGame->abilityRepairRate, false, saveGame->statueHp);
 
 		saveGame->skillInfos = myPlayer->abilityComp->GetSkillInfoArr();
 
@@ -139,9 +177,6 @@ void ATPSProjectGameModeBase::SaveFileDuplicate(UMySaveGame* saveGame, bool Load
 		saveGame->currRound = currRound;
 		GetFieldItem(saveGame->FieldItemID);
 
-		ADoomstone* temp = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
-
-		saveGame->statueHp = temp->Hp;
 	}
 }
 
@@ -234,6 +269,17 @@ void ATPSProjectGameModeBase::GetFieldItem(TArray<struct FFieldItem>& fieldItems
 
 void ATPSProjectGameModeBase::SetFieldItem(TArray<struct FFieldItem>& fieldItems)
 {
+	TArray<AActor*> actors;
+
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABuildableItem::StaticClass(), actors);
+
+	for (auto actor : actors) {
+		if (actor->GetClass()->IsChildOf(ABuildableItem::StaticClass())) {
+			actor->Destroy();
+		}
+	}
+
+
 	for (auto itemInfo : fieldItems) {
 		myPlayer->CreateItem(loadActors, itemInfo.ItemID);
 
@@ -245,11 +291,11 @@ void ATPSProjectGameModeBase::SetFieldItem(TArray<struct FFieldItem>& fieldItems
 		}
 		loadActors.Empty();
 	}
+
 }
 
 void ATPSProjectGameModeBase::OpenLoadingScreen()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("OpenLoadingScreen"));
 	loadingScreen->AddToViewport();
 
 	GetWorld()->GetTimerManager().SetTimer(loadingScreenTimer, FTimerDelegate::CreateLambda(

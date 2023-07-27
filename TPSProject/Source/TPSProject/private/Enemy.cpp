@@ -8,10 +8,12 @@
 #include "DamageUI.h"
 #include "DamageUIActor.h"
 #include "RoundUI.h"
+#include "Doomstone.h"
 #include "TPSPlayer.h"
 #include "EnemyHpBar.h"
 #include "DamageWidget.h"
 #include "AIController.h"
+#include "BuildableItem.h"
 
 #include <Components/BoxComponent.h>
 #include <Components/AudioComponent.h>
@@ -22,6 +24,7 @@
 #include <Kismet/GameplayStatics.h>
 #include <GameFramework/Character.h>
 #include <Camera/CameraComponent.h>
+#include <BarricadeItem.h>
 
 // Sets default values
 AEnemy::AEnemy()
@@ -92,7 +95,8 @@ void AEnemy::AddWorldDamageUI(int Damage, float currHpPercent, float preHpPercen
 	if (player == nullptr)
 		player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-	FVector pos = GetMesh()->GetSocketLocation(FName("HeadWidgetSocket")) + 40;
+	FVector pos = GetActorLocation();
+	pos.Z = GetMesh()->GetSocketLocation(FName("HeadWidgetSocket")).Z + 20;
 
 
 	bool isRecycle = true;
@@ -136,15 +140,17 @@ void AEnemy::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AAc
 	class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-
 	if (OtherActor->ActorHasTag("DoomStone") || OtherActor->ActorHasTag("Player")) {
 		if (fsm->isInAttackRange == false) {
 			fsm->anim->PlayAttackAnim(false, true);
 			fsm->isInAttackRange = true;
 		}
 	}
-	else if (OtherActor->ActorHasTag("Barricade")) {
-		if (fsm->isPossibleToMove() == false || fsm->isInAttackRange == false) {
+	else if (OtherActor->GetClass ()->IsChildOf(ABarricadeItem::StaticClass())) {
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Overlap Barricade"));
+		if (fsm->isInAttackRange == false) {
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Barricade Attack"));
+
 			fsm->anim->PlayAttackAnim(false, true);
 			fsm->isInAttackRange = true;
 		}
@@ -157,7 +163,14 @@ bool AEnemy::isOverlapingTargets()
 	targetSensor->GetOverlappingActors(actors);
 
 	for (auto actor : actors) {
-		if (actor->ActorHasTag("DoomStone") || actor->ActorHasTag("Player") || actor->ActorHasTag("Barricade")) {
+		if (actor->ActorHasTag("DoomStone") && Cast<ADoomstone>(actor)->isDestory == false) {
+			return true;
+		}
+
+		else if (actor->ActorHasTag("Player") && Cast<ATPSPlayer>(actor)->hp > 0) {
+			return true;
+		}
+		else if (actor->GetClass()->IsChildOf(ABarricadeItem::StaticClass()) && Cast<ABarricadeItem>(actor)->isDestroy == false) {
 			return true;
 		}
 	}

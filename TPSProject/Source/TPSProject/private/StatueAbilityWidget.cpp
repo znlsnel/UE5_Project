@@ -10,11 +10,42 @@
 
 void UStatueAbilityWidget::NativeConstruct()
 {
-	parent = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
-	player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	Super::NativeConstruct();
+
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Native"));
+
+	if (parent == nullptr) {
+		parent = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("SetGetStatueAbilityArr -- Statue is Nullptr"));
+
+	}
+	if (player == nullptr) {
+		player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("SetGetStatueAbilityArr -- player is Nullptr"));
+	}
+
+}
+
+bool UStatueAbilityWidget::Initialize() 
+{
+	Super::Initialize();
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Initialize"));
+
+	if (parent == nullptr) {
+		parent = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("SetGetStatueAbilityArr -- Statue is Nullptr"));
+
+	}
+	if (player == nullptr) {
+		player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("SetGetStatueAbilityArr -- player is Nullptr"));
+	}
+
 
 	abilityInfo = CreateWidget<UStatueAbilityInfoWidget>(GetWorld(), statueAblityInfoFactory);
+
 	LoadJson();
+	return false;
 }
 
 void UStatueAbilityWidget::LoadJson()
@@ -52,13 +83,14 @@ bool UStatueAbilityWidget::UpgradeAbility(AbilityType type)
 	if (nullCheck || costCheck)
 		return false;
 	
-	if  (UpgradeAbility(ability)) {
+	ability->point++;
+	if (UpgradeAbility(ability)) {
 		player->Grace -= ability->cost;
-		ability->point++;
-
 		abilityInfo->InitWidget(ability);
 		return true;
 	}
+	else
+		ability->point--;
 
 	return false;
 }
@@ -74,6 +106,8 @@ bool UStatueAbilityWidget::UpgradeAbility(FStatueAbility* ability)
 		parent->Hp += recoverHp;
 		if (parent->Hp > parent->MaxHp)
 			parent->Hp = parent->MaxHp;
+
+		parent->HpPercent = (float)(parent->Hp) / (float)(parent->MaxHp);
 	}
 	else if (ability->abilityType == AbilityType::SealRepair) {
 		
@@ -89,21 +123,22 @@ bool UStatueAbilityWidget::UpgradeAbility(FStatueAbility* ability)
 	}
 	else if (ability->abilityType == AbilityType::HPUpgrade) {
 		int preHp = parent->MaxHp;
-		parent->MaxHp = parent->initHp + (ability->point * 5) * 100;
-
+		parent->MaxHp = parent->initHp + 
+			((ability->point) * (parent->initHp / 2));
 		parent->Hp += parent->MaxHp - preHp;
+		parent->HpPercent = (float)parent->Hp / (float)parent->MaxHp;
 	}
 	return true;
 }
 
 void UStatueAbilityWidget::HorverButton(bool isHorver, AbilityType type, FVector2D pos)
 {
-	if (abilityInfo->IsInViewport() == false)
-		abilityInfo->AddToViewport();
 	if (isHorver == false) {
 		abilityInfo->CloseWidget();
 		return;
 	}
+
+
 	abilityInfo->SetPositionInViewport(pos);
 	FStatueAbility* tempAbility = GetAbility(type);
 
@@ -133,24 +168,45 @@ void UStatueAbilityWidget::UpdateRepairRate()
 	GetWorld()->GetTimerManager().SetTimer(repairRateLoopTimer, this, &UStatueAbilityWidget::UpdateRepairRate, 0.1f, false);
 }
 
-void UStatueAbilityWidget::SetGetStatueAbilityArr(TArray<FStatueAbility>& arr, float& m_repairRate, bool Set)
+void UStatueAbilityWidget::SetGetStatueAbilityArr(TArray<FStatueAbility>& arr, float& m_repairRate, bool Set, int& statueHp)
 {
+	if (parent == nullptr) {
+		parent = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("SetGetStatueAbilityArr -- Statue is Nullptr"));
+
+	}
+	if (player == nullptr) {
+		player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("SetGetStatueAbilityArr -- player is Nullptr"));
+	}
+
+
 	if (Set) {
 		for (auto ability : arr) {
 			FStatueAbility* temp = GetAbility(ability.abilityType);
 			if (temp) {
-				temp->cost = ability.cost;
+				temp->point = ability.point;
 				UpgradeAbility(temp);
 			}
+
+
 		}
 		repairRate = m_repairRate;
+		parent->Hp = statueHp;
+		parent->HpPercent = (float)parent->Hp / (float)parent->MaxHp;
 		return;
 	}
+
 	arr.Empty();
 	for (auto ability : statueAbilitys) {
-		arr.Add(*ability);
+		FStatueAbility temp;
+		temp.abilityType = ability->abilityType;
+		temp.point = ability->point;
+		arr.Add(temp);
 	}
+
 	m_repairRate = repairRate;
+	statueHp = parent->Hp;
 }
 
 

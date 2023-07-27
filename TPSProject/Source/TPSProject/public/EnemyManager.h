@@ -58,20 +58,20 @@ public:
 
 	void SpawnEnemy();
 	void SpawnBossMonster();
-	int GetSpawnIndex();
-	void CreateEnemy(FVector location , TSubclassOf<class AEnemy>& enemyFactory, TArray<class AEnemy*>& pool);
-	void AddEnemy(FVector location, TArray<class AEnemy*>& pool);
-	bool RecycleEnemy(class AEnemy* enemy, int SpawnIndex);
 
 	void FindSpawnPoints();
 	void ResetEnemy();
+	void PlayGameAudio(bool isNight, bool off = false);
 
-		TArray<int> preSpawnIndex;
+	void AddEnemy(FVector location, TArray<class AEnemy*>& pool);
+	void CreateEnemy(FVector location , TSubclassOf<class AEnemy>& enemyFactory, TArray<class AEnemy*>& pool);
+
+	bool RecycleEnemy(class AEnemy* enemy, int SpawnIndex);
+	int GetSpawnIndex();
+
 	UFUNCTION(BlueprintCallable)
 		void RoundEvent(bool start);
 	
-		//void LoopCount();
-
 public:
 	// 스폰을 위한 알람 타이머
 	FTimerHandle spawnTimerHandle;
@@ -105,6 +105,7 @@ public:
 	TArray<class AEnemy*> RiktorPool;
 	TArray<class AEnemy*> KwangPool;
 	TArray<class AEnemy*> EnemyPool;
+	TArray<int> preSpawnIndex;
 
 
 	//TArray<class AEnemy*> SpecialEnemyPool;
@@ -120,4 +121,19 @@ public:
 
 	class AmyGameStateBase* myGameState;
 	class ATPSProjectGameModeBase* myGameMode;
+
+	UPROPERTY(EditAnywhere)
+		USoundBase* RoundStartSound;
+	UPROPERTY(EditAnywhere)
+		USoundBase* RoundEndSound;
+
+	UPROPERTY(EditAnywhere)
+		USoundBase* NightMusic;
+	UPROPERTY()
+		class UAudioComponent* NightAudio;
+
+	UPROPERTY(EditAnywhere)
+		USoundBase* MorningMusic;
+	UPROPERTY()
+		class UAudioComponent* MorningAudio;
 };

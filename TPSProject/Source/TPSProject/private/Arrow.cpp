@@ -43,17 +43,14 @@ AArrow::AArrow()
 
 	ArrowMesh->SetSimulatePhysics(false);
 
-	Light = CreateDefaultSubobject<UPointLightComponent>(TEXT("Light"));
-	Light->SetupAttachment(ArrowMesh);
-	Light->AttachToComponent(ArrowMesh, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts or when spawned
 void AArrow::BeginPlay()
 {
 	Super::BeginPlay();
-	Light->SetVisibility(false);
 	ArrowEffect->Deactivate();
+
 
 
 }
@@ -88,6 +85,9 @@ void AArrow::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimi
 	ArrowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	ArrowEffect->Deactivate();
+
+
+
 	UNiagaraComponent* tempImpact = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
 
 	FHitResult k = Hit;
@@ -118,7 +118,7 @@ void AArrow::InitArrow(FVector ArrowHeadSocketPos, int damage)
 
 	ArrowMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ArrowEffect->Deactivate();
-	Light->SetVisibility(true);
+
 	attackDamage = damage;
 
 }
@@ -193,7 +193,6 @@ void AArrow::CancelArrow()
 	SetActorHiddenInGame(true);
 	ProjectileMovementComp->SetUpdatedComponent(NULL);
 	ArrowEffect->Deactivate();
-	Light->SetVisibility(false);
 }
 
 // Called every frame

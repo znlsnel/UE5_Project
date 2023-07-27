@@ -17,6 +17,8 @@ struct TPSPROJECT_API FUpgradeInfo
 	GENERATED_BODY()
 public:
 	UPROPERTY()
+		int currSkillPoint = 5;
+	UPROPERTY()
 		int32 Unlock_SecondSection = 5;
 	UPROPERTY()
 		int32 Unlock_ThirdSection = 5;
@@ -64,17 +66,17 @@ public:
 		void SkillInfoWidgetEvent(bool isHover, SkillType type, FVector2D pos);
 
 	UFUNCTION(BlueprintImplementableEvent)
-		void OpenWidget();
-	UFUNCTION(BlueprintImplementableEvent)
-		void CloseWidget();
-	UFUNCTION(BlueprintImplementableEvent)
 		void playSkillSectionUIAnimation();
+
+	void OpenWidget();
+	void CloseWidget();
 
 	void UpdateRemainSkillCount();
 	FUpgradeInfo GetAbilityInfo();
 	void SetAbilityInfo(FUpgradeInfo upgradeInfo);
 
 public:
+	FTimerHandle closeWidgetTimer;
 	class ATPSPlayer* myPlayer;
 	class UPlayerAbilityComp* abilityComp;
 
@@ -85,10 +87,17 @@ public:
 		class UAbilityInfo* abliltyInfo;
 
 	UPROPERTY(BlueprintReadOnly)
-		int currSkillCoin = 10;
+		int currSkillCoin = 2;
 
 	UPROPERTY(BlueprintReadWrite)
 		TArray<class USkillStateWidget*> skillButtons;
+
+	UPROPERTY(BlueprintReadOnly, Category = "BindAnimation", meta = (BindWidgetAnim), Transient)
+		UWidgetAnimation* OpenWidgetAnim;
+
+	UPROPERTY(BlueprintReadOnly, Category = "BindAnimation", meta = (BindWidgetAnim), Transient)
+		UWidgetAnimation* CloseWidgetAnim;
+
 
 	int32 Unlock_SecondSection = 5;
 	int32 Unlock_ThirdSection = 5;
@@ -117,7 +126,6 @@ public:
 	UPROPERTY(EditAnywhere)
 		USoundBase* failedSound;
 
-	UPROPERTY(BlueprintReadWrite)
-		bool isOpen = false;
+	bool isOpen = false;
 
 };

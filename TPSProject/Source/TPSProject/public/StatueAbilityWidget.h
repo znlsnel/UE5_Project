@@ -24,11 +24,16 @@ struct TPSPROJECT_API FStatueAbility
 	GENERATED_BODY()
 
 public:
-	FString abilityName = "";
-	FString abilityInfo = "";
-	AbilityType abilityType = AbilityType::None;
-	int point = 0;
-	int cost = 0;
+	UPROPERTY()
+		FString abilityName = "";
+	UPROPERTY()
+		FString abilityInfo = "";
+	UPROPERTY()
+		AbilityType abilityType = AbilityType::None;
+	UPROPERTY()
+		int point = 0;
+	UPROPERTY()
+		int cost = 0;
 };
 
 UCLASS()
@@ -38,6 +43,7 @@ class TPSPROJECT_API UStatueAbilityWidget : public UUserWidget
 	
 public:
 	virtual void NativeConstruct()override;
+	virtual bool Initialize()override;
 
 	void LoadJson();
 	bool UpgradeAbility(AbilityType type);
@@ -45,7 +51,7 @@ public:
 	void HorverButton(bool isHorver, AbilityType type, FVector2D pos);
 	void UpdateRepairRate();
 
-	void SetGetStatueAbilityArr(TArray< FStatueAbility>& arr, float& repairRate, bool Set);
+	void SetGetStatueAbilityArr(TArray< FStatueAbility>& arr, float& repairRate, bool Set, int& statueHP);
 
 	UFUNCTION(BlueprintCallable)
 		void CloseWidget();

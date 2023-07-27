@@ -168,8 +168,8 @@ void UPlayerUI::InitPlayerUI()
 
 	screenUI->SetVisibility(ESlateVisibility::Visible);
 	crosshair->SetVisibility(ESlateVisibility::Visible);
-	StatueHpWidget->AddToViewport();
-	StatueHpWidget->UpdateWidgetPos();
+	StatueHpWidget->InitHpWidget();
+
 }
 
 void UPlayerUI::InitializeWidgets()

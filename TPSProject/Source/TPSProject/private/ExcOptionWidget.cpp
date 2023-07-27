@@ -37,6 +37,7 @@ bool UExcOptionWidget::Initialize()
 	CloseButton->OnClicked.AddDynamic(this, &UExcOptionWidget::ClickCloseButton);
 	CloseInputTextSlotButton->OnClicked.AddDynamic(this, &UExcOptionWidget::ClickCloseInputTextSlotButton);
 	InputTextSlotCheckButton->OnClicked.AddDynamic(this, &UExcOptionWidget::ClickInputTextSlotCheckButton);
+	CloseWidgetButton->OnClicked.AddDynamic(this, &UExcOptionWidget::ClickCloseWidgetButton);
 
 
 	return true;
@@ -54,6 +55,14 @@ void UExcOptionWidget::OpenWidget()
 		player = Cast<ATPSPlayer>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 	player->isMovable = false;
 	player->isRotatable = false;
+	UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+	APlayerController* temp = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	temp->bShowMouseCursor = true;
+	temp->bEnableClickEvents = true;
+	temp->bEnableMouseOverEvents = true;
+
+	temp->EnableInput(temp);
 }
 
 void UExcOptionWidget::CloseWidget()
@@ -68,6 +77,12 @@ void UExcOptionWidget::CloseWidget()
 	}
 	player->isMovable = true;
 	player->isRotatable = true;
+	UGameplayStatics::SetGamePaused(GetWorld(), false);
+	APlayerController* temp = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	temp->bShowMouseCursor = false;
+	temp->bEnableClickEvents = false;
+	temp->bEnableMouseOverEvents = false;
+
 
 	GetWorld()->GetTimerManager().SetTimer(closeTimer, FTimerDelegate::CreateLambda(
 		[&]() {
@@ -127,7 +142,9 @@ void UExcOptionWidget::ClickLoadButton()
 		return;
 	}
 
-	myGameMode->LoadGame(slotNum);
+	if (myGameMode->LoadGame(slotNum))
+		CloseWidget();
+
 }
 
 void UExcOptionWidget::ClickSaveSlotOpenButton()
@@ -170,6 +187,11 @@ void UExcOptionWidget::ClickInputTextSlotCheckButton()
 
 	UpdateSelectArrow(true);
 	UpdateSlotName();
+}
+
+void UExcOptionWidget::ClickCloseWidgetButton()
+{
+	CloseWidget();
 }
 
 void UExcOptionWidget::UpdateSelectArrow(bool Initialize)

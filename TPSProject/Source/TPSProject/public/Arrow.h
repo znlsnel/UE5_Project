@@ -35,8 +35,6 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UStaticMeshComponent* ArrowMesh;
 	UPROPERTY(EditAnywhere)
-		class UPointLightComponent* Light;
-	UPROPERTY(EditAnywhere)
 		class UProjectileMovementComponent* ProjectileMovementComp;
 	UPROPERTY(EditAnywhere)
 		class UParticleSystemComponent* ArrowEffect;

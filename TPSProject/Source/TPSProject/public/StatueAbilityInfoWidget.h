@@ -19,13 +19,15 @@ public:
 	void InitWidget(FStatueAbility* ability);
 
 
-	UFUNCTION(BlueprintImplementableEvent)
-		void OpenWidget();
+	void OpenWidget();
 
-	UFUNCTION(BlueprintImplementableEvent)
-		void CloseWidget();
+	void CloseWidget();
 
 public:
+	UPROPERTY(BlueprintReadOnly, Category = "BindAnimation", meta = (BindWidgetAnim), Transient)
+		UWidgetAnimation* OnAnim;
+
+
 	UPROPERTY(BlueprintReadOnly)
 		FString AbilityName = "";
 

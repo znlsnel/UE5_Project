@@ -25,6 +25,7 @@ public:
 	
 	void BlockAttack();
 	void OnBlocking(bool On);
+	void ReflectAttack(class AEnemy* enemy);
 public:
 	UPROPERTY(EditAnywhere)
 		class UParticleSystemComponent* swordEffect;
@@ -47,15 +48,11 @@ public:
 
 	float lastAttackTime = 0.f;
 	float lastBlockingTime = -5.f;
-	float nextComboDelay = 2.5f;
+	float nextComboDelay = 2.f;
 
-	float BlockingCoolTime = 5.f;
+	float BlockingCoolTime = 3.f;
 
 	int32 currCombo = 0;
-	FName Attack_1 = FName("Attack_1");
-	FName Attack_2 = FName("Attack_2");
-	FName Attack_3 = FName("Attack_3");
-	FName Attack_4 = FName("Attack_4");
 	FName Attack_Air = FName("Attack_Air");
 
 	FTimerHandle swordMoveTimer;

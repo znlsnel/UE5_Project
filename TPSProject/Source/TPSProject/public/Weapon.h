@@ -111,7 +111,8 @@ public:
 	// 매 사격시 정확도가 낮아지는 정도
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponVars)
 		float FireSpread = 0.f;
-	
+	float InitFireSpread = 0.f;
+
 	float currFireSpread = 0.f;
 	float lastFiredTime = 0.f;
 

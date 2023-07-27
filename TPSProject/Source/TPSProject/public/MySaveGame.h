@@ -48,6 +48,9 @@ public:
 		int playerMineral = 0;
 
 	UPROPERTY(VisibleAnywhere)
+		int playerHp = 0;
+
+	UPROPERTY(VisibleAnywhere)
 		int currRound = 0;
 
 

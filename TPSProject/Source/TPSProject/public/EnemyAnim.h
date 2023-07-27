@@ -58,13 +58,14 @@ public:
 	int SkillDamage = 5;
 
 	UPROPERTY(EditAnywhere)
-		float LongRangeSkillCoolTime = 15.f;
+		float LongRangeSkillCoolTime = 30.f;
 	float lastLongRangeSkillUseTime = 0.f;
 
 	UPROPERTY(EditAnywhere)
 		float MeleeSkillCoolTime = 15.f;
 	float lastMeleeSkillUseTime = 0.f;
 
+	float lastStartMotionTime = -10.f;
 
 	UPROPERTY(BlueprintReadOnly)
 		float speed = 100.f;

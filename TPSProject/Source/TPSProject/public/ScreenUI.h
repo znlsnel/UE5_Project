@@ -33,6 +33,22 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void playerHpEvent(bool isHeal);
+	
+
+	// SkillUI
+	void UpdateSkillLockImage(class UPlayerAbilityComp* playerAC);
+	void SetSkillLockImage(bool IsPossibleSkill, class UImage* skillImage, class UImage* SkillLockImage);
+
+	UFUNCTION()
+		void UpdateSkillSlotPressed(SkillType type, bool isUse = false);
+
+	void SetSkillSlotPressed(class UImage* skillImage, class UImage* skillLockImage, bool SkillCooling);
+	void SkillCoolTimeTextInit();
+
+	UFUNCTION()
+		UImage* GetSkillImage(SkillType type);
+	UFUNCTION()
+		UImage* GetSkillLockImage(SkillType type);
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void RespawnEvent(bool death);
@@ -53,6 +69,7 @@ public:
 	void BasicSkillCoolTimeLoop();
 
 public:
+
 	class ATPSPlayer* myPlayer;
 	class UPlayerAbilityComp* myAbilityComp;
 	FTimerHandle startTimerHandle;
@@ -130,4 +147,23 @@ public:
 	UFUNCTION(BlueprintCallable)
 		FString UpdateAmmoCount();
 
+	class UImage* currSelectSkill;
+
+	UPROPERTY(BlueprintReadOnly, Category = "BindButton", meta = (BindWidget))
+		class UImage* IceAttackImage;
+	UPROPERTY(BlueprintReadOnly, Category = "BindButton", meta = (BindWidget))
+		class UImage* FireStormImage;
+	UPROPERTY(BlueprintReadOnly, Category = "BindButton", meta = (BindWidget))
+		class UImage* LightningStrikeImage;
+	UPROPERTY(BlueprintReadOnly, Category = "BindButton", meta = (BindWidget))
+		class UImage* HealImage;
+
+	UPROPERTY(BlueprintReadOnly, Category = "BindButton", meta = (BindWidget))
+		class UImage* IceAttackLockImage;
+	UPROPERTY(BlueprintReadOnly, Category = "BindButton", meta = (BindWidget))
+		class UImage* FireStormLockImage;
+	UPROPERTY(BlueprintReadOnly, Category = "BindButton", meta = (BindWidget))
+		class UImage* LightningStrikeLockImage;
+	UPROPERTY(BlueprintReadOnly, Category = "BindButton", meta = (BindWidget))
+		class UImage* HealLockImage;
 };

@@ -159,13 +159,32 @@ void ATPSPlayer::UpgradeHp(int addHp)
 	int RecoveryHp = maxHp;
 	maxHp = initHp + addHp;
 	RecoveryHp = maxHp - RecoveryHp;
-	hp += RecoveryHp;
+	AddHP(RecoveryHp);
+	//hp += RecoveryHp;
 	playerUI->screenUI->UpdateScreenUI();
 }
 
 void ATPSPlayer::GameOver()
 {
 	playerUI->GameOver();
+}
+
+void ATPSPlayer::UpdateHeartSound()
+{
+	if (hp > maxHp / 5) {
+		if (heartAudio && heartAudio->IsPlaying()) {
+			heartAudio->Stop();
+		}
+	}
+	else {
+		if (IsValid(heartAudio) == false) {
+			heartAudio = UGameplayStatics::SpawnSound2D(GetWorld(), heartSound);
+			heartAudio->Stop();
+		}
+		if (IsValid(heartAudio) && heartAudio->IsPlaying() == false) {
+			heartAudio->Play();
+		}
+	}
 }
 
 
@@ -180,7 +199,8 @@ void ATPSPlayer::Tick(float DeltaTime)
 void ATPSPlayer::HpRecoveryLoop()
 {
 	FSkillInfo* tempSkillInfo =  abilityComp->GetSkillInfo(SkillType::HpNaturalHealing);
-	if (tempSkillInfo && hp < maxHp && tempSkillInfo->point > 0) {
+	if (tempSkillInfo && hp < maxHp && hp > 0 && tempSkillInfo->point > 0) {
+
 		AddHP(tempSkillInfo->powerValue);
 	}
 
@@ -376,7 +396,7 @@ void ATPSPlayer::OnHitEvent(int damage, FVector enemyPos)
 
 	lastHitTime = GetWorld()->GetTimeSeconds();
 	int randDamage = UKismetMathLibrary::RandomIntegerInRange(FMath::Max(1, damage - (damage / 3)), damage + (damage / 3));
-	randDamage = 30;
+
 	DamageEffect->Activate(true);
 	int temphp = hp - randDamage;
 	hp = FMath::Max(temphp, 0);

@@ -103,6 +103,34 @@ void UAbilityUpgradeWidget::SkillInfoWidgetEvent(bool isHover, SkillType type, F
 
 
 
+void UAbilityUpgradeWidget::OpenWidget()
+{
+	if (IsAnimationPlaying(OpenWidgetAnim) || IsAnimationPlaying(CloseWidgetAnim))
+		return;
+	
+	AddToViewport();
+
+	PlayAnimation(OpenWidgetAnim);
+	isOpen = true;
+}
+
+void UAbilityUpgradeWidget::CloseWidget()
+{
+	if (IsAnimationPlaying(OpenWidgetAnim) || IsAnimationPlaying(CloseWidgetAnim))
+		return;
+
+	PlayAnimation(CloseWidgetAnim);
+	abliltyInfo->UnHoverWidget();
+
+	GetWorld()->GetTimerManager().SetTimer(closeWidgetTimer, FTimerDelegate::CreateLambda(
+		[&]() {
+			if(IsInViewport())
+				RemoveFromParent();
+			isOpen = false;
+		}
+	), 1.f, false);
+}
+
 void UAbilityUpgradeWidget::UpdateRemainSkillCount()
 {
 
@@ -135,6 +163,8 @@ void UAbilityUpgradeWidget::UpdateRemainSkillCount()
 FUpgradeInfo UAbilityUpgradeWidget::GetAbilityInfo()
 {
 	FUpgradeInfo result;
+	result.currSkillPoint = currSkillCoin;
+
 	result.Unlock_SecondSection = Unlock_SecondSection;
 	result.Unlock_ThirdSection = Unlock_ThirdSection;
 	result.Unlock_FourthSection = Unlock_FourthSection;
@@ -157,6 +187,8 @@ FUpgradeInfo UAbilityUpgradeWidget::GetAbilityInfo()
 
 void UAbilityUpgradeWidget::SetAbilityInfo(FUpgradeInfo upgradeInfo)
 {
+	currSkillCoin = upgradeInfo.currSkillPoint;
+
 	Unlock_SecondSection = upgradeInfo.Unlock_SecondSection;
 	Unlock_ThirdSection = upgradeInfo.Unlock_ThirdSection;
 	Unlock_FourthSection = upgradeInfo.Unlock_FourthSection;

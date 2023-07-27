@@ -55,9 +55,8 @@ void UEnemyAnim::AttackToTargets(TArray<AActor*> actors, int damage)
 				AWeapon_Sword* tempSword = Cast<AWeapon_Sword>(tempPlayer->playerFire->currWeapon);
 
 				if (tempSword->isBlocking == true) {
-					me->OnDamage(damage, "", tempPlayer);
-					tempSword->BlockEffect->Activate(true);
-					UGameplayStatics::PlaySoundAtLocation(GetWorld(), tempSword->BlockSound, tempSword->GetActorLocation());
+					tempSword->ReflectAttack(me);
+
 					return;
 				}
 			}
@@ -88,16 +87,15 @@ void UEnemyAnim::PlayDamageAnim(bool IsDeath, AActor* attacker)
 {
 
 	if (IsDeath) {
-		
-		//Montage_Stop(0.f, AM_Damaged);
-		//Montage_Stop(0.f, AM_Attack);
 		Montage_Play(AM_Die);
 		return;
 	}
 
-	if (Montage_IsPlaying(AM_Skill) || Montage_IsPlaying(AM_Attack))
+	bool bossAttack = Montage_IsPlaying(AM_Attack) && bHasAbilitySkill;
+	if (Montage_IsPlaying(AM_Skill) || bossAttack)
 		return;
 
+	Montage_Stop(1.f, AM_Attack);
 	Montage_Play(AM_Damaged);
 	if (attacker) {
 		FName sectionName = "";
@@ -127,12 +125,15 @@ void UEnemyAnim::PlayDamageAnim(bool IsDeath, AActor* attacker)
 
 void UEnemyAnim::PlayAttackAnim(bool isLongRangeAttack, bool startMotion)
 {
+
 	if (Montage_IsPlaying(AM_Skill))
 		return;
 
 	if (me->fsm->stoneStatue->isDestory)
 		return;
 
+	if (me->fsm->target->ActorHasTag("BuildableItem") && Cast <ABuildableItem>(me->fsm->target)->isDestroy) return;
+		
 
 	FRotator LookRot = UKismetMathLibrary::FindLookAtRotation(me->GetActorLocation(), me->fsm->target->GetActorLocation());
 	me->SetActorRotation(FRotator(0, LookRot.Yaw, 0));
@@ -148,6 +149,8 @@ void UEnemyAnim::PlayAttackAnim(bool isLongRangeAttack, bool startMotion)
 		return;
 	}
 
+
+
 	bool UseMeleeSkill = FMath::RandRange(0, 10) == 0;
 	bool MeleeSkillCoolTimeisDone = GetWorld()->GetTimeSeconds() - lastMeleeSkillUseTime > MeleeSkillCoolTime;
 
@@ -157,13 +160,20 @@ void UEnemyAnim::PlayAttackAnim(bool isLongRangeAttack, bool startMotion)
 		lastMeleeSkillUseTime = GetWorld()->GetTimeSeconds();
 		return;
 	}
-	FName sectionName = FName("StartMotion");
-	
-	if (startMotion == false) {
-		sectionName = FName(FString::Printf(TEXT("Attack_%d"), currAttackSection++));
+
+	FName sectionName = FName(FString::Printf(TEXT("Attack_%d"), currAttackSection++));
 
 		if (currAttackSection > attackAMSectionCount)
 			currAttackSection = 1;
+	
+	if (startMotion) {
+		sectionName = FName("StartMotion");
+		currAttackSection = 1;
+
+		if (GetWorld()->GetTimeSeconds() - lastStartMotionTime < 7)
+			return;
+		lastStartMotionTime = GetWorld()->GetTimeSeconds();
+
 	}
 	
 	if (Montage_IsPlaying(AM_Attack) == false) {

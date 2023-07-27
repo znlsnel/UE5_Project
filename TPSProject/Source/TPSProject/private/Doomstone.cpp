@@ -14,6 +14,7 @@
 #include <GeometryCollection/GeometryCollection.h>
 #include <GeometryCollection/GeometryCollectionActor.h>
 
+
 // Sets default values
 ADoomstone::ADoomstone()
 {
@@ -26,6 +27,9 @@ ADoomstone::ADoomstone()
 	PrimaryActorTick.bCanEverTick = true;
 	Tags.Add("DoomStone");
 	Tags.Add("EnemysTarget");
+
+
+
 }
 
 void ADoomstone::DestoryStatue()
@@ -49,7 +53,8 @@ void ADoomstone::BeginPlay()
 	statueMesh->SetHiddenInGame(true);
 	MakeStatueActor();
 
-	Hp = MaxHp;
+	Hp = MaxHp ;
+	HpPercent = (float)Hp / (float)MaxHp;
 //	hpWidget->parent = this;
 }
 
@@ -87,9 +92,11 @@ void ADoomstone::MakeStatueActor()
 	statueActor->GeometryCollectionComponent->SetSimulatePhysics(false);
 
 	FVector loc = GetActorLocation();
-	loc.Z = -20;
+	loc.Z = -150;
 	statueActor->SetActorLocation(loc);
 	statueActor->SetActorRotation(GetActorRotation());
+	HpPercent = (float)Hp / (float)MaxHp;
+
 }
 
 

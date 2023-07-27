@@ -74,6 +74,8 @@ void UPlayerAbilityComp::BeginPlay()
 		IceAttack.Add(GetWorld()->SpawnActor<ASkill>(IceAttackFactory));
 		LightningStrike.Add(GetWorld()->SpawnActor<ASkill>(LightningStrikeFactory));
 	}
+	myScreenUI->UpdateSkillLockImage(this);
+
 }
 
 // Called every frame
@@ -108,6 +110,7 @@ bool UPlayerAbilityComp::GetMouseInput()
 
 void UPlayerAbilityComp::SkillTrigger()
 {
+	if (currSkill == nullptr) return;
 	currSkill->TriggerSkill();
 	SetSkillTimer(currSkill->skillType);
 	currSkill = nullptr;
@@ -147,7 +150,7 @@ void UPlayerAbilityComp::OperateSkillTimer()
 		if (FMath::Fmod(IceAttackTime, 1.0f) <= 0.1f) {
 			if (IceAttackTime <= 0.1f) {
 				myScreenUI->IceAttackTimeText = "";
-				myScreenUI->ToggleSkillSlot(SkillType::IceAttack, false);
+				//myScreenUI->UpdateSkillSlotPressed(SkillType::IceAttack, false);
 			}
 			else {
 				myScreenUI->IceAttackTimeText = FString::Printf(TEXT("%d"), (int)IceAttackTime);
@@ -161,7 +164,7 @@ void UPlayerAbilityComp::OperateSkillTimer()
 		if (FMath::Fmod(LightningStrikeTime, 1.0f) <= 0.1f) {
 			if (LightningStrikeTime <= 0.1f) {
 				myScreenUI->LightningStrikeTimeText = "";
-				myScreenUI->ToggleSkillSlot(SkillType::LightningStrike, false);
+				//myScreenUI->UpdateSkillSlotPressed(SkillType::LightningStrike, false);
 			}
 			else {
 				myScreenUI->LightningStrikeTimeText = FString::Printf(TEXT("%d"), (int)LightningStrikeTime);
@@ -175,7 +178,7 @@ void UPlayerAbilityComp::OperateSkillTimer()
 		if (FMath::Fmod(HealTime, 1.0f) <= 0.1f) {
 			if (HealTime <= 0.1f) {
 				myScreenUI->HealTimeText = "";
-				myScreenUI->ToggleSkillSlot(SkillType::Healing, false);
+				//myScreenUI->UpdateSkillSlotPressed(SkillType::Healing, false);
 			}
 			else {
 				myScreenUI->HealTimeText = FString::Printf(TEXT("%d"), (int)HealTime);
@@ -188,10 +191,10 @@ void UPlayerAbilityComp::OperateSkillTimer()
 	if (FireStormTime > 0.f) {
 
 		FireStormTime -= 0.1f;
-		if (FMath::Fmod(FireStormTime, 1.0f) <= 0.05f) {
-			if (FireStormTime <= 0.05f) {
+		if (FMath::Fmod(FireStormTime, 1.0f) <= 0.1f) {
+			if (FireStormTime <= 0.1f) {
 				myScreenUI->FireStormTimeText = "";
-				myScreenUI->ToggleSkillSlot(SkillType::FireStorm, false);
+				//myScreenUI->UpdateSkillSlotPressed(SkillType::FireStorm, false);
 			}
 			else {
 				myScreenUI->FireStormTimeText = FString::Printf(TEXT("%d"), (int)FireStormTime);
@@ -199,6 +202,8 @@ void UPlayerAbilityComp::OperateSkillTimer()
 		}
 		isAllZero = false;
 	}
+
+	myScreenUI->UpdateSkillSlotPressed(SkillType::None, false);
 
 	GetWorld()->GetTimerManager().ClearTimer(skillTimerHandle);
 
@@ -231,6 +236,8 @@ void UPlayerAbilityComp::SetSkillInfoArr(TArray<FSkillInfo> setSkillInfos)
 			UpdateValue(temp);
 		}
 	}
+	myScreenUI->UpdateSkillLockImage(this);
+	myScreenUI->SkillCoolTimeTextInit();
 }
 
 TArray<FSkillInfo> UPlayerAbilityComp::GetSkillInfoArr()
@@ -262,7 +269,7 @@ bool UPlayerAbilityComp::UseSkill(SkillType type)
 		return false;
 	}
 
-	if (currSkill->mySkill->point > 0) {
+	if (CheckSkillPossible(currSkill)) {
 		currSkill->state = SkillState::Aiming;
 	} 
 	else {
@@ -273,6 +280,39 @@ bool UPlayerAbilityComp::UseSkill(SkillType type)
 	currSkill->OnSkill(true);
 
 	return true;
+}
+
+bool UPlayerAbilityComp::CheckSkillPossible(SkillType type)
+{
+	ASkill* tempSkill = nullptr;
+
+	switch (type) {
+	case SkillType::IceAttack:
+		tempSkill = IceAttack[0];
+		break;
+	case SkillType::LightningStrike:
+		tempSkill = LightningStrike[0];
+		break;
+	case SkillType::Healing:
+		tempSkill = HealStorm[0];
+		break;
+	case SkillType::FireStorm:
+		tempSkill = fireStorm[0];
+		break;
+	}
+
+	if (IsValid(tempSkill) == false)
+		return false;
+
+	return CheckSkillPossible(tempSkill);
+}
+
+bool UPlayerAbilityComp::CheckSkillPossible(ASkill* skill)
+{
+	if (skill == nullptr)
+		return false; 
+
+	return skill->mySkill->point > 0;
 }
 
 ASkill* UPlayerAbilityComp::GetSkill(SkillType type)
@@ -391,7 +431,7 @@ void UPlayerAbilityComp::UpdateValue(FSkillInfo* skillInfo)
 	if (myPlayer && skillInfo->skillType == SkillType::HpUpgrade) {
 		myPlayer->UpgradeHp(skillInfo->powerValue);
 	}
-	myScreenUI->UnLockSkill(skillInfo->skillType);
-
+	//myScreenUI->UnLockSkill(skillInfo->skillType);
+	myScreenUI->UpdateSkillLockImage(this);
 }
 

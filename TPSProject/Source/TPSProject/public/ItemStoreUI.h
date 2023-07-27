@@ -97,7 +97,7 @@ public:
 
 public:
 	UPROPERTY(BlueprintReadWrite)
-	class UUserWidget* ItemInListPopup;
+		class UUserWidget* ItemInListPopup;
 
 	UPROPERTY(BlueprintReadOnly, Category = "BindButton", meta = (BindWidget))
 		class UButton* ListButton_All;
@@ -115,8 +115,11 @@ public:
 
 	EItemType currListType = EItemType::None;
 
-	TArray<class UButton*> buttons;
-	TArray<FStoreItem> ItemList;
+	UPROPERTY()
+		TArray<class UButton*> buttons;
+	UPROPERTY()
+		TArray<FStoreItem> ItemList;
+	UPROPERTY()
 	TArray < TObjectPtr<class UStoreListItemObject>> ItemObjects;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))

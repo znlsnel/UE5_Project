@@ -84,7 +84,7 @@ void UScreenUI::UseSkillSlot(SkillType type)
 {
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("UseSkillSlot"));
 	bool result = myAbilityComp->UseSkill(type);
-	ToggleSkillSlot(type, result);
+	UpdateSkillSlotPressed(type, result);
 }
 
 void UScreenUI::BasicSkillCoolTime(bool dashOrShield, float CoolTime)
@@ -167,4 +167,125 @@ void UScreenUI::WeaponSwap_Implementation()
 		currWeaponTexture = SwordUI;
 		break;
 	}
+}
+
+void UScreenUI::UpdateSkillLockImage(UPlayerAbilityComp* playerAC)
+{
+	bool PossibleIceAttack = playerAC->CheckSkillPossible(SkillType::IceAttack);
+	bool PossibleLightningStrike = playerAC->CheckSkillPossible(SkillType::LightningStrike);
+	bool PossibleHeal = playerAC->CheckSkillPossible(SkillType::Healing);
+	bool PossibleFireStorm = playerAC->CheckSkillPossible(SkillType::FireStorm);
+
+	SetSkillLockImage(PossibleIceAttack, IceAttackImage, IceAttackLockImage);
+
+	SetSkillLockImage(PossibleLightningStrike, LightningStrikeImage, LightningStrikeLockImage);
+
+	SetSkillLockImage(PossibleHeal, HealImage, HealLockImage);
+
+	SetSkillLockImage(PossibleFireStorm, FireStormImage, FireStormLockImage);
+}
+
+void UScreenUI::SetSkillLockImage(bool IsPossibleSkill, UImage* skillImage, UImage* SkillLockImage)
+{
+	if (IsPossibleSkill) {
+
+		if (SkillLockImage->RenderOpacity != 0.f)
+			skillImage->SetColorAndOpacity(FLinearColor(FVector4(1, 1, 1, 1)));
+
+		SkillLockImage->SetRenderOpacity(0.f);
+	}
+	else {
+		SkillLockImage->SetRenderOpacity(1.f);
+		skillImage->SetColorAndOpacity(FLinearColor(FVector4(0.1f, 0.1f, 0.1f, 1.f)));
+	}
+}
+
+void UScreenUI::UpdateSkillSlotPressed(SkillType type, bool isUse)
+{
+	if (type != SkillType::None) {
+		if (isUse) {
+			switch (type) {
+				case SkillType::IceAttack:
+					currSelectSkill = IceAttackImage;
+					break;
+				case SkillType::FireStorm:
+					currSelectSkill = FireStormImage;
+					break;
+				case SkillType::LightningStrike:
+					currSelectSkill = LightningStrikeImage;
+					break;
+				case SkillType::Healing:
+					currSelectSkill = HealImage;
+					break;
+			}
+		}
+		else
+			currSelectSkill = nullptr;
+	}
+
+	SetSkillSlotPressed(IceAttackImage, IceAttackLockImage, IceAttackTimeText != "");
+	SetSkillSlotPressed(LightningStrikeImage, LightningStrikeLockImage, LightningStrikeTimeText != "");
+	SetSkillSlotPressed(HealImage, HealLockImage, HealTimeText != "");
+	SetSkillSlotPressed(FireStormImage, FireStormLockImage, FireStormTimeText != "");
+
+}
+
+void UScreenUI::SetSkillSlotPressed(UImage* skillImage, UImage* skillLockImage, bool SkillCooling)
+{
+	if (SkillCooling == false && skillLockImage->RenderOpacity == 0.f) {
+		skillImage->SetColorAndOpacity(FLinearColor(FVector4(1, 1, 1, 1)));
+	}
+
+	if (SkillCooling || skillImage == currSelectSkill) {
+		if (SkillCooling && skillImage == currSelectSkill)
+			currSelectSkill = nullptr;
+		skillImage->SetColorAndOpacity(FLinearColor(FVector4(0.1f, 0.1f, 0.1f, 1.f)));
+	}
+}
+
+void UScreenUI::SkillCoolTimeTextInit()
+{
+	IceAttackTimeText = "";
+	LightningStrikeTimeText = "";
+	HealTimeText = "";
+	FireStormTimeText = "";
+}
+
+
+UImage* UScreenUI::GetSkillImage(SkillType type)
+{
+	switch (type) {
+	case SkillType::IceAttack:
+		return IceAttackImage;
+
+	case SkillType::FireStorm:
+		return FireStormImage;
+
+	case SkillType::LightningStrike:
+		return LightningStrikeImage;
+
+	case SkillType::Healing:
+		return HealImage;
+
+	}
+	return nullptr;
+}
+
+UImage* UScreenUI::GetSkillLockImage(SkillType type)
+{
+	switch (type) {
+	case SkillType::IceAttack:
+		return IceAttackLockImage;
+
+	case SkillType::FireStorm:
+		return FireStormLockImage;
+
+	case SkillType::LightningStrike:
+		return LightningStrikeLockImage;
+
+	case SkillType::Healing:
+		return HealLockImage;
+
+	}
+	return nullptr;
 }

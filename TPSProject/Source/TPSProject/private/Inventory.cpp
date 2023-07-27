@@ -156,6 +156,13 @@ void UInventory::SetInventorySlot(TArray<int>& ItemIDArr)
 	int currItemID = 0;
 	int count = 0;
 
+	for (auto InventorySlot : InventorySlotArray) {
+		while (InventorySlot->Items.IsEmpty() == false) {
+			InventorySlot->RemoveItemFromInventory();
+		}
+	}
+
+
 	for (auto itemID : ItemIDArr) {
 		if (currItemID != 0 && itemID != currItemID) {
 			TArray<ABuildableItem*>tempArr;

@@ -43,6 +43,8 @@ public:
 		void ClickCloseInputTextSlotButton();
 	UFUNCTION()
 		void ClickInputTextSlotCheckButton();
+	UFUNCTION()
+		void ClickCloseWidgetButton();
 
 	void UpdateSelectArrow(bool Initialize = false);
 	void UpdateSlotName();
@@ -87,6 +89,8 @@ public:
 		class UButton* CloseInputTextSlotButton;
 	UPROPERTY(BlueprintReadOnly, Category = "BindWidgets", meta = (BindWidget))
 		class UButton* InputTextSlotCheckButton;
+	UPROPERTY(BlueprintReadOnly, Category = "BindWidgets", meta = (BindWidget))
+		class UButton* CloseWidgetButton;
 
 // Images
 	UPROPERTY(BlueprintReadOnly, Category = "BindWigets", meta = (BindWidget))

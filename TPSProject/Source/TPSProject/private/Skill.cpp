@@ -144,10 +144,16 @@ void ASkill::SetLocatoin()
 {
 	hitResult = LineTrace();
 
-	if (hitResult.bBlockingHit)
+	if (hitResult.bBlockingHit) {
+		if (IsHidden())
+			SetActorHiddenInGame(false);
 		SetActorLocation(hitResult.ImpactPoint);
-	else
+	}
+	else {
+		if (IsHidden() == false)
+			SetActorHiddenInGame(true);
 		SetActorLocation(myPlayer->GetActorLocation());
+	}
 	//SkillPreview->SetWorldRotation(hitResult.ImpactNormal.Rotation());
 }
 
@@ -176,7 +182,7 @@ FHitResult ASkill::LineTrace()
 	FVector startLocation = myPlayerControler->PlayerCameraManager->GetCameraLocation();
 	FRotator roc = myPlayerControler->PlayerCameraManager->GetCameraRotation();
 	
-	FVector endLocation = startLocation + (roc.Vector() * 2000);
+	FVector endLocation = startLocation + (roc.Vector() * 4000);
 
 	FHitResult HitResult;
 	FCollisionQueryParams QueryParams;

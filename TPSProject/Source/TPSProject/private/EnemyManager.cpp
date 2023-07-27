@@ -21,6 +21,7 @@
 #include "Containers/ContainerAllocationPolicies.h"
 #include <GameFramework/Actor.h>
 #include <Components/DirectionalLightComponent.h>
+#include <Components/AudioComponent.h>
 
 // Sets default values
 AEnemyManager::AEnemyManager()
@@ -251,6 +252,39 @@ void AEnemyManager::ResetEnemy()
 	), 1.f, false);
 }
 
+void AEnemyManager::PlayGameAudio(bool isNight, bool off)
+{
+	if (MorningAudio == nullptr)
+		MorningAudio = UGameplayStatics::SpawnSound2D(GetWorld(), MorningMusic);
+
+	if (NightAudio == nullptr)
+		NightAudio = UGameplayStatics::SpawnSound2D(GetWorld(), NightMusic);
+
+	if (isNight){
+		if (MorningAudio && MorningAudio->IsPlaying())
+			MorningAudio->Stop();
+		if (NightAudio && NightAudio->IsPlaying() == false)
+			NightAudio->Play();
+		UGameplayStatics::PlaySound2D(GetWorld(), RoundStartSound);
+
+	}
+	else {
+		if (NightAudio && NightAudio->IsPlaying())
+			NightAudio->Stop();
+		if (MorningAudio && MorningAudio->IsPlaying() == false)
+			MorningAudio->Play();
+		UGameplayStatics::PlaySound2D(GetWorld(), RoundEndSound);
+
+	}
+
+	if (off) {
+		if (NightAudio && NightAudio->IsPlaying())
+			NightAudio->Stop();
+		if (MorningAudio && MorningAudio->IsPlaying())
+			MorningAudio->Stop();
+	}
+}
+
 
 void AEnemyManager::RoundEvent(bool start)
 {
@@ -261,18 +295,24 @@ void AEnemyManager::RoundEvent(bool start)
 		isbreakTime = false;
 
 		currMonsterSpawnTimer = InitMonsterSpawnTime - (0.3f * myGameMode->currRound);
-		BossSpawnTime = (myGameState->DaySecond / (myGameMode->currRound / 3) + 1);
+		BossSpawnTime = myGameState->DaySecond / (float)((myGameMode->currRound / 3) + 1);
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("BossSpawnTime = %f"), BossSpawnTime));
+
 
 		// All Enemy Die
 
 		SpawnEnemy();
 		SpawnBossMonster();
+
+
+		PlayGameAudio(true);
 	}
 	else
 	{
 		if (player->myAbilityWidget)
-			player->myAbilityWidget->currSkillCoin++;
+			player->myAbilityWidget->currSkillCoin += 2;
 		myGameMode->currRound++;
+		player->Grace += 1000;
 		isbreakTime = true;
 
 		GetWorld()->GetTimerManager().ClearTimer(spawnTimerHandle);
@@ -284,6 +324,9 @@ void AEnemyManager::RoundEvent(bool start)
 			enemy->OnDamage(enemy->fsm->maxHp * 100, "", nullptr, true);
 		for (auto enemy : KwangPool)
 			enemy->OnDamage(enemy->fsm->maxHp * 100, "", nullptr, true);
+
+		PlayGameAudio(false);
+
 
 	}
 }

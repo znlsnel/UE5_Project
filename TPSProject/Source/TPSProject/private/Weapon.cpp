@@ -231,6 +231,7 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	currFireSpread = FireSpread;
+	InitFireSpread = FireSpread;
 }
 
 // Called every frame

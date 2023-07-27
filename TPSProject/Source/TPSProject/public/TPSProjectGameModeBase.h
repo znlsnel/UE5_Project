@@ -16,6 +16,7 @@ class TPSPROJECT_API ATPSProjectGameModeBase : public AGameModeBase
 	
 protected:
 	ATPSProjectGameModeBase();
+	~ATPSProjectGameModeBase();
 	virtual void InitGame(const FString& mapName, const FString& Options, FString& ErrorMessage)override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const;

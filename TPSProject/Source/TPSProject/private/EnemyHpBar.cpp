@@ -41,12 +41,18 @@ void UEnemyHpBar::SetLocationLoop()
 
 	FVector2D EnemyScreenPosition = FVector2D(0);
 
-	FVector enemyPos = myEnemy->GetMesh()->GetSocketLocation(FName("HeadWidgetSocket"));
+	FVector enemyPos = myEnemy->GetActorLocation();
+	enemyPos.Z = myEnemy->GetMesh()->GetSocketLocation(FName("HeadWidgetSocket")).Z;
 
 
 	UGameplayStatics::ProjectWorldToScreen(playerController,
 		enemyPos,
 		EnemyScreenPosition);
+	int32 xSize = 0;
+	int32 ySize = 0;
+	playerController->GetViewportSize(xSize, ySize);
+	if (EnemyScreenPosition.Y < 0)
+		EnemyScreenPosition.Y = ySize*2 / 5;
 
 	preHpPercent = FMath::FInterpTo(preHpPercent, currHpPercent, GetWorld()->GetDeltaSeconds(), uiRenderTime - 0.5f);
 

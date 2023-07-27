@@ -48,7 +48,7 @@ public:
 		float fireSpeed = 0.3f;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-		int Damage = 2.f;
+		int Damage = 5.f;
 
 
 	UPROPERTY(VisibleAnywhere)

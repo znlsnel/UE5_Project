@@ -95,7 +95,9 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 	hp = maxHp;
 
 	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
 	anim->speed = me->GetCharacterMovement()->MaxWalkSpeed;
+
 	anim->isDead = false;
 	
 	me->SetActorHiddenInGame(false);
@@ -127,6 +129,10 @@ void UEnemyFSM::MoveState()
 
 	if (anim->Montage_IsPlaying(anim->AM_Attack) || anim->Montage_IsPlaying(anim->AM_Skill)){
 		ai->StopMovement();
+		return;
+	}
+
+	if (anim->bHasAbilitySkill == false && anim->Montage_IsPlaying(anim->AM_Damaged)) {
 		return;
 	}
 
@@ -187,6 +193,7 @@ bool UEnemyFSM::isPossibleToMove(AActor* goalTarget)
 
 void UEnemyFSM::AttackState()
 {
+
 	ai->StopMovement();
 	
 	if (isInAttackRange == false) {

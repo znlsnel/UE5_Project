@@ -8,8 +8,6 @@
 void UAbilityInfo::InitWidget(FSkillInfo* skillInfo, bool StartHover)
 {
 	//FString skillName, FString skillInfomation, int currValue, int nextValue, float currCoolTime, float nextCoolTime, bool StartHover
-	if (IsInViewport() == false)
-		AddToViewport();
 	SkillName = skillInfo->SkillName;
 	SkillInfomation = skillInfo->SkillInfo;
 
@@ -39,4 +37,19 @@ void UAbilityInfo::InitWidget(FSkillInfo* skillInfo, bool StartHover)
 
 	if (StartHover)
 		HoverWidget();
+}
+
+void UAbilityInfo::HoverWidget()
+{
+	if (IsInViewport() == false) {
+		AddToViewport();
+		PlayAnimation(OnAnim);
+	}
+
+}
+
+void UAbilityInfo::UnHoverWidget()
+{
+	if (IsInViewport())
+		RemoveFromParent();
 }

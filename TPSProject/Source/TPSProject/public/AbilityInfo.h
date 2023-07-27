@@ -19,14 +19,17 @@ public:
 	void InitWidget(FSkillInfo* skillInfo, bool StartHover = true);
 
 	
-
-	UFUNCTION(BlueprintImplementableEvent)
-		void HoverWidget();
-	UFUNCTION(BlueprintImplementableEvent)
-		void UnHoverWidget();
-
+	void HoverWidget();
+	void UnHoverWidget();
 
 public:
+	UPROPERTY(BlueprintReadOnly, Category = "BindAnimation", meta = (BindWidgetAnim), Transient)
+		UWidgetAnimation* OnAnim;
+
+	UPROPERTY(BlueprintReadOnly, Category = "BindAnimation", meta = (BindWidgetAnim), Transient)
+		UWidgetAnimation* OffAnim;
+
+
 	UPROPERTY(BlueprintReadOnly)
 		FString SkillName = "";
 

@@ -35,6 +35,8 @@ public:
 		TSubclassOf<class AGeometryCollectionActor> statueActorFactory;
 	class AGeometryCollectionActor* statueActor;
 
+
+
 	UPROPERTY(BlueprintReadWrite)
 		bool isDestory = false;
 
@@ -42,10 +44,12 @@ public:
 		int Hp = 0;
 
 	UPROPERTY(BlueprintReadWrite)
-		int MaxHp = 1000;
+		int MaxHp = 100;
 
 	UPROPERTY(BlueprintReadWrite)
 		float HpPercent = 1.f;
 
-	int initHp = 1000;
+	int initHp = 100;
+	
+
 };

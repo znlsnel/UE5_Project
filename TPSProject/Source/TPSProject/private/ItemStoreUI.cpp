@@ -229,6 +229,7 @@ EItemType UItemStoreUI::ConvertStringToItemType(FString type)
 
 void UItemStoreUI::UpdateItemList( )
 {
+	if (ItemListView == nullptr) return;
 	ItemListView->ClearListItems();
 	for (auto Item : ItemObjects) {
 		EItemType currType = Item->itemIfno.itemType;

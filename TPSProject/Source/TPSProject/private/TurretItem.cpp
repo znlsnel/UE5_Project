@@ -80,8 +80,18 @@ void ATurretItem::FireLoop()
 {
 	GetWorld()->GetTimerManager().ClearTimer(fireLoopTimer);
 	
+
 	if (isFireable && currTarget)
 	{ // Attack Logic
+		if (currTarget->isDead() || currTarget->isActive() == false)
+		{
+			isFireable = false;
+			isTurretActive = false;
+			currTarget = nullptr;
+			return;
+		}
+
+
 		FHitResult hit;
 		if (isShootingPossible(currTarget, hit) == false) {
 			isFireable = false;
@@ -95,8 +105,11 @@ void ATurretItem::FireLoop()
 
 			if (hit.GetActor()->GetClass()->IsChildOf(AEnemy::StaticClass())) {
 				AEnemy* tempEnemy = Cast<AEnemy>(hit.GetActor());
-				tempEnemy->OnDamage(Damage, hit.BoneName, myPlayer);
 
+				int damage = FMath::Max(Damage, tempEnemy->fsm->maxHp / 20);
+				
+
+				tempEnemy->OnDamage(damage, hit.BoneName, myPlayer);
 			}
 			UKismetSystemLibrary::PrintString(GetWorld(), hit.GetActor()->GetName());
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), fireSound, GetActorLocation());
@@ -122,13 +135,12 @@ void ATurretItem::FindEnemy()
 			if (overlappingActor->ActorHasTag("Enemy") == false)
 				continue;
 
-			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Find ! ! !"));
-
 			FHitResult hit;
 			AEnemy* enemy = Cast<AEnemy>(overlappingActor);
-			if (enemy->isActive() && isShootingPossible(enemy, hit)) {
+			if (enemy->isActive()) {
 				currTarget = enemy;
 				FireLoop();
+				break;
 			}
 
 		}

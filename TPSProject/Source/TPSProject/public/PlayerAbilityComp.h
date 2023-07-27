@@ -96,6 +96,8 @@ public:
 	TArray< FSkillInfo> GetSkillInfoArr();
 	class ASkill* GetSkill(SkillType type);
 	bool UseSkill(SkillType type);
+	bool CheckSkillPossible(SkillType type);
+	bool CheckSkillPossible(ASkill* skill);
 	SkillSectionType ConvertSectionType(FString type);
 	SkillType ConvertSkillType(FString type);
 	void UpdateValue(struct FSkillInfo* skillInfo);

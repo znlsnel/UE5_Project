@@ -17,3 +17,16 @@ void UStatueAbilityInfoWidget::InitWidget(FStatueAbility* ability)
 		Value = FString("HP: ") + FString::Printf(TEXT("%d"), ability->point * 50) + " % ";
 	}
 }
+
+void UStatueAbilityInfoWidget::OpenWidget()
+{
+	if (IsInViewport() == false)
+		AddToViewport();
+	PlayAnimation(OnAnim);
+}
+
+void UStatueAbilityInfoWidget::CloseWidget()
+{
+	if (IsInViewport())
+		RemoveFromParent();
+}

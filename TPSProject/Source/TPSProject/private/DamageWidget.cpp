@@ -56,6 +56,11 @@ void UDamageWidget::SetLocationLoop()
 	UGameplayStatics::ProjectWorldToScreen(playerController,
 		EnemyPos,
 		EnemyScreenPosition);
+	int32 xSize = 0;
+	int32 ySize = 0;
+	playerController->GetViewportSize(xSize, ySize);
+	if (EnemyScreenPosition.Y < 0)
+		EnemyScreenPosition.Y = (ySize * 2 / 5) - 20;
 
 	//EnemyScreenPosition.X += (viewX / 2);
 	//EnemyScreenPosition.Y += (viewY / 2);
