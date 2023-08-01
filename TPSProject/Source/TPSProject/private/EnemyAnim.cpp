@@ -133,6 +133,10 @@ void UEnemyAnim::PlayAttackAnim(bool isLongRangeAttack, bool startMotion)
 		return;
 
 	if (me->fsm->target->ActorHasTag("BuildableItem") && Cast <ABuildableItem>(me->fsm->target)->isDestroy) return;
+
+	if (me->fsm->stoneStatue && me->fsm->stoneStatue->isDestory)
+		return;
+
 		
 
 	FRotator LookRot = UKismetMathLibrary::FindLookAtRotation(me->GetActorLocation(), me->fsm->target->GetActorLocation());
@@ -165,17 +169,16 @@ void UEnemyAnim::PlayAttackAnim(bool isLongRangeAttack, bool startMotion)
 
 		if (currAttackSection > attackAMSectionCount)
 			currAttackSection = 1;
-	
-	if (startMotion) {
+
+
+	if (startMotion &&( GetWorld()->GetTimeSeconds() - lastStartMotionTime ) > 7) {
 		sectionName = FName("StartMotion");
 		currAttackSection = 1;
 
-		if (GetWorld()->GetTimeSeconds() - lastStartMotionTime < 7)
-			return;
 		lastStartMotionTime = GetWorld()->GetTimeSeconds();
-
 	}
-	
+
+
 	if (Montage_IsPlaying(AM_Attack) == false) {
 		Montage_Play(AM_Attack);
 		Montage_JumpToSection(sectionName, AM_Attack);

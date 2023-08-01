@@ -125,8 +125,7 @@ void UPlayerAnim::AnimNotify_SkillTrigger()
 
 void UPlayerAnim::AnimNotify_EndSkill()
 {
-	player->isMovable = true;
-	player->isRotatable = true;
+
 }
 
 void UPlayerAnim::AnimNotify_OnMeleeAttack()

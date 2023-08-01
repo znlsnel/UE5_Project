@@ -36,8 +36,8 @@ enum class BuildableItemType : uint8
 	None = 0			UMETA(DisplayName = "None"),
 	StoneWall = 20	UMETA(DisplayName = "StoneWall"),
 	SandBag = 23		UMETA(DisplayName = "SandBag") ,
-	Concrete = 22		UMETA(DisplayName = "Concrete"),
-	BrokenWall = 21	UMETA(DisplayName = "BrokenWall") ,
+	BrokenWall = 22	UMETA(DisplayName = "BrokenWall") ,
+	Concrete = 21		UMETA(DisplayName = "Concrete"),
 	Turret = 30		UMETA(DisplayName = "Turret") ,
 };
 

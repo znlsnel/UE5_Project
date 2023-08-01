@@ -67,7 +67,7 @@ public:
 
 	void AddItemInServer(class AItem* item);
 	void UpdateAttackAndHp(bool updateAttack, float value);
-
+	
 	class UStoreUI* GetStore();
 
 	FTimerHandle SetTranceformBuildableTimer;
@@ -217,4 +217,10 @@ public:
 	class UInventory* GetInventory();
 	void AddHP(int value);
 
+	void SetUnableMove(float AllowMoveTime);
+	void SetUnableRotate(float AllowRotateTime);
+	FTimerHandle movableTimer;
+	FTimerHandle rotatableTimer;
+	float allowMoveSecondTime = 0.f;
+	float allowRotateSecondTime = 0.f;
 };

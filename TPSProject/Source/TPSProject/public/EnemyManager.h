@@ -102,10 +102,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = SpawnSettings)
 		TSubclassOf<class AEnemy> Yaku;
 
-	TArray<class AEnemy*> RiktorPool;
-	TArray<class AEnemy*> KwangPool;
-	TArray<class AEnemy*> EnemyPool;
-	TArray<int> preSpawnIndex;
+	UPROPERTY()
+		TArray<class AEnemy*> RiktorPool;
+	UPROPERTY()
+		TArray<class AEnemy*> KwangPool;
+	UPROPERTY()
+		TArray<class AEnemy*> EnemyPool;
+	UPROPERTY()
+		TArray<int> preSpawnIndex;
 
 
 	//TArray<class AEnemy*> SpecialEnemyPool;

@@ -114,6 +114,8 @@ void ATPSPlayer::BeginPlay()
 	DamageEffect->Deactivate();
 
 
+
+	
 	GetWorld()->Exec(GetWorld(), TEXT("DisableAllScreenMessages"));
 	hp = maxHp;
 	if (playerUI->screenUI)
@@ -383,6 +385,40 @@ void ATPSPlayer::AddHP(int value)
 	}
 }
 
+void ATPSPlayer::SetUnableMove(float AllowMoveTime)
+{
+	float currAllowMoveSecondTime = AllowMoveTime + GetWorld()->GetTimeSeconds();
+	if (currAllowMoveSecondTime <= allowMoveSecondTime)
+		return;
+
+	allowMoveSecondTime = AllowMoveTime;
+	isMovable = false;
+
+	GetWorld()->GetTimerManager().ClearTimer(movableTimer);
+	GetWorld()->GetTimerManager().SetTimer(movableTimer, FTimerDelegate::CreateLambda(
+		[&]() {
+			isMovable = true;
+		}
+	), allowMoveSecondTime, false);
+}
+
+void ATPSPlayer::SetUnableRotate(float AllowRotateTime)
+{
+	float currAllowRotateSecondTime = AllowRotateTime + GetWorld()->GetTimeSeconds();
+	if (currAllowRotateSecondTime <= allowRotateSecondTime)
+		return;
+
+	allowRotateSecondTime = AllowRotateTime;
+	isRotatable = false;
+
+	GetWorld()->GetTimerManager().ClearTimer(rotatableTimer);
+	GetWorld()->GetTimerManager().SetTimer(rotatableTimer, FTimerDelegate::CreateLambda(
+		[&]() {
+			isRotatable = true;
+		}
+	), allowRotateSecondTime, false);
+}
+
 
 
 
@@ -623,7 +659,7 @@ void ATPSPlayer::OnPlayerDie()
 	playerUI->screenUI->RespawnEvent(true);
 	playerUI->screenUI->RespawnTime = respawnTime;
 	playerUI->screenUI->RespawnTimeLoop();
-	isMovable = false;
+	SetUnableMove(respawnTime);
 	if (heartAudio)
 		heartAudio->Stop();
 
@@ -631,7 +667,6 @@ void ATPSPlayer::OnPlayerDie()
 		isDie = false;
 		AddHP(maxHp);
 		PlayMontage(AM_Spawn);
-		isMovable = true;
 		SpawnEffect->Activate(true);
 		}), respawnTime, false);
 }

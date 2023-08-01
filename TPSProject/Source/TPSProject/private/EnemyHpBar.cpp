@@ -54,7 +54,7 @@ void UEnemyHpBar::SetLocationLoop()
 	if (EnemyScreenPosition.Y < 0)
 		EnemyScreenPosition.Y = ySize*2 / 5;
 
-	preHpPercent = FMath::FInterpTo(preHpPercent, currHpPercent, GetWorld()->GetDeltaSeconds(), uiRenderTime - 0.5f);
+	preHpPercent = FMath::FInterpTo(preHpPercent, currHpPercent, GetWorld()->GetDeltaSeconds(), uiRenderTime + 0.5f);
 
 	SetPositionInViewport(EnemyScreenPosition);
 

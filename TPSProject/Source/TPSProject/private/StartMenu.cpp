@@ -211,7 +211,7 @@ void UStartMenu::OpenWidget(bool GameOver, ULevelSequencePlayer* gameOverSequenc
 	if (GameOver) {
 		GameOverPanel->SetRenderScale(FVector2D(1));
 		MainPanel->SetRenderScale(FVector2D(0));
-		BackGroundImage->SetRenderOpacity(0.5f);
+		BackGroundImage->SetRenderOpacity(0.7f);
 		sequencePlayer = gameOverSequencePlayer;
 	}
 	else {

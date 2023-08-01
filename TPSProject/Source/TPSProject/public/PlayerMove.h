@@ -47,6 +47,9 @@ public:
 	float lastDashTime = -3.f;
 	float dashCoolTime = 5.f;
 
+	UPROPERTY(EditAnywhere)
+	float mouseSpeed = 1.f;
+
 	UPROPERTY(EditAnywhere, Category = PlayerSetting) 
 		float walkSpeed = 200;
 	UPROPERTY(EditAnywhere, Category = PlayerSetting) 

@@ -31,6 +31,8 @@ enum class EItemID : uint8
 	Turret = 30,
 };
 
+
+
 UENUM(BlueprintType)
 enum class EItemType : uint8 {
 	weapon,

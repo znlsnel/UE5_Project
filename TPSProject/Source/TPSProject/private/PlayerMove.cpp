@@ -25,6 +25,9 @@ void UPlayerMove::BeginPlay()
 
 	moveComp->MaxWalkSpeed = runSpeed;
 	playerAnim = Cast<UPlayerAnim>(me->GetMesh()->GetAnimInstance());
+	if (mouseSpeed > 1.f)
+		mouseSpeed = 1.f;
+
 }
 
 void UPlayerMove::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -61,7 +64,7 @@ void UPlayerMove::Turn(float value)
 {
 
 	if (me->isDie || me->isRotatable == false) return;
-
+	
 	turnValue += value;
 	turnValue = UKismetMathLibrary::FClamp(turnValue, -10, 10);
 	
@@ -72,7 +75,7 @@ void UPlayerMove::Turn(float value)
 	}
 
 	if (me->playerUI->IsMouseActive) return;
-	me->AddControllerYawInput(value);
+	me->AddControllerYawInput(value * mouseSpeed);
 }
 
 void UPlayerMove::LookUp(float value)
@@ -90,7 +93,7 @@ void UPlayerMove::LookUp(float value)
 	if (me->playerUI->IsMouseActive) return;
 
 	
-	me->AddControllerPitchInput(value);
+	me->AddControllerPitchInput(value * mouseSpeed);
 }
 
 void UPlayerMove::Move()

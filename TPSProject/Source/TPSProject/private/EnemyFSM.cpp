@@ -56,8 +56,7 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (isActive == false) return;
 
-	if (stoneStatue && stoneStatue->isDestory)
-		mState = EEnemyState::Idle;
+
 
 	switch (mState)
 	{
@@ -136,22 +135,29 @@ void UEnemyFSM::MoveState()
 		return;
 	}
 
-	if (target->ActorHasTag("Player")) {
-		double dist = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
-		bool isInRange =  dist < (me->targetSensor->GetScaledBoxExtent().Y* me->GetMesh()->GetRelativeScale3D().Y);
+	double dist = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
+	bool isInRange = dist < (me->targetSensor->GetScaledBoxExtent().Y * me->GetMesh()->GetRelativeScale3D().Y);
 
+	if (isInRange) {
+		isInAttackRange = true;
+	}
+	else if (target->ActorHasTag("Player")) {
 		if (isInRange == false && GetWorld()->GetTimeSeconds() - anim->lastLongRangeSkillUseTime > anim->LongRangeSkillCoolTime) {
 			anim->LongRangeAttack();
 			anim->lastLongRangeSkillUseTime = GetWorld()->GetTimeSeconds();
 		}
 
-		if (isInRange) {
-			isInAttackRange = true;
-		}
+
+	}
+
+	if (stoneStatue && stoneStatue->isDestory) {
+		mState = EEnemyState::Idle;
+		return;
 	}
 
 	if (isInAttackRange) {
 		mState = EEnemyState::Attack;
+		ai->StopMovement();
 		return;
 	}
 
@@ -196,6 +202,11 @@ void UEnemyFSM::AttackState()
 
 	ai->StopMovement();
 	
+
+	if (stoneStatue && stoneStatue->isDestory)
+		return;
+
+
 	if (isInAttackRange == false) {
 		mState = EEnemyState::Idle;
 		return;
@@ -272,15 +283,16 @@ void UEnemyFSM::OnDamageProcess(int damage, AActor* attacker,  FName boneName, b
 	ai->StopMovement();
 
 	if (IsValid(attacker) && attacker->ActorHasTag(TEXT("Player"))) {
-		if (target->ActorHasTag(TEXT("Player")) == false) {
-			anim->PlayAttackAnim(false, true);
-		}
-
+		anim->PlayAttackAnim(false, true);
 		double dist = FVector::Distance(attacker->GetActorLocation(), me->GetActorLocation());
 		bool isInRange = dist < (me->targetSensor->GetScaledBoxExtent().Y * me->GetMesh()->GetRelativeScale3D().Y) * 10;
-
-		if (isInRange)
+		bool IsattackState = dist < me->targetSensor->GetScaledBoxExtent().Y * me->GetMesh()->GetRelativeScale3D().Y;
+		if (isInRange) {
 			target = attacker;
+		}
+		if (IsattackState)
+			isInAttackRange = true;
+
 	}
 
 	// Damage
@@ -316,12 +328,11 @@ void UEnemyFSM::OnDamageProcess(int damage, AActor* attacker,  FName boneName, b
 		return;
 	}
 	else {
+		anim->lastLongRangeSkillUseTime += 2;
+
 		if (anim->bHasAbilitySkill == false) {
 			lastAttackTime = 0.f;
-			mState = EEnemyState::Idle;
-			ai->StopMovement();
 		}
-
 		anim->PlayDamageAnim(false , attacker);
 	}
 }
@@ -345,7 +356,7 @@ void UEnemyFSM::UpdageTargetTick()
 	if (target == nullptr || isActiveUpdateTargetTick == false)
 		return;
 
-	if (target->ActorHasTag("Player") && Cast<ATPSPlayer>(target)->isDie == false) {
+	if (target->ActorHasTag("Player") && Cast<ATPSPlayer>(target)->hp > 0 ) {
 			double dist = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
 			bool isInRange = dist < (me->targetSensor->GetScaledBoxExtent().Y * me->GetMesh()->GetRelativeScale3D().Y) * 10;
 

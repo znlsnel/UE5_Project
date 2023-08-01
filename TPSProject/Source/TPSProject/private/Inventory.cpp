@@ -169,6 +169,7 @@ void UInventory::SetInventorySlot(TArray<int>& ItemIDArr)
 			myPlayer->CreateItem(tempArr, (EItemID)currItemID, count);
 			for (auto item : tempArr) {
 				item->myPlayer = myPlayer;
+				item->SetActorLocation(FVector(-1000, -1000, -1000));
 				AddItemToInventory(item);
 			}
 			count = 0; 

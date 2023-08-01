@@ -101,8 +101,8 @@ bool UPlayerAbilityComp::GetMouseInput()
 
 	if (myPlayer) {
 		myPlayer->PlayMontage(skillAnim, FName(FString::Printf(TEXT("Skill_%d"), randSkill)));
-		myPlayer->isRotatable = false;
-		myPlayer->isMovable = false;
+		myPlayer->SetUnableRotate(0.6f);
+		myPlayer->SetUnableMove(0.6f);
 	}
 
 	return true;

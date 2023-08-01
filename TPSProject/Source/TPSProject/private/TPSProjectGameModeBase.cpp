@@ -253,7 +253,7 @@ void ATPSProjectGameModeBase::GetFieldItem(TArray<struct FFieldItem>& fieldItems
 	fieldItems.Empty();
 	for (auto actor : actors) {
 		if (actor->GetClass()->IsChildOf(ABuildableItem::StaticClass())) {
-			if (actor->IsHidden()) return;
+			if (actor->IsHidden()) continue;
 			ABuildableItem* tempItem = Cast<ABuildableItem>(actor);
 			FFieldItem item;
 			item.Location = tempItem->GetActorLocation();

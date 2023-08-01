@@ -140,10 +140,19 @@ void AEnemy::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AAc
 	class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor->ActorHasTag("DoomStone") || OtherActor->ActorHasTag("Player")) {
+	if (OtherActor->ActorHasTag("DoomStone")) {
 		if (fsm->isInAttackRange == false) {
 			fsm->anim->PlayAttackAnim(false, true);
 			fsm->isInAttackRange = true;
+		}
+	}
+	else if (OtherActor->ActorHasTag("Player")) {
+		if (Cast<ATPSPlayer>(OtherActor)->hp > 0) {
+
+			if (fsm->isInAttackRange == false) {
+				fsm->anim->PlayAttackAnim(false, true);
+				fsm->isInAttackRange = true;
+			}
 		}
 	}
 	else if (OtherActor->GetClass ()->IsChildOf(ABarricadeItem::StaticClass())) {

@@ -113,17 +113,18 @@ void AWeapon_Sword::Attack()
 		}
 	}
 
-	myPlayer->isMovable = false;	
+	myPlayer->SetUnableMove(0.65f);
+	myPlayer->SetUnableRotate(0.3f);
+
 	if (isEnemyInSensor == false) {
 		SwordMoveOn = true;
 	}
 	
+	GetWorldTimerManager().ClearTimer(swordMoveTimer);
 	GetWorldTimerManager().SetTimer(swordMoveTimer, FTimerDelegate::CreateLambda(
 		[&]() {
-			myPlayer->isMovable = true;
 			SwordMoveOn = false;
 		}), swordMoveTime, false);
-
 
 }
 
@@ -151,7 +152,6 @@ void AWeapon_Sword::AttackEvent()
 		}
 	}
 
-
 	if (tempEnemys.IsEmpty() == false) {
 		GetWorldTimerManager().SetTimer(doubleAttackTimer, FTimerDelegate::CreateLambda([&]() {
 			for (auto enemy : tempEnemys) {
@@ -173,14 +173,17 @@ void AWeapon_Sword::BlockAttack()
 
 void AWeapon_Sword::OnBlocking(bool On)
 {
-	myPlayer->isMovable = On ? false : true;
+	if (On) {
+		myPlayer->SetUnableMove(0.65f);
+		myPlayer->SetUnableRotate(0.5f);
+
+	}
 	isBlocking = On;
 
 	GetWorld()->GetTimerManager().ClearTimer(blockingTimer);
 	GetWorld()->GetTimerManager().SetTimer(blockingTimer, FTimerDelegate::CreateLambda(
 		[&]() {
 			if (isBlocking) {
-				myPlayer->isMovable = true;
 				isBlocking = false;
 			}
 		}), 1.f, false);
