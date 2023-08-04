@@ -36,4 +36,5 @@ public:
 	float NightRotationSpeed = 0.f;
 
 	class ADirectionalLight* myLight;
+	class ADoomstone* statue;
 };

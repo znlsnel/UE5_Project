@@ -71,6 +71,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Attack)
 		int attackPower = 5;
+	UPROPERTY(EditDefaultsOnly, Category = Attack)
+		float playerTraceDist = 1500;
 
 	UPROPERTY(EditAnywhere)
 		float dieSpeed = 10.0f;
@@ -80,6 +82,8 @@ public:
 		int InitHp = 10;
 	int hp = 10;
 	int maxHp = 10;
+
+
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Reward)
 		int rwdMineral = 20;

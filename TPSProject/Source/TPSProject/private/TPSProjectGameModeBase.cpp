@@ -13,7 +13,6 @@
 #include "ItemStoreUI.h"
 #include "WeaponData.h"
 #include "InventorySlot.h"
-#include "MySaveGame.h"
 #include "BuildableItem.h"
 #include "EnemyManager.h"
 
@@ -147,7 +146,7 @@ void ATPSProjectGameModeBase::SaveFileDuplicate(UMySaveGame* saveGame, bool Load
 		myPlayer->UpdateHeartSound();
 		myPlayer->SetActorLocation(saveGame->Location);
 		myPlayer->playerFire->SetOwnWeapons(saveGame->ownWeapon);
-
+		SetWeaponAmmoInfo(saveGame);
 		myPlayer->abilityComp->SetSkillInfoArr(saveGame->skillInfos);
 		myPlayer->playerUI->statueAbilityWidget->SetGetStatueAbilityArr(saveGame->statueAbilitys, saveGame->abilityRepairRate, true, saveGame->statueHp);
 		myPlayer->playerUI->screenUI->inventory->SetInventorySlot(saveGame->InventoryItemID);
@@ -164,7 +163,7 @@ void ATPSProjectGameModeBase::SaveFileDuplicate(UMySaveGame* saveGame, bool Load
 		saveGame->playerMineral = myPlayer->Mineral;
 		saveGame->playerHp = myPlayer->hp;
 		saveGame->ownWeapon = myPlayer->playerFire->GetOwnWeapons();
-
+		GetWeaponAmmoInfo(saveGame);
 		saveGame->Location = myPlayer->GetActorLocation();
 		myPlayer->playerUI->statueAbilityWidget->SetGetStatueAbilityArr(saveGame->statueAbilitys, saveGame->abilityRepairRate, false, saveGame->statueHp);
 
@@ -302,6 +301,35 @@ void ATPSProjectGameModeBase::OpenLoadingScreen()
 		[&]() {
 			loadingScreen->RemoveFromParent();
 		}), 3.f, false);
+}
+
+void ATPSProjectGameModeBase::GetWeaponAmmoInfo(class UMySaveGame* saveGame)
+{
+	TArray<AWeapon*> tempArr = myPlayer->playerFire->GetWeapons();
+	myPlayer->playerFire->weapon_Pistol;
+
+	for (auto weapon : tempArr) {
+		FWeaponAmmo tempAmmo;
+		tempAmmo.weaponType = weapon->weaponType;
+		tempAmmo.currAmmo = weapon->currAmmo;
+		tempAmmo.TotalAmmo = weapon->Ammo;
+		saveGame->weaponAmmoInfo.Add(tempAmmo);
+	}
+}
+
+void ATPSProjectGameModeBase::SetWeaponAmmoInfo(UMySaveGame* saveGame)
+{
+	TArray<AWeapon*> tempArr = myPlayer->playerFire->GetWeapons();
+
+	for (auto ammoInfo : saveGame->weaponAmmoInfo) {
+		for (auto weapon : tempArr) {
+			if (weapon && weapon->weaponType == ammoInfo.weaponType) {
+				weapon->Ammo = ammoInfo.TotalAmmo;
+				weapon->currAmmo = ammoInfo.currAmmo;
+			}
+			
+		}
+	}
 }
 
 

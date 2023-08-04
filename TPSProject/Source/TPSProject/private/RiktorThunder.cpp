@@ -99,8 +99,15 @@ void ARiktorThunder::MoveLoop()
 	if (myParent->fsm->anim->isDead) {
 		SetActiveThunder(false);
 	}
+	prePos = GetActorLocation();
 
-	GetWorldTimerManager().SetTimer(AIMoveLoopTimer, this, &ARiktorThunder::MoveLoop, 1.f, false);
+	GetWorldTimerManager().SetTimer(AIMoveLoopTimer, FTimerDelegate::CreateLambda([&]() {
+		if (prePos == GetActorLocation()) {
+			SetActiveThunder(false);
+			return;
+		}
+		MoveLoop();
+		}), 1.f, false);
 }
 
 void ARiktorThunder::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

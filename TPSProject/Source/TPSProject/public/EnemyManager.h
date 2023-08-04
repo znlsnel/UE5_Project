@@ -116,7 +116,8 @@ public:
 	//TArray<class AEnemy*> BossEnemyPool;
 
 
-	AEnemy* tempEnemy;
+	UPROPERTY()
+		AEnemy* tempEnemy;
 	UPROPERTY(EditDefaultsOnly)
 		int32 spawnLimit = 40;
 	UPROPERTY(EditDefaultsOnly)

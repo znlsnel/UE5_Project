@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ItemStoreUI.h"
+#include "WeaponData.h"
 #include "StatueAbilityWidget.h"
 #include "AbilityUpgradeWidget.h"
 #include "PlayerAbilityComp.h"
@@ -28,6 +29,20 @@ public:
 		EItemID ItemID = EItemID::Shotgun;
 };
 
+USTRUCT(BlueprintType)
+struct TPSPROJECT_API FWeaponAmmo
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+		WeaponType weaponType = WeaponType::None;
+
+	UPROPERTY()
+		int currAmmo = -1;
+	UPROPERTY()
+		int TotalAmmo = 0;
+};
 
 UCLASS()
 class TPSPROJECT_API UMySaveGame : public USaveGame
@@ -53,6 +68,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		int currRound = 0;
 
+
+	UPROPERTY()
+		TArray<FWeaponAmmo> weaponAmmoInfo;
 
 
 	UPROPERTY(VisibleAnywhere)

@@ -28,7 +28,8 @@ public class TPSProject : ModuleRules
 			"JsonUtilities",
 			"LevelSequence",
 			"MovieScene",
-			"GeometryCollectionEngine"
+			"GeometryCollectionEngine",
+			"HairStrandsCore"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

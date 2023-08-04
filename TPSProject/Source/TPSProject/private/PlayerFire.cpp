@@ -30,14 +30,7 @@
 UPlayerFire::UPlayerFire()
 {
 	SetIsReplicated(true);
-	// ÃÑ¾Ë »ç¿îµå
-	{
-		ConstructorHelpers::FObjectFinder<USoundBase> tempSound(TEXT("SoundWave'/Game/Assets/Sounds/Rifle.Rifle'"));
-		if (tempSound.Succeeded())
-		{
-			bulletSound = tempSound.Object;
-		}
-	}
+
 }
 
 void UPlayerFire::SetupInputBinding(UInputComponent* PlayerInputComponent)
@@ -244,6 +237,20 @@ void UPlayerFire::SetOwnWeapons(int ownWeapon)
 	else weapon_Bow = nullptr;
 	//bow
 
+}
+
+TArray<AWeapon*> UPlayerFire::GetWeapons()
+{
+	TArray<AWeapon*> tempArr;
+	if (weapon_Pistol)
+		tempArr.Add(weapon_Pistol);
+	if (weapon_Bow)
+		tempArr.Add(weapon_Bow);
+	if (weapon_Shotgun)
+		tempArr.Add(weapon_Shotgun);
+	if (weapon_Rifle)
+		tempArr.Add(weapon_Rifle);
+	return tempArr;
 }
 
 

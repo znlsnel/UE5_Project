@@ -12,6 +12,8 @@
 /**
  *
  */
+
+
 UCLASS(ClassGroup = (PlayerComponent), meta = (BlueprintSpawnableComponent))
 class TPSPROJECT_API UPlayerFire : public UPlayerBaseComponent
 {
@@ -33,7 +35,7 @@ public:
 	void EquipWeapon(WeaponType weaponType);
 	int GetOwnWeapons();
 	void SetOwnWeapons(int ownWeapon);
-
+	TArray<AWeapon*> GetWeapons();
 
 	template<bool b>
 	void SniperAim() { SniperAim(b); }					// ½ºÄÚÇÁ ¸ðµå
@@ -101,12 +103,6 @@ public:
 	// ÃÑ¾Ë ÀÌÆåÆ® Particle
 	UPROPERTY(EditAnywhere, Category = BulletEffect)
 		class UParticleSystem* bulletEffectFactory;
-
-	// ÃÑ¼Ò¸®
-	UPROPERTY(EditDefaultsOnly, Category = Sound)
-		class USoundBase* bulletSound;
-
-
 
 	UPROPERTY(BlueprintReadOnly)
 		FVector LeftHandlePos;

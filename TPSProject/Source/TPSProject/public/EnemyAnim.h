@@ -29,7 +29,7 @@ public:
 		void AnimNotify_DamagedEnd();
 
 	void playHitSound(bool IsDeath);
-	void AttackToTargets(TArray<AActor*> actors, int damage);
+	void AttackToTargets(TArray<AActor*>& actors, int damage);
 
 
 public:
@@ -59,7 +59,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		float LongRangeSkillCoolTime = 30.f;
-	float lastLongRangeSkillUseTime = 0.f;
+	float lastLongRangeSkillUseTime = -15.f;
 
 	UPROPERTY(EditAnywhere)
 		float MeleeSkillCoolTime = 15.f;

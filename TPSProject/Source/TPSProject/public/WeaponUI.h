@@ -30,6 +30,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		WeaponType FindSelectWeaponType();
 
+	float Get2DVectorDist(FVector2D& a, FVector2D b);
+	WeaponType GetCloseButton(FVector2D& mousePos);
 public:
 	UPROPERTY(BlueprintReadWrite)
 	class ATPSPlayer* player;

@@ -3,12 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MySaveGame.h"
+
 #include "GameFramework/GameModeBase.h"
 #include "TPSProjectGameModeBase.generated.h"
 
 /**
  * 
  */
+
+
+
+
 UCLASS()
 class TPSPROJECT_API ATPSProjectGameModeBase : public AGameModeBase
 {
@@ -34,6 +40,9 @@ public:
 	void GetFieldItem(TArray<struct FFieldItem>& fieldItems);
 	void SetFieldItem(TArray<struct FFieldItem>& fieldItems);
 	void OpenLoadingScreen();
+	void GetWeaponAmmoInfo(class UMySaveGame* saveGame);
+	void SetWeaponAmmoInfo(class UMySaveGame* saveGame);
+
 public:
 	FTimerHandle LoadTimer;
 	UPROPERTY(EditAnywhere)

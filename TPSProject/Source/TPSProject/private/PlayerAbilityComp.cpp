@@ -94,6 +94,9 @@ bool UPlayerAbilityComp::GetMouseInput()
 	if (currSkill->hitResult.bBlockingHit == false) 
 		return true;
 
+	if (myPlayer->isMovable == false)
+		return true;
+
 	int randSkill = FMath::RandRange(1, 3);
 
 	if (myPlayer == nullptr)

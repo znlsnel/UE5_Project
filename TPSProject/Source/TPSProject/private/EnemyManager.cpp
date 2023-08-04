@@ -295,7 +295,7 @@ void AEnemyManager::RoundEvent(bool start)
 		isbreakTime = false;
 
 		currMonsterSpawnTimer = InitMonsterSpawnTime - (0.3f * myGameMode->currRound);
-		BossSpawnTime = myGameState->DaySecond / (float)((myGameMode->currRound / 3) + 1);
+		BossSpawnTime = (myGameState->DaySecond / (float)((myGameMode->currRound / 3) + 1)) + 10;
 		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("BossSpawnTime = %f"), BossSpawnTime));
 
 

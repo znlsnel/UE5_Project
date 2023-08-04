@@ -137,10 +137,10 @@ void UPlayerUI::ATVWeaponSelectUI(bool addToView)
 	//ToggleMouse(addToView);
 	if (addToView)
 	{
-		if (weaponSelectUI->isOpen == false)
-			weaponSelectUI->WidgetOn();
 		Cast<UPlayerMove>(me->playerMove)->turnValue = 0.f;
 		Cast<UPlayerMove>(me->playerMove)->lookUpValue = 0.f;
+		if (weaponSelectUI->isOpen == false)
+			weaponSelectUI->WidgetOn();
 		IsMouseActive = true;
 	}
 	else

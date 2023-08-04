@@ -144,6 +144,7 @@ void AEnemy::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AAc
 		if (fsm->isInAttackRange == false) {
 			fsm->anim->PlayAttackAnim(false, true);
 			fsm->isInAttackRange = true;
+			fsm->target = OtherActor;
 		}
 	}
 	else if (OtherActor->ActorHasTag("Player")) {
@@ -152,6 +153,7 @@ void AEnemy::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AAc
 			if (fsm->isInAttackRange == false) {
 				fsm->anim->PlayAttackAnim(false, true);
 				fsm->isInAttackRange = true;
+				fsm->target = OtherActor;
 			}
 		}
 	}
@@ -162,6 +164,7 @@ void AEnemy::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AAc
 
 			fsm->anim->PlayAttackAnim(false, true);
 			fsm->isInAttackRange = true;
+			fsm->target = OtherActor;
 		}
 	}
 }

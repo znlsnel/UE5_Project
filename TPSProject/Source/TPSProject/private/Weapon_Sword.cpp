@@ -206,7 +206,7 @@ void AWeapon_Sword::OnBlocking(bool On)
 
 void AWeapon_Sword::ReflectAttack(AEnemy* enemy)
 {
-	float rand = FMath::FRandRange(0.25f, 0.45f);
+	float rand = FMath::FRandRange(0.35f, 0.55f);
 	int damage = (int)((float)(enemy->fsm->maxHp) * rand);
 
 	enemy->OnDamage(damage, "", myPlayer);

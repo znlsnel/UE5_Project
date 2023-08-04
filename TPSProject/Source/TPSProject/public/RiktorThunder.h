@@ -53,4 +53,6 @@ public:
 	class AAIController* myAI;
 	class AEnemy* myParent;
 	class AActor* target;
+
+	FVector prePos = FVector(0);
 };

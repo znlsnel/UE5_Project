@@ -2,6 +2,7 @@
 
 
 #include "myGameStateBase.h"
+#include "Doomstone.h"
 
 #include <Engine/DirectionalLight.h>
 #include <Kismet/GameplayStatics.h>
@@ -9,6 +10,8 @@
 AmyGameStateBase::AmyGameStateBase()
 {
 	myLight = Cast<ADirectionalLight>( UGameplayStatics::GetActorOfClass(GetWorld(), ADirectionalLight::StaticClass()));
+	statue = Cast<ADoomstone>(UGameplayStatics::GetActorOfClass(GetWorld(), ADoomstone::StaticClass()));
+
 }
 
 void AmyGameStateBase::BeginPlay()
@@ -25,11 +28,13 @@ void AmyGameStateBase::RotateDLLoop()
 {
 	GetWorldTimerManager().ClearTimer(DLRotationTimer);
 
-	float additionalRotationValue = DaytimeRotationSpeed;
-	if (myLight->GetActorRotation().Pitch > 1)
-		additionalRotationValue = NightRotationSpeed;
+	if (statue->isDestory == false) {
+		float additionalRotationValue = DaytimeRotationSpeed;
+		if (myLight->GetActorRotation().Pitch > 1)
+			additionalRotationValue = NightRotationSpeed;
 
-	myLight->AddActorWorldRotation(FRotator(additionalRotationValue, 0, 0));
+		myLight->AddActorWorldRotation(FRotator(additionalRotationValue, 0, 0));
+	}
 
 	GetWorldTimerManager().SetTimer(DLRotationTimer, this, &AmyGameStateBase::RotateDLLoop, DirectionalLightRotateTickSpeed, false);
 }

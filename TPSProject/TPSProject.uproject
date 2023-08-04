@@ -48,6 +48,10 @@
 				"Win64",
 				"Mac"
 			]
+		},
+		{
+			"Name": "AlembicHairImporter",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [

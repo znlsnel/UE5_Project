@@ -59,6 +59,12 @@ void AArrow::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimi
 {
 	if (bIsUsed == false) return;
 
+
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Hit ! ! !"));
+
+	for (auto name : OtherActor->Tags)
+		UKismetSystemLibrary::PrintString(GetWorld(), "Name : " + name.ToString());
+
 	if (OtherActor->ActorHasTag(FName("Enemy")))
 	{
 		tempEnemy = Cast<AEnemy>(OtherActor);

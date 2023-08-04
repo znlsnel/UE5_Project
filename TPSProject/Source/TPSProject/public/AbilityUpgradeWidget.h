@@ -86,8 +86,8 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		class UAbilityInfo* abliltyInfo;
 
-	UPROPERTY(BlueprintReadOnly)
-		int currSkillCoin = 2;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		int currSkillCoin = 200;
 
 	UPROPERTY(BlueprintReadWrite)
 		TArray<class USkillStateWidget*> skillButtons;

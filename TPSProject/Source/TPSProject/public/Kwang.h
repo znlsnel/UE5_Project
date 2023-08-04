@@ -32,6 +32,6 @@ public:
 	TArray<class AAttackRangeIndicator*> attackRangeIndicators;
 
 	class UKwangAnim* myAnim;
-	
+	class AActor* player;
 
 };

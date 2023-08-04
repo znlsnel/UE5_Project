@@ -147,6 +147,8 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UParticleSystemComponent* DamageEffect;
 
+
+
 //======================================================================
 
 // Detail =====================================================================
@@ -186,10 +188,10 @@ public:
 
 	bool isMovable = true;
 	bool isRotatable = true;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		int Grace = 0;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		int Mineral = 0;
 
 	int respawnTime = 10;

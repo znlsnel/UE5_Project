@@ -4,7 +4,9 @@
 #include "Kwang.h"
 #include "KwangAnim.h"
 #include "AttackRangeIndicator.h"
+#include "TPSPlayer.h"
 
+#include <Kismet/GameplayStatics.h>
 #include <particles/ParticleSystemComponent.h>
 
 AKwang::AKwang() : Super()
@@ -16,6 +18,7 @@ void AKwang::BeginPlay()
 {
 	Super::BeginPlay();
 
+	player = UGameplayStatics::GetActorOfClass(GetWorld(), ATPSPlayer::StaticClass());
 	for (int i = 0; i < 15; i++) {
 		AActor* tempActor = GetWorld()->SpawnActor(attackRangeIndicatorFactory);
 		if (IsValid(tempActor)) {
@@ -42,8 +45,7 @@ AAttackRangeIndicator* AKwang::GetAttackRangeIndicator()
 void AKwang::LoopLightningStrike()
 {
 	GetWorldTimerManager().ClearTimer(lightningLoopTimer);
-	if (fsm->target == nullptr || isLightningLoop == false || myAnim->isDead) {
-
+	if (isLightningLoop == false || myAnim->isDead) {
 		return;
 	}
 
@@ -52,7 +54,7 @@ void AKwang::LoopLightningStrike()
 	if (attackRange == nullptr)
 		return;
 
-	attackRange->SetActive(true, fsm->target->GetActorLocation());
+	attackRange->SetActive(true, player->GetActorLocation());
 	attackRange->SetMode(false);
 	attackRange->SetAttackTimer(this);
 

@@ -9,6 +9,8 @@
 #include "DoomStone.h"
 #include "BuildableItem.h"
 
+#include "AIController.h"
+
 #include <Components/AudioComponent.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
@@ -40,13 +42,13 @@ void UEnemyAnim::playHitSound(bool IsDeath)
 	}
 }
 
-void UEnemyAnim::AttackToTargets(TArray<AActor*> actors, int damage)
+void UEnemyAnim::AttackToTargets(TArray<AActor*>& actors, int damage)
 {
 	if (actors.IsEmpty()) {
 		me->fsm->isInAttackRange = false;
 		return;
 	}
-
+	
 	for (auto target : actors) {
 		if (target->ActorHasTag("Player")) {
 			ATPSPlayer* tempPlayer = Cast<ATPSPlayer>(target);
@@ -85,7 +87,6 @@ void UEnemyAnim::NativeBeginPlay()
 
 void UEnemyAnim::PlayDamageAnim(bool IsDeath, AActor* attacker)
 {
-
 	if (IsDeath) {
 		Montage_Play(AM_Die);
 		return;
@@ -95,7 +96,7 @@ void UEnemyAnim::PlayDamageAnim(bool IsDeath, AActor* attacker)
 	if (Montage_IsPlaying(AM_Skill) || bossAttack)
 		return;
 
-	Montage_Stop(1.f, AM_Attack);
+	//Montage_Stop(1.f, AM_Attack);
 	Montage_Play(AM_Damaged);
 	if (attacker) {
 		FName sectionName = "";
@@ -126,34 +127,33 @@ void UEnemyAnim::PlayDamageAnim(bool IsDeath, AActor* attacker)
 void UEnemyAnim::PlayAttackAnim(bool isLongRangeAttack, bool startMotion)
 {
 
-	if (Montage_IsPlaying(AM_Skill))
+	if (Montage_IsPlaying(AM_Skill) || Montage_IsPlaying(AM_Die))
 		return;
 
 	if (me->fsm->stoneStatue->isDestory)
 		return;
 
+	if (startMotion && (GetWorld()->GetTimeSeconds() - lastStartMotionTime) < 7) return;
+
+
 	if (me->fsm->target->ActorHasTag("BuildableItem") && Cast <ABuildableItem>(me->fsm->target)->isDestroy) return;
 
-	if (me->fsm->stoneStatue && me->fsm->stoneStatue->isDestory)
-		return;
 
-		
-
-	FRotator LookRot = UKismetMathLibrary::FindLookAtRotation(me->GetActorLocation(), me->fsm->target->GetActorLocation());
-	me->SetActorRotation(FRotator(0, LookRot.Yaw, 0));
+	me->fsm->ai->StopMovement();
 
 	if (isLongRangeAttack) {
 		Montage_Play(AM_Skill);
 		Montage_JumpToSection(longRangeSkill);
 		return;
 	}
-
 	else if (me->isOverlapingTargets() == false) {
 		me->fsm->isInAttackRange = false;
 		return;
 	}
 
 
+	FRotator LookRot = UKismetMathLibrary::FindLookAtRotation(me->GetActorLocation(), me->fsm->target->GetActorLocation());
+	me->SetActorRotation(FRotator(0, LookRot.Yaw, 0));
 
 	bool UseMeleeSkill = FMath::RandRange(0, 10) == 0;
 	bool MeleeSkillCoolTimeisDone = GetWorld()->GetTimeSeconds() - lastMeleeSkillUseTime > MeleeSkillCoolTime;
@@ -166,18 +166,14 @@ void UEnemyAnim::PlayAttackAnim(bool isLongRangeAttack, bool startMotion)
 	}
 
 	FName sectionName = FName(FString::Printf(TEXT("Attack_%d"), currAttackSection++));
-
-		if (currAttackSection > attackAMSectionCount)
-			currAttackSection = 1;
-
+	if (currAttackSection > attackAMSectionCount)
+		currAttackSection = 1;
 
 	if (startMotion &&( GetWorld()->GetTimeSeconds() - lastStartMotionTime ) > 7) {
 		sectionName = FName("StartMotion");
 		currAttackSection = 1;
-
 		lastStartMotionTime = GetWorld()->GetTimeSeconds();
 	}
-
 
 	if (Montage_IsPlaying(AM_Attack) == false) {
 		Montage_Play(AM_Attack);

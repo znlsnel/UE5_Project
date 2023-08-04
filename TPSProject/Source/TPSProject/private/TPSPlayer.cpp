@@ -1,5 +1,4 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #include "TPSPlayer.h"
 #include "ScreenUI.h"
 #include "Weapon_Pistol.h"
@@ -61,10 +60,13 @@ ATPSPlayer::ATPSPlayer()
 	tpsCamComp = CreateDefaultSubobject<UCameraComponent>(TEXT("TpsCamComp"));
 	meleeAttackSensor = CreateDefaultSubobject<UBoxComponent>(TEXT("MeleeAttackSensor"));
 
+
 	itemFactory = CreateDefaultSubobject<UItemFactoryComp>(TEXT("itemFactory"));
 	abilityComp = CreateDefaultSubobject<UPlayerAbilityComp>(TEXT("Abilitys"));
 	SpawnEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SpawnEffect"));
 	DamageEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("DamageEffect"));
+
+
 	// RootComponent ´Â °èÃþ±¸Á¶»ó Ä¸½¶ ÄÝ¸®Àü ÄÄÆ÷³ÍÆ®¸¦ ÀÇ¹ÌÇÔ
 	springArmComp->SetupAttachment(RootComponent);
 	springArmComp->SetRelativeLocation(FVector(0, 30, 70));

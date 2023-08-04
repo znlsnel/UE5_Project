@@ -35,7 +35,8 @@ public:// º¯¼ö
 	UPROPERTY(EditAnywhere)
 		class UTexture2D* defaultIcon;
 
-	TArray<class AItem*> Items;
+	UPROPERTY()
+		TArray<class AItem*> Items;
 
 	UPROPERTY(BlueprintReadWrite)
 		int itemCount = 0;

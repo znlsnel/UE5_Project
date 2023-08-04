@@ -76,6 +76,7 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 			DieState(); 
 			break;
 	}
+	anim->speed = me->GetVelocity().Length();
 	anim->animState = mState;
 
 }
@@ -95,8 +96,8 @@ void UEnemyFSM::InitializeEnemy(FVector spawnPoint)
 
 	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
-	anim->speed = me->GetCharacterMovement()->MaxWalkSpeed;
-
+//	anim->speed = me->GetCharacterMovement()->MaxWalkSpeed;
+	anim->speed = me->GetVelocity().Length();
 	anim->isDead = false;
 	
 	me->SetActorHiddenInGame(false);
@@ -126,28 +127,19 @@ void UEnemyFSM::MoveState()
 	if (target == nullptr)
 		return;
 
-	if (anim->Montage_IsPlaying(anim->AM_Attack) || anim->Montage_IsPlaying(anim->AM_Skill)){
+	if (anim->Montage_IsPlaying(anim->AM_Skill)) {
 		ai->StopMovement();
 		return;
 	}
 
-	if (anim->bHasAbilitySkill == false && anim->Montage_IsPlaying(anim->AM_Damaged)) {
-		return;
-	}
-
 	double dist = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
-	bool isInRange = dist < (me->targetSensor->GetScaledBoxExtent().Y * me->GetMesh()->GetRelativeScale3D().Y);
+	bool isInRange = dist < 1000;
 
-	if (isInRange) {
-		isInAttackRange = true;
-	}
-	else if (target->ActorHasTag("Player")) {
-		if (isInRange == false && GetWorld()->GetTimeSeconds() - anim->lastLongRangeSkillUseTime > anim->LongRangeSkillCoolTime) {
+	if (target->ActorHasTag("Player")) {
+		if (anim->bHasAbilitySkill &&  isInRange == false && GetWorld()->GetTimeSeconds() - anim->lastLongRangeSkillUseTime > anim->LongRangeSkillCoolTime) {
 			anim->LongRangeAttack();
 			anim->lastLongRangeSkillUseTime = GetWorld()->GetTimeSeconds();
 		}
-
-
 	}
 
 	if (stoneStatue && stoneStatue->isDestory) {
@@ -158,15 +150,10 @@ void UEnemyFSM::MoveState()
 	if (isInAttackRange) {
 		mState = EEnemyState::Attack;
 		ai->StopMovement();
-		return;
 	}
-
-	if (isPossibleToMove(target))
-		ai->MoveToActor(target);
 	else
-	{
-		//UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Failed"));
-	}
+		ai->MoveToActor(target);
+
 }
 
 
@@ -199,26 +186,22 @@ bool UEnemyFSM::isPossibleToMove(AActor* goalTarget)
 
 void UEnemyFSM::AttackState()
 {
-
-	ai->StopMovement();
-	
-
-	if (stoneStatue && stoneStatue->isDestory)
-		return;
-
-
 	if (isInAttackRange == false) {
 		mState = EEnemyState::Idle;
 		return;
 	}
-
+	if (stoneStatue && stoneStatue->isDestory)
+		return;
 	if (anim->Montage_IsPlaying(anim->AM_Attack))
 		return;
 
+	
+	ai->StopMovement();
+
 	lastAttackTime += GetWorld()->GetDeltaSeconds();
 	if (lastAttackTime > attackDelayTime){
-		anim->PlayAttackAnim();
 		lastAttackTime = 0;
+		anim->PlayAttackAnim();
 	}
 }
 
@@ -231,8 +214,8 @@ void UEnemyFSM::DeadEneny(AActor* attacker)
 	anim->PlayDamageAnim(true);
 	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	int mineral = rwdMineral + currRound * 5;
-	int grace = rwdGrace + currRound  * 5;
+	int mineral = (int)((1 + ((float)currRound * 0.3f)) * rwdMineral);
+	int grace = (int)((1 + ((float)currRound * 0.3f)) * rwdGrace);
 
 	if (attacker && attacker->ActorHasTag("Player")) {
 		Cast<ATPSPlayer>(attacker)->GetMineralGrace(mineral, grace);
@@ -280,18 +263,17 @@ void UEnemyFSM::OnDamageProcess(int damage, AActor* attacker,  FName boneName, b
 	if (anim->isDead)
 		return;
 
-	ai->StopMovement();
-
-	if (IsValid(attacker) && attacker->ActorHasTag(TEXT("Player"))) {
-		anim->PlayAttackAnim(false, true);
+	if (IsValid(attacker) && attacker->ActorHasTag(TEXT("Player"))) 
+	{
 		double dist = FVector::Distance(attacker->GetActorLocation(), me->GetActorLocation());
-		bool isInRange = dist < (me->targetSensor->GetScaledBoxExtent().Y * me->GetMesh()->GetRelativeScale3D().Y) * 10;
-		bool IsattackState = dist < me->targetSensor->GetScaledBoxExtent().Y * me->GetMesh()->GetRelativeScale3D().Y;
+		double allowDist = (me->targetSensor->GetScaledBoxExtent().Y * me->GetMesh()->GetRelativeScale3D().Y);
+
+		bool isInRange = dist < playerTraceDist;
+
 		if (isInRange) {
 			target = attacker;
+			//anim->PlayAttackAnim(false, true);
 		}
-		if (IsattackState)
-			isInAttackRange = true;
 
 	}
 
@@ -328,6 +310,10 @@ void UEnemyFSM::OnDamageProcess(int damage, AActor* attacker,  FName boneName, b
 		return;
 	}
 	else {
+		if (GetWorld()->GetTimeSeconds() - anim->lastLongRangeSkillUseTime > anim->LongRangeSkillCoolTime) {
+			float temp = GetWorld()->GetTimeSeconds() - anim->lastLongRangeSkillUseTime;
+			anim->lastLongRangeSkillUseTime -= (temp - anim->LongRangeSkillCoolTime) - 5;
+		}
 		anim->lastLongRangeSkillUseTime += 2;
 
 		if (anim->bHasAbilitySkill == false) {
@@ -343,8 +329,8 @@ void UEnemyFSM::RoundInitEnemy(int round)
 	if (round == currRound)
 		return;
 
-	maxHp = InitHp + (int)((float)InitHp * 0.2f * (float)round);
-	anim->AttackDamage = attackPower + (int)((float)attackPower * 0.2f * (float)round);
+	maxHp = InitHp + (int)((float)InitHp * 0.3f * (float)round);
+	anim->AttackDamage = attackPower + (int)((float)attackPower * 0.4f * (float)round);
 
 	currRound = round;
 }
@@ -356,21 +342,23 @@ void UEnemyFSM::UpdageTargetTick()
 	if (target == nullptr || isActiveUpdateTargetTick == false)
 		return;
 
-	if (target->ActorHasTag("Player") && Cast<ATPSPlayer>(target)->hp > 0 ) {
-			double dist = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
-			bool isInRange = dist < (me->targetSensor->GetScaledBoxExtent().Y * me->GetMesh()->GetRelativeScale3D().Y) * 10;
+	double dist = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
 
-			if (isInRange)
-				return;
-		}
-	
-
-	if (target->ActorHasTag("BuildableItem")) {
-		if (Cast<ABuildableItem>(target)->isDestroy == false && target->IsHidden() == false)
-			return;
+	bool TargetStoneStatue = false;
+	if (target->ActorHasTag("Player") ) {
+	//	TargetStoneStatue = dist > (me->targetSensor->GetScaledBoxExtent().Y * me->GetMesh()->GetRelativeScale3D().Y) * 10;
+		if (Cast<ATPSPlayer>(target)->hp > 0)
+			TargetStoneStatue = dist > playerTraceDist;
+		else
+			TargetStoneStatue = true;
+	}
+	else if (target->ActorHasTag("BuildableItem")) {
+		if (Cast<ABuildableItem>(target)->isDestroy || target->IsHidden())
+			TargetStoneStatue = true;
 	}
 
-	target = stoneStatue;
+	if (TargetStoneStatue)
+		target = stoneStatue;
 
 	GetWorld()->GetTimerManager().SetTimer(UpdateTargetTimer, this, &UEnemyFSM::UpdageTargetTick, 1.f, true);
 }
