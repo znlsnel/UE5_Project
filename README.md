@@ -67,7 +67,7 @@
 
 ### 몬스터
 - 밤이 되면 생성되는 몬스터와 보스 몬스터 구현
-[![Video](https://github.com/user-attachments/assets/258dda25-ad84-44f3-961b-ae2e344391f5)](https://www.youtube.com/watch?time_continue=21&v=DfpeI9w_5m8&embeds_referring_euri=https%3A%2F%2Fwww.notion.so%2F&source_ve_path=MjM4NTE)
+[![Video](https://github.com/user-attachments/assets/258dda25-ad84-44f3-961b-ae2e344391f5)](https://www.youtube.com/watch?time_continue=0&v=DfpeI9w_5m8&embeds_referring_euri=https%3A%2F%2Fwww.notion.so%2F&source_ve_path=MjM4NTE)
 <br>
 
 ### HP UI
